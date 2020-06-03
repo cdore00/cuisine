@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type" />
+<meta http-equiv="Content-Language" content="fr"/>
+<meta name="contactcity" content="Quebec"/>
+<meta name="contactprovince" content="Quebec"/>
+<meta name="contactcountry" content="Canada"/>
+<title>Traiteur Simpas</title>
+<meta name="viewport" content="minimum-scale=1.0, width=device-width, user-scalable=yes" />
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
+
+
+<!-- Include quill stylesheet -->
+<link rel="stylesheet" href="misc/quill.snow.css" >
+<link rel="stylesheet" href="misc/photo.css" />
+<link rel="stylesheet" href="misc/menu.css" />
+
+<meta name="viewport" content="minimum-scale=1.0, width=device-width, user-scalable=yes" />
+
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
+
+<script type="text/javascript" src="misc/util.js"></script>
+<script type="text/javascript" src="misc/menu.js"></script>
+<script src="misc/quill.js"></script>
+
+<script type="text/javascript"> 
+<!--
+
+function initNewsPage(){
+initPage();
+getInfo("listNews?data=1", listResult);
+initMenu("oMenu1");
+}
+
+function listResult(data){
+var newsColl = document.getElementById('newsColl');
+//var htmlStr = "";
+
+var ulElem = document.createElement("ul");
+
+for (var i = 0; i < data.length ; i ++) { 
+	var liElem = document.createElement("li");
+	var plat = data[i];
+
+	//Image
+	var leftElem = document.createElement("div");
+	leftElem.innerHTML = plat.contentL;
+	leftElem.setAttribute('class', 'ql-editor zoneLeft');
+	liElem.appendChild(leftElem);
+
+	//Description
+	var divElem = document.createElement('div');
+	divElem.setAttribute('class', 'divTxt');
+	
+	var pElem = document.createElement('span');
+	pElem.setAttribute('class', 'newsTitle');
+	pElem.innerHTML = plat.title;
+	divElem.appendChild(pElem);
+
+	var pElem = document.createElement('p');
+	pElem.setAttribute('class', 'newsDate');
+	pElem.innerHTML = plat.date;
+	divElem.appendChild(pElem);
+	
+	var pElem = document.createElement('p');
+	pElem.innerHTML = plat.contentR;
+	divElem.appendChild(pElem);
+	
+	liElem.appendChild(divElem);
+	ulElem.appendChild(liElem);
+
+}
+newsColl.appendChild(ulElem);
+
+}
+
+// -->
+</script> 
+<style>
+
+.zoneLeft{
+float: left;
+width: 40% !important;
+text-align: center;
+}
+
+.newsDate{
+font-style: italic;
+}
+
+.newsTitle{
+font-size: 1.5em;
+}
+
+#preview{
+border: none;
+}
+
+
+</style>
+</head>
+
+<body onload="initNewsPage();">
+<a name="hautPage"></a>
+
+<div id="fontAdjust">
+<div class="divFont" onclick="setFontS(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontS(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+<a href="#" id="butMenu" title="Menu" ><img id="logomenu" alt="Menu" src="misc/menu.png" width="64" height="32" onclick="showSubMenu(this)"/></a>
+
+<div id="topmenu">
+<ul>
+	<li>
+	<a id="oMenu0" class="optMenu" href="index.html" onmouseover="showSubMenu(this)" >Accueil</a>
+	</li>
+	<li>
+	<a id="oMenu1" class="optMenu" href="news.html" onmouseover="showSubMenu(this)" >Nouvelles</a>
+	</li>
+	<li>
+	<a id="oMenu2" class="optMenu" href="repas.html" onmouseover="showSubMenu(this)" >Repas pr&eacute;par&eacute;s</a>   
+	</li>
+	<li>
+	<a id="oMenu3" class="optMenu" href="joindre.html" onmouseover="showSubMenu(this)" >Traiteur</a>
+	</li>
+	<li>
+	<a id="oMenu4" class="optMenu" href="joindre.html" onmouseover="showSubMenu(this)">Certificat-cadeau</a>
+	</li>
+	<li>
+	<a id="oMenu5" class="optMenu" href="joindre.html" onmouseover="showSubMenu(this)" >Blogue</a>
+	</li>
+	<li>
+	<a id="oMenu6" class="optMenu" href="a_propos.html" onmouseover="showSubMenu(this)" >&Agrave; propos</a>
+	</li>
+	<li>
+	<a id="oMenu7" class="optMenu" href="joindre.html" onmouseover="showSubMenu(this)" >Contact</a>
+	</li>
+</ul>
+</div>
+
+<div id="entete">
+<h1>Traiteur Simpas</h1>
+</div>
+
+
+
+<h2>Nouvelles</h2>
+
+
+<div id="preview" class="ql-container ql-snow">
+<div id="newsColl" class="list-items">
+
+</div>
+
+
+<div id="piedPage">
+
+<div>
+<p id="copyright"><a href="mailto:traiteur.simpas@gmail.com?Subject=traiteursimpas.com">&copy; Tous droits r&eacute;serv&eacute;s: Chef Catering 2018</a></p></div>
+</div>
+
+
+ </body>	 
+ </html>

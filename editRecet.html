@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
+<meta name="format-detection" content="telephone=yes" />
+
+<link rel="shortcut icon" type="image/x-icon" href="images/golf.png">
+<link rel="shortcut icon" type="image/x-icon" href="images/golf.png?">
+<title>Recettes</title>
+<meta content="Recettes" name="keywords" />
+<meta content="Recettes" name="description" />
+
+<link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
+
+<script type="text/javascript" src="misc/util.js"></script>
+<script type="text/javascript" language="Javascript">
+<!--
+
+var userId;
+var recetID;
+
+var goURL;
+var recetForm;
+
+if (document.images)
+{
+ favOn= new Image(30,30);
+ favOn.src="images/favoris.png";  
+
+ favOff= new Image(30,30);
+ favOff.src="images/favorisOff.png";
+}
+
+
+function initPage(){
+recetForm = document.getElementById('recetForm');
+var data = getURLdata();
+
+window.oTip = new messTipObject();
+window.oPick = new listPickerObject();
+
+setFontSize();
+
+var mode = "$MOD";
+recetID = data;
+if (recetID == "NEW")
+	mode = "$NEW";
+//userId = GetCookie("userID");
+
+getInfo("getRecette?data=" + recetID + mode, getRecetteData);
+}
+
+function getRecetteData(odata){
+var Fcat = document.getElementById('Fcat');
+
+if ( recetID != "NEW"){
+var oRecet = odata.rec[0];
+recetForm.FrecetName.value = oRecet.nom;
+recetForm.Fsource.value = oRecet.url;
+recetForm.Ftemps.value = oRecet.temp;
+recetForm.Fcuisson.value = oRecet.cuis;
+recetForm.Fportion.value = oRecet.port;
+showIngr(oRecet.ingr);
+showPrep(oRecet.prep);
+}
+var cat = odata.cat;
+for (var i = 0; i < cat.length; i++) {
+	var optElem = document.createElement("option");
+	optElem.setAttribute('value', cat[i]._id);
+	if (oRecet && cat[i]._id == oRecet.cat._id)
+		optElem.setAttribute('selected', true);
+	optElem.innerHTML = cat[i].desc;	
+	Fcat.appendChild(optElem);
+}
+showProgress(1);
+}
+
+function addIngr(chkId, txtId, txt){
+	var liElem = document.createElement("li");
+	var inElem = document.createElement("input");
+	inElem.setAttribute('class', '');
+	inElem.setAttribute('type', 'checkbox');
+	inElem.setAttribute('id', chkId);
+	inElem.setAttribute('name', 'chxIngr');
+	liElem.appendChild(inElem);
+	
+	var inElem = document.createElement("input");
+	inElem.setAttribute('class', 'inputtext');
+	inElem.setAttribute('type', 'text');
+	inElem.setAttribute('id', txtId);
+	inElem.setAttribute('value', txt);
+	inElem.setAttribute('name', 'txtIngr');
+	liElem.appendChild(inElem);
+return liElem;
+}
+
+function ajoutIngr(txt){
+var ingrList = document.getElementById('ingrList');
+var x = document.getElementsByName("chxIngr");
+var i = x.length;
+if (!txt)
+	txt = "";
+ingrList.appendChild(addIngr('chxIngr' + i, 'txtIngr' + i, txt));
+}
+
+function delIngr(){
+var x = document.getElementsByName("chxIngr");
+
+for (var i = 0; i < x.length; i++) {
+	if (x[i].checked){
+		x[i].parentNode.parentNode.removeChild(x[i].parentNode);
+		delIngr();
+		}
+}
+}
+
+function showIngr(oIngr){
+//Load ingrédients
+var ingrList = document.getElementById('ingrList');
+var mapLink = document.getElementById('mapLink');
+
+
+//mapLink.href += recetID + "$" + courseIDdef;  
+for (var i = 0; i < oIngr.length; i++) {
+	ingrList.appendChild(addIngr('chxIngr' + i, 'txtIngr' + i, oIngr[i]));
+}
+}
+
+function addPrep(chkId, txtId, txt){
+	var liElem = document.createElement("li");
+	var inElem = document.createElement("input");
+	inElem.setAttribute('class', '');
+	inElem.setAttribute('type', 'checkbox');
+	inElem.setAttribute('id', chkId);
+	inElem.setAttribute('name', 'chxPrep');
+	liElem.appendChild(inElem);
+
+	var inElem = document.createElement("textarea");
+	inElem.setAttribute('class', 'inputtext');
+	inElem.setAttribute('rows', '3');
+	inElem.setAttribute('id', 'txtPrep' + i);
+	inElem.setAttribute('name', 'txtPrep');	
+	inElem.innerHTML = txt;
+	liElem.appendChild(inElem);	
+return liElem;
+}
+
+function ajoutPrep(txt){
+var prepList = document.getElementById('prepList');
+var x = document.getElementsByName("chxPrep");
+var i = x.length;
+if (!txt)
+	txt = "";
+prepList.appendChild(addPrep('chxPrep' + i, 'txtPrep' + i, txt));
+}
+
+function delPrep(){
+var x = document.getElementsByName("chxPrep");
+
+for (var i = 0; i < x.length; i++) {
+	if (x[i].checked){
+		x[i].parentNode.parentNode.removeChild(x[i].parentNode);
+		delPrep();
+		}
+}
+}
+
+function showPrep(oPrep){
+//Load preparation
+var prepList = document.getElementById('prepList');
+
+for (var i = 0; i < oPrep.length; i++){
+	prepList.appendChild(addPrep('chxPrep' + i, 'txtPrep' + i, oPrep[i]));
+}
+}
+
+function saveAll(oButSave){
+
+var data = {};
+	var msg = "&nbsp;<b>Enregistrement : " + recetForm.FrecetName.value + " ...</b>";
+	window.oTip.show(msg, oButSave, true);
+data.ID = recetID;
+data.nom = recetForm.FrecetName.value;
+data.url = recetForm.Fsource.value;
+data.temp = recetForm.Ftemps.value;
+data.cuis = recetForm.Fcuisson.value;
+data.port = recetForm.Fportion.value;
+data.cat = {};
+data.cat._id = eval(recetForm.Fcat[recetForm.Fcat.selectedIndex].value);
+data.cat.desc = recetForm.Fcat[recetForm.Fcat.selectedIndex].innerHTML;
+
+for (var i = 0; i < recetForm.Fcat.length; i++) {
+	
+}
+
+var x = document.getElementsByName("txtIngr");
+var arrIngr = [];
+for (var i = 0; i < x.length; i++) {
+	arrIngr[arrIngr.length] = x[i].value;
+}
+data.ingr = arrIngr;
+
+var x = document.getElementsByName("txtPrep");
+var arrPrep = [];
+for (var i = 0; i < x.length; i++) {
+	arrPrep[arrPrep.length] = x[i].value;
+}
+data.prep = arrPrep;
+
+getInfo("saveRecet?data=" + JSON.stringify(data) , recetSaved);
+
+}
+
+function recetSaved(oRes){
+
+if (!oRes.ok && oRes.message){
+	var modLayer = document.getElementById('modalDiv');
+	window.oTip.fadeout();
+	alert(langLbl[oRes.message]);
+	authentifier();
+	modLayer.style.visibility="visible";
+}else{
+	window.oTip.initMess("Enregistré");
+	window.oTip.fadeout(300);
+	if (oRes.upserted)
+		setTimeout(function() {
+			document.location = "editRecet.html?data=" + oRes.upserted.$oid;
+		}, 3000);
+}
+}
+
+
+function addToRecet(fList, ingrPrep){
+var tTab = fList.tabText.value;
+var dat = tTab.split("\n");
+var firstPar = false;
+
+for (var i = 0; i < dat.length; i++) {
+	var bData = dat[i];
+	if (bData.length > 0){
+		var t = bData[0].charCodeAt(0);
+		bData = bData.split("\t");
+		if ( ingrPrep == "i")
+			ajoutIngr(bData);
+		else
+			ajoutPrep(bData);
+	}
+}
+}
+
+function ajouteRecet(){
+recetID = "NEW";
+recetForm.FrecetName.value = "";
+recetForm.Fsource.value = "";
+recetForm.Ftemps.value = "";
+recetForm.Fcuisson.value = "";
+recetForm.Fportion.value = "";
+remChilds(document.getElementById('ingrList'));
+remChilds(document.getElementById('prepList'));
+}
+
+function delRecet(oButDel){
+if (confirm("Supprimer la recette « " + recetForm.FrecetName.value + " » ?")){
+		window.oTip.show("&nbsp;<b>Suppression de la recette " + recetForm.FrecetName.value + " ...</b>", oButDel, true);
+		getInfo("delRecet?data=" + recetID , recetDeleted);
+}
+
+}
+								
+function recetDeleted(oRep){
+if (oRep.ok){
+	window.oTip.initMess("&nbsp;<b>Recette " + recetForm.FrecetName.value + " supprimée !</b>");
+	window.oTip.fadeout(300);
+	setTimeout(function() {
+		ajouteRecet(true);
+	}, 3000);
+}
+}
+
+function selAllchx(chxList){
+var x = document.getElementsByName(chxList);
+if (x)
+	var sel = !x[0].checked;
+for (var i = 0; i < x.length; i++) {
+	x[i].checked = sel;
+}
+
+}
+
+// -->
+</script>
+
+<style>
+
+.formLabel{
+position: relative;
+float: left;
+clear: both;
+min-width: 10em;
+display: inline;
+text-align: right;
+margin-right: 0.5em;
+}
+
+.inputselect {
+height: auto;
+}
+
+#butMenu {
+    visibility: visible;
+	margin-left: 10px;
+}
+
+.sectionTitle{
+margin-left: 10px;
+font-weight: bold;
+font-size: 1.1em;
+}
+
+#butClub{
+visibility: hidden;
+display: inline;
+}
+
+strong{
+color: #0f0;
+}
+
+input[type=checkbox] {
+  transform: scale(2);
+}
+
+.listitem {
+    overflow: hidden;
+}
+
+textarea{
+overflow: scroll;
+}
+
+
+
+#ingrList input[type=text], #prepList textarea{
+width: 85%;
+margin-left: 10px;
+}
+
+#Fsource{
+width: 65%;
+}
+
+#prepList textarea{
+height: 50px;
+}
+
+#delAllIngr{
+list-style-type : none;
+}
+
+
+
+</style>
+
+</head>
+
+<body onload="initPage()"><a name="haut"></a>
+
+<div id="topbar" class="vert">
+<div id="leftnav"><a title="Formulaire de recherche" href="index.html"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
+<div id="chargement" class="">
+<progress id="progressQ" ></progress>
+<div class="charge"><text id="load"></text></div><div class="charge loading"></div></div>
+<div id="fontAdjust" class="unselectable">
+<div class="divFont" onclick="setFontSize(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontSize(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+</div>
+<div id="duobutton">
+<a href="#" id="butMenu" class="char_icon" title="Save data" onclick="saveAll(this); return false;">&#x1f4be;</a>
+<a href="listeResult.html" ><text id="mlist"></text></a>
+<!--  <a id="mapLink" target="_blank" href="ClubMap.html?data=" ><text id="mmaps"></text></a>  // -->
+</div>
+
+
+<div id="content">
+
+<div class="pageitem">
+
+<form id="recetForm" action="javascript:void(0);">
+
+	<div class="sectionTitle">
+	<label for="ingrList">Recette&nbsp;:&nbsp;&nbsp;</label><a class="itin" alt="Ajouter une recette" href="javascript:ajouteRecet();">Ajouter</a>
+	<a class="itin" alt="Supprimer la recette" href="javascript:delRecet(this);">Supprimer</a>
+	<div id="butClub">
+	<a class="itin" alt="Add club" href="javascript:addClub();">Ajouter une recette</a>
+	<a class="itin" alt="Remove club" href="javascript:return false;" onclick="delClub(this);">Supprimer la recette</a>
+	</div></div>
+
+<ul>
+<li class="listitem gras">
+	<div class="formLabel">	
+	<label for="FrecetName">Nom</label></div>
+	<input id="FrecetName" class="inputtext" type="text" size="20" maxlength="35" value="" />
+</li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label for="Fcat">Cat&eacute;gorie</label></div>
+	<select id="Fcat" class="inputselect">
+	</select>
+</li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label for="Ftemps">Temps de préparation</label></div>
+	<input id="Ftemps" class="inputtext" type="text" maxlength="20" value="" />
+</li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label for="Fcuisson">Cuisson</label></div>
+	<input id="Fcuisson" class="inputtext" type="text" maxlength="20" value="" />
+</li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label for="Fportion">Portions</label></div>
+	<input id="Fportion" class="inputtext" type="text" maxlength="20" value="" />
+</li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label for="Fsource">Source URL</label></div>
+	<input id="Fsource" class="inputtext" type="text" maxlength="200" value="" />
+</li>
+</ul>
+
+<hr>
+<!-- Ingrédients list // -->
+	<div class="sectionTitle">
+	<label for="ingrList">Ingr&eacute;dients&nbsp;:&nbsp;&nbsp;</label><a class="itin" alt="Ajouter ingr&eacute;dient" href="javascript:ajoutIngr();">Ajouter</a>
+	<a class="itin" alt="Supprimer ingr&eacute;dient" href="javascript:delIngr();">Supprimer</a>
+	&nbsp;Tous:&nbsp;<input id="delAllIngr" class="inputtext" type="checkbox" onclick="selAllchx('chxIngr')" />
+	</div>
+
+
+<ol id="ingrList">
+
+</ol>
+
+<hr>
+<!-- Préparation list // -->	
+	<div class="sectionTitle">
+	<label for="prepList">Pr&eacute;paration&nbsp;:&nbsp;&nbsp;</label><a class="itin" alt="Ajouter pr&eacute;paration" href="javascript:ajoutPrep();">Ajouter</a>
+	<a class="itin" alt="Supprimer pr&eacute;paration" href="javascript:delPrep();">Supprimer</a>
+	&nbsp;Tous:&nbsp;<input id="delAllIngr" class="inputtext" type="checkbox" onclick="selAllchx('chxPrep')" />
+	</div>
+<ol id="prepList">
+
+</ol>
+</form>
+<hr>
+
+<form id="tabTextF">
+	​<textarea id="tabText" rows="4" cols="92" form="tabTextF"></textarea>
+	<div>
+	<input id="butAddIngr" class="itin" type="button" onclick="addToRecet(this.form,'i');" value="Ajouter aux ingr&eacute;dients"/>
+	<input id="butAddPrep" class="itin" type="button" onclick="addToRecet(this.form,'p');" value="Ajouter à la pr&eacute;paration"/>
+	</div>
+</form>
+</div>  <!-- FIN  class="pageitem" // -->
+
+</div>  <!-- FIN  id="content" // -->
+
+<div id="bottombar" class="vert">
+	<div id="rightbutton"> <a class="char_icon" href="#haut" alt="Haut de page">&#9650;</a> </div>
+	<div id="message"></div>
+</div>
+
+<div id="copyright">
+<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2005-2020</a>
+</div>
+
+<div id="modalDiv"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
+<meta name="format-detection" content="telephone=no" />
+
+<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico?">
+<title>Recettes</title>
+<meta content="Recettes" name="keywords" />
+<meta content="Recettes" name="description" />
+
+<link href="misc/init.css" rel="stylesheet" media="screen" type="text/css" />
+<link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
+
+<script type="text/javascript" src="misc/util.js"></script>
+
+<script type="text/javascript" language="Javascript">
+<!--
+
+var clubPos = null;
+var lat, lng, km;
+
+function ficheRec (IdRecet) {
+var url = 'ficheRec.html?data=' + IdRecet;
+document.location.href = url;
+}
+
+
+function initPage(){
+var urlInfo = document.location.href;
+
+setFontSize();
+
+if (urlInfo.indexOf("data=") == -1){  // Not a new request
+	var data = localStorage.getItem("idList");
+
+	var request = encodeURI(data);
+	getInfo("getRecList?data=" + request, showResult);
+	
+	clubPos = '#pos' + localStorage.getItem("clubPos");
+}else{  // New request
+	var data = getURLdata();
+	var request = encodeURI(data);
+	getInfo("searchResult?" + request, showResult);
+}
+}
+
+
+function showResult(oResult){
+var pageZone = document.getElementById('pageZone');
+var message = document.getElementById('message');
+
+mess = localStorage.getItem("message");
+
+if (typeof oResult.ph == "boolean"){
+	if (oResult.ph)
+		mess = mess.replace("phonetic", langLbl["Iphon"]);
+	else
+		mess = mess.replace("phonetic", "");
+	var result = oResult.data;
+}else{
+	mess = mess.replace("phonetic", "");
+	var result = oResult;
+}	
+
+message.innerHTML = result.length + mess;
+
+var cntItem = 0;
+var idList = "";
+var myPos = localStorage.getItem('myPos');
+if (myPos){
+	var coord = myPos.split(',');
+}
+
+for (var i = 0; i < result.length; i++) {
+	idList += result[i]._id.$oid + ",";
+	var liElem = document.createElement("li");
+	liElem.setAttribute('class', 'listitem');
+	var aElem = document.createElement("a");
+	aElem.setAttribute('id', 'pos' + result[i]._id.$oid);
+	liElem.appendChild(aElem);
+	var aElem = document.createElement("a");
+	aElem.setAttribute('href', 'javascript:ficheRec(\'' + result[i]._id.$oid + '\')');
+	aElem.setAttribute('class', 'itemdetail');
+
+	var nT = 0;
+	aElem.innerHTML = result[i].nom ;
+	liElem.appendChild(aElem);
+	
+	cntItem += 1;
+	var nextClass = "itemdetail";
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', nextClass);
+	spanElem.innerHTML = result[i].cat.desc + ", Préparation: <text>" + result[i].temp + ";</text> Cuisson: <text>" + result[i].cuis + ";</text> Portions: " + result[i].port;
+	liElem.appendChild(spanElem);
+
+	if (cntItem > 4){
+		nextClass = "itemdetail90";
+		var divElem = document.createElement("span");
+		divElem.setAttribute('id', 'rightNavItem');  //rightbuttonItem
+		divElem.innerHTML = '<a class="char_icon" href="#haut" alt="Haut de page">&#9650;</a>';
+		spanElem.appendChild(divElem);
+		cntItem = 0;
+	}	
+	liElem.appendChild(spanElem);
+	pageZone.appendChild(liElem);
+}
+
+idList = idList.substring(0, idList.length - 1 )
+localStorage.setItem('idList', idList);
+
+showProgress(1);
+if (clubPos)
+	document.location = clubPos;
+}
+
+
+// -->
+</script>
+
+<style>
+
+#rightNavItem{
+position: relative;
+float:right;
+
+}
+
+.char_icon a:hover{
+color:#d33 !important;
+}
+.itemdetail{
+    overflow: hidden;
+}
+
+#pageZone text{
+display: inline-block;
+min-width: 4em;
+}
+
+</style>
+
+</head>
+
+<body onload="initPage();"><a name="haut"></a>
+
+<div id="topbar" class="vert">
+<div id="leftnav"><a title="Formulaire de recherche" href="index.html"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
+<div id="chargement">
+<progress id="progressQ" ></progress>
+<div class="charge"><text id="searc"></text></div><div class="charge loading"></div>
+</div>
+<!--<button type="button" id="rightnav" title="Taille de police" onclick="changeTaille();"><img id="imgTaille" alt="Taille de police" height="20" width="45" src="images/taille.png" /></button>// -->
+<div id="fontAdjust" class="unselectable">
+<div class="divFont" onclick="setFontSize(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontSize(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+</div>
+
+
+<div id="duobutton">
+<a id="pressed" href="#"><text id="mlist"></text></a>
+<a id="callMap" href="index.html?data="><text id="searc"></text></a>
+</div>
+
+<div id="content">
+
+<ul id="pageZone" class="pageitem">
+
+</ul>
+
+</div>
+
+<div id="bottombar" class="vert">
+	<div id="rightbutton"> <a class="char_icon" href="#haut" alt="Haut de page">&#9650;</a> </div>
+	<div id="message"></div>
+</div>
+
+<!-- #include file = "pied_page.asp" -->
+</div>
+<script type="text/javascript" language="Javascript">
+<!--
+//document.location = '#pos';
+
+// -->
+</script>
+
+<div id="copyright">
+<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2005-2020</a>
+</div>
+</body>
+
+</html>

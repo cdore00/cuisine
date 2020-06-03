@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Language" content="fr"/>
+<meta name="contactcity" content="Quebec"/>
+<meta name="contactprovince" content="Quebec"/>
+<meta name="contactcountry" content="Canada"/>
+<title>Traiteur Simpas</title>
+<meta name="viewport" content="minimum-scale=1.0, width=device-width, user-scalable=yes" />
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
+<link rel="stylesheet" type="text/css" href="misc/init.css" media="screen" />
+<link id="pagestyle" rel="stylesheet" type="text/css" href="misc/photo.css" />
+
+<meta name="viewport" content="minimum-scale=1.0, width=device-width, user-scalable=yes" />
+
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
+
+<script type="text/javascript" src="misc/util.js"></script>
+<script type="text/javascript"> 
+<!--
+var iQ = 1, iR = 3;
+
+function hideShowSom(objQR){
+var arrowDiv = objQR.childNodes[iQ].childNodes[1];
+//alert("Node Q=" + iQ + " Heigth=" + objQR.childNodes[iQ].offsetHeight);
+if (objQR.offsetHeight >= objQR.childNodes[iQ].offsetHeight + objQR.childNodes[iR].offsetHeight){
+	objQR.style.height = objQR.childNodes[iQ].offsetHeight + "px";
+	arrowDiv.innerHTML = "&#9660;";
+}else{
+	objQR.style.height= objQR.childNodes[iR].offsetHeight + objQR.childNodes[iQ].offsetHeight + "px";
+	arrowDiv.innerHTML = "&#9650;";
+}
+}
+
+function initQR(){
+setTimeout(adjustQR, 1000);
+}
+
+function adjustQR(){
+var oQRs = document.getElementsByClassName('objQR');
+for (i = 0; i < oQRs[0].childNodes.length; i++) {
+	if (oQRs[0].childNodes[i].className == "questRep"){
+		iQ = i;
+		//alert("Node Q=" + iQ + " Heigth=" + objQR.childNodes[iQ].offsetHeight);
+	}
+	if (oQRs[0].childNodes[i].className == "rep"){
+		iR = i;
+		//alert("Node R=" + iR + " Heigth=" + objQR.childNodes[iR].offsetHeight);
+	}
+}
+
+if (oQRs[0].childNodes[iQ].offsetHeight == 0)
+	var h = "2.5em"
+for (i = 0; i < oQRs.length; i++) {
+	if (h)
+		oQRs[i].style.height = h;	
+	else
+		oQRs[i].style.height = oQRs[i].childNodes[iQ].offsetHeight + "px";
+}
+
+}
+
+// -->
+</script> 
+
+<style>
+.objQR {
+height: 2.5em;
+border-bottom: 1px solid #aaa;
+text-align: left;
+overflow: hidden;
+-webkit-transition: all 0.6s ease-in-out;
+-moz-transition: all 0.6s ease-in-out;
+transition: all 0.6s ease-in-out;
+margin-top: 10px;
+margin-left: 10px;
+
+cursor: pointer;
+}
+
+.hideSom{
+color: white;
+float: right;
+}
+
+.questRep{
+position: relative;
+}
+
+.quest{
+display: contents;
+float: left;
+font-weight: bold;
+font-size: 1.1em
+}
+
+.rep{
+clear:both;
+}
+
+.alignLeft{
+border-bottom: solid 5px #ccc;
+}
+
+</style>
+
+
+</head>
+
+<body onload="initPage(initQR);">
+
+<div id="entete">
+<a name="hautPage"></a>
+<div id="fontAdjust">
+<div class="divFont" onclick="setFontS(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontS(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+<h1>Traiteur Simpas</h1>
+</div>
+
+<div id="divmenu">
+<ul>
+	<li>
+	<a href="index.html">Accueil</a>
+	</li>
+	<li>
+	<a class="selOpt" href="#">Repas pr&eacute;par&eacute;s</a>   
+	</li>
+	<li>
+	<a href="joindre.html">Traiteur</a>
+	</li>
+	<li>
+	<a href="joindre.html">Certificat-cadeau</a>
+	</li>
+	<li>
+	<a href="a_propos.html">&Agrave; propos</a>
+	</li>
+	<li>
+	<a href="joindre.html">Nous joindre</a>
+	</li>
+</ul>
+</div>
+
+
+<div id="content">
+<h2>Repas pr&eacute;par&eacute;s</h2>
+<h3>Traiteur Simpas</h3>
+
+<h4><a href="menu.html">Menu de la semaine</a></h4>
+<h4><a href="photos.html">Nos mets</a></h4>
+<h4><a href="#foireQ">Foire aux questions</a></h4>
+
+<div class="alignLeft">
+<p>&nbsp;</p>
+<p>&Agrave; chaque semaine, Simpas vous offre un choix de sept plats sant&eacute;s, abordables et livr&eacute;s &agrave; votre domicile tous les dimanches. Vous pouvez cr&eacute;er les combinaisons de repas que vous d&eacute;sirez avec les mets qui vous plaisent ou commander les sept repas hebdomadaires.</p>
+<p>&nbsp;</p>
+<p>Vos repas de semaine n'auront jamais &eacute;t&eacute; aussi simples &agrave; planifier et &agrave; pr&eacute;parer! Le tout est emball&eacute; sous vide pour vous permettre de r&eacute;chauffer facilement, et ce, en un rien de temps, tout en conservant la fraîcheur des aliments.</p>
+<p>&nbsp;</p>
+<p>Vous avez jusqu'au mercredi (inclusivement) pour commander afin de recevoir votre livraison le dimanche entre 14h et 20h. Si vous ne pouvez être pr&eacute;sents lors de la livraison, vous n'avez qu'&agrave; laisser une glacière près de la porte afin que notre livreur puisse y d&eacute;poser votre commande.</p>
+<p>&nbsp;</p>
+<p>La livraison est gratuite (Qu&eacute;bec et L&eacute;vis) pour les commandes de 5 portions et plus.</p>
+
+<p>&nbsp;</p>
+</div>
+
+
+<p>&nbsp;</p>
+
+
+<a name="foireQ"></a>
+<h4>Foire aux questions</h4>
+<hr>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Puis-je avoir plus de d&eacute;tails sur le fonctionnement pour les repas pr&eacute;par&eacute;s?</p>
+</div>
+</div>
+<div class="rep">
+<p>Tous nos repas pr&eacute;par&eacute;s sont livr&eacute;s emball&eacute;s sous vide et num&eacute;rot&eacute;s (Repas 1, Repas 2, Repas 3, ...) afin de faciliter le rep&eacute;rage de chaque plat et son accompagnement (s'il y a lieu). Aussi, le nombre de sacs est inscrit sur l'&eacute;tiquette de chaque repas (Sac 1 de 1 ou Sac 1 de 2).</p>
+<p>Vos repas sont d&eacute;j&agrave; tout pr&ecirc;ts. Il n'y a aucune cuisine n&eacute;cessaire, vous n'avez qu'&agrave; r&eacute;chauffer!</p>
+<p>Vous trouverez aussi les logos de cong&eacute;lation et de micro-ondes sur les &eacute;tiquettes lorsqu'applicables.</p>
+<img id="imgObj" src="photos/alim_logo.jpg" style="display: block; width: 150px;"/>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Est-ce possible de savoir &agrave; quelle heure la livraison aura lieu?</p>
+</div>
+</div>
+<div class="rep">
+<p>Les livraisons ont lieu le dimanche entre 14h et 20h. Si vous avez une pr&eacute;f&eacute;rence pour l'heure de livraison, veuillez s'il-vous-plaît l'inscrire dans la remarque au moment de finaliser votre panier d'achat.</p>
+<p>Cependant, prendre note que nous ne garantissons pas l'heure de livraison, puisqu'elle varie en fonction du nombre de commandes, de l'emplacement des clients, de la temp&eacute;rature, etc.</p>
+<p>Si vous deviez vous absentez durant la plage de livraison, nous conseillons de placer une glaci&egrave;re pr&egrave;s de la porte afin que le livreur puisse y d&eacute;poser votre commande.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Que faire si je ne suis pas disponible durant la plage de livraison?</p>
+</div>
+</div>
+<div class="rep">
+<p>Les livraisons des commandes ont lieu les dimanches, de 14h &agrave; 20h. Si vous ne pouvez &ecirc;tre pr&eacute;sents lors de la livraison, vous n'avez qu'&agrave; laisser une glaci&egrave;re pr&egrave;s de la porte afin que notre livreur puisse y d&eacute;poser votre commande. S'il est impossible pour vous de laisser une glaci&egrave;re, communiquez avec nous afin de voir si nous pouvons livrer votre commande &agrave; un autre moment.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Comment faire pour commander vos repas pr&eacute;par&eacute;s?</p>
+</div>
+</div>
+<div class="rep">
+<p>Il y a plusieurs fa&ccedil;ons de commander nos repas pr&eacute;par&eacute;s :</p>
+<ul>
+<li>en ligne</li>
+<li>par courriel &agrave; l'adresse suivante : traiteur.simpas@gmail.com</li>
+<li>en nous envoyant une message priv&eacute; sur notre page facebook: https://www.facebook.com/traiteursimpas/</li>
+<li>en nous appelant au 581-998-4992.</li>
+</ul>
+<p>Au plaisir :)</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Est-ce que vos repas sont frais ou congel&eacute;s?</p>
+</div>
+</div>
+<div class="rep">
+<p>Tous nos repas sont frais et emball&eacute;s sous vide pour un maximum de fraicheur.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Quels sont les modes de paiement accept&eacute;s?</p>
+</div>
+</div>
+<div class="rep">
+<p>Vous pouvez payer en argent comptant ou par virement Interac au moment de la livraison ou par carte de cr&eacute;dit au moment de votre commande en ligne.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Est-ce que vos repas pr&eacute;par&eacute;s se cong&egrave;lent?</p>
+</div>
+</div>
+<div class="rep">
+<p>Nos repas pr&eacute;par&eacute;s sont livr&eacute;s frais et vous pouvez congeler la plupart de nos repas au besoin. Surveillez l'icône de cong&eacute;lation sur les &eacute;tiquettes de vos repas pr&eacute;par&eacute;s qui vous indiquera les repas qui conserveront bien leur goût et leur texture m&ecirc;me apr&egrave;s avoir &eacute;t&eacute; congel&eacute;s:</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Que faire en cas d'allergies alimentaires?</p>
+</div>
+</div>
+<div class="rep">
+<p>Si vous souffrez d'allergies alimentaires, s'il-vous-plaît nous indiquer &agrave; quels aliments vous &ecirc;tes allergique au moment de votre commande.</p>
+<p>Quoique nous mettons toujours tous les efforts n&eacute;cessaires pour minimiser les risques en cas d'allergie, il est important de mentionner que nous ne pouvons pas garantir qu'il n'y a aucun contact avec les allerg&egrave;nes ou que nos ingr&eacute;dients achet&eacute;s ne contiennent pas certaines traces de ces allerg&egrave;nes.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Est-ce que vous ajouter des agents de conservation ou des rehausseurs de goût &agrave; vos plats?</p>
+</div>
+</div>
+<div class="rep">
+<p>Nous mettons un peu de sel, poivre et &eacute;pices pour le goût, mais nous n'ajoutons AUCUN agent de conservation ni AUCUN rehausseur de goût &agrave; nos repas, tout comme des repas faits &agrave; la maison. Nous choisissons plutôt d'emballer nos repas sous vide afin de conserver leur fraîcheur.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Que faire si nous voulons commander vos repas, mais nous n'habitons pas Qu&eacute;bec ni L&eacute;vis?</p>
+</div>
+</div>
+<div class="rep">
+<p>Une alternative que nous offrons &agrave; nos clients est de livrer sur leur lieu de travail le lundi, s'il est situ&eacute; &agrave; Qu&eacute;bec ou L&eacute;vis. Dans ce cas, s'il-vous-plaît communiquer avec nous pour v&eacute;rifier les heures de livraison possibles.</p>
+<p>Une autre option est de fixer ensemble un point de rencontre aux limites de Qu&eacute;bec ou L&eacute;vis pour effectuer la livraison le dimanche.</p>
+</div>
+</div>
+
+<div class="objQR" onclick="hideShowSom(this)">
+<div class="questRep">
+<div class="hideSom">&#9660;</div>
+<div class="quest">
+<p>Devons-nous prendre un abonnement pour commander vos plats pr&eacute;par&eacute;s?</p>
+</div>
+</div>
+<div class="rep">
+<p>Absolument pas! Chez Simpas, vous commandez vos mets cuisin&eacute;s seulement pour les semaines où vous en avez envie. Vous avez la libert&eacute; de commander nos plats chaque semaine ou une fois de temps en temps, selon vos besoins.</p>
+</div>
+</div>
+ 
+
+</div>  <!--End content // -->
+
+
+<div id="piedPage">
+<div>
+<p id="copyright"><a href="mailto:traiteur.simpas@gmail.com?Subject=traiteursimpas.com">&copy; Tous droits r&eacute;serv&eacute;s: Chef Catering 2018</a></p></div>
+</div>
+
+
+ </body>	 
+ </html>

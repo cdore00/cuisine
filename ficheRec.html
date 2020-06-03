@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
+<meta name="format-detection" content="telephone=yes" />
+
+<link rel="shortcut icon" type="image/x-icon" href="images/golf.png">
+<link rel="shortcut icon" type="image/x-icon" href="images/golf.png?">
+<title>Recettes</title>
+<meta content="Recettes" name="keywords" />
+<meta content="Recettes" name="description" />
+
+<link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
+
+<script type="text/javascript" src="misc/util.js"></script>
+<script type="text/javascript" language="Javascript">
+<!--
+
+var userId;
+var recetID;
+var courseIDdef;
+var clubName;
+var clubCourse;
+var favChange = false;
+var goURL;
+
+
+function changeFav(objImg){
+favChange = true;
+if (objImg.classList.contains("favOn")){
+	objImg.classList.replace("favOn", "favOff");
+}else{
+	objImg.classList.replace("favOff", "favOn");
+}
+}
+
+function majFav(nextURL){
+var action=0;	//deleteAction
+var starStat = document.getElementById('favIcon');
+
+goURL = nextURL;
+
+if (favChange){
+	if (starStat.classList.contains("favOn"))
+		action=1;  //addAction
+		
+	if (nextURL)
+		getInfo("updateFav?data=" + recetID + "$" + userId + "$" + action, changeURL);
+	else
+		getInfo("updateFav?data=" + recetID + "$" + userId + "$" + action);
+}else{
+if (nextURL)
+	changeURL();
+}
+}
+
+function changeURL(oRep){
+document.location.href = goURL;
+}
+
+function initPage(){
+var butMenu = document.getElementById("butMenu");
+
+userId = GetCookie("userID");
+if (userId){
+
+	butMenu.style.visibility = "visible";
+}
+if ( GetCookie("userRole") != "ADM"){
+	document.getElementById("menuOptEdit").style.visibility = "hidden";
+	document.getElementById("menuOptAdd").style.visibility = "hidden";
+}
+	
+var data = getURLdata();
+
+setFontSize();
+window.oMenu = new menuObject(document.getElementById('butMenu'));
+	
+recetID = data;
+
+getInfo("getRecette?data=" + data , showRecet);
+
+}
+
+function showMenu(){
+	window.oMenu.show();
+}
+
+function editRecet(currentClub){
+if (currentClub)
+	document.location = "editRecet.html?data=" + recetID;
+else
+	document.location = "editRecet.html?data=NEW";
+}
+
+
+function showRecet(oRecet){
+var recetInfo = document.getElementById('recetInfo');
+var recetDetail = document.getElementById('recetDetail');
+var pageZone = document.getElementById('pageZone');
+var CourseList = "";
+var favClass = "favOff";
+
+//5ec1626963f1571d78b4f8dd
+
+//recetIngrList = oRecet[0].ingr;
+recetPrepList = oRecet[0].prep;
+
+var cInfo = oRecet[0].cat.desc;
+recetInfo.innerHTML = cInfo;
+
+	var bElem = document.createElement("b");
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem spanCenter gras');
+	spanElem.innerHTML = oRecet[0].nom;
+	bElem.appendChild(spanElem);
+	pageZone.appendChild(bElem);
+if (oRecet[0].temp != ""){
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem');
+	spanElem.innerHTML = "<b><text>Préparation:</text></b>" + oRecet[0].temp;
+	pageZone.appendChild(spanElem);
+}
+if (oRecet[0].cuis != ""){
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem');
+	spanElem.innerHTML = "<b><text>Cuisson:</text></b>" + oRecet[0].cuis;
+	pageZone.appendChild(spanElem);
+}
+if (oRecet[0].port != ""){
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem');
+	spanElem.innerHTML = "<b><text>Portions:</text></b>" + oRecet[0].port + "</br></br>";
+	pageZone.appendChild(spanElem);
+}
+
+	var bElem = document.createElement("b");
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem gras');
+	spanElem.innerHTML = "Ingrédients";
+	bElem.appendChild(spanElem);
+	pageZone.appendChild(bElem);
+	
+	pageZone.appendChild(numList(oRecet[0].ingr));
+
+	var bElem = document.createElement("b");
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem gras');
+	spanElem.innerHTML = "Préparation";
+	bElem.appendChild(spanElem);
+	pageZone.appendChild(bElem);
+	
+	pageZone.appendChild(numList(oRecet[0].prep));
+	
+if (oRecet[0].url)
+	cInfo = 'Source : <a target="_blank" href=' + oRecet[0].url + '>' + oRecet[0].url + '</a>&nbsp;';
+else
+	cInfo = "";
+//	cInfo += '&nbsp;<a class="itin" target="_blank" href="ClubTrajet.html?Lat=">' + langLbl["direc"] + '</a>';
+
+recetDetail.innerHTML = cInfo;
+
+showProgress(1);
+}
+
+function numList(oColl){
+
+	var ulElem = document.createElement("ol");
+for (var i = 0; i < oColl.length; i++) {
+	var olElem = document.createElement("li");
+	olElem.setAttribute('class', '');
+	olElem.innerHTML = oColl[i];
+	ulElem.appendChild(olElem);
+	}
+return ulElem;
+}
+
+function sendMail(){
+
+	if (confirm("Envoyer la recette par courriel ?")) {
+		getInfo("sendRecetMail?data=" + GetCookie("userMail") + "$" + recetID , recetSent);
+	}
+}
+
+function recetSent(oRes){
+
+alert(langLbl[oRes.message] + GetCookie("userMail"));
+
+}
+
+// -->
+</script>
+
+<style>
+
+#recetInfo{
+text-align: center;
+}
+
+.spanCenter{
+width: 100%;
+text-align: center;
+}
+
+#pageZone ol{
+margin-top: 0px;
+}
+
+#pageZone text{
+display: inline-block;
+min-width: 6em;
+}
+
+
+</style>
+
+</head>
+
+<body onload="initPage()" onunload="majFav()"><a name="haut"></a>
+
+<div id="topbar" class="vert">
+<div id="leftnav"><a title="Formulaire de recherche" href="#" onclick="majFav('index.html');"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
+<div id="chargement" class="">
+<progress id="progressQ" ></progress>
+<div class="charge"><text id="load"></text></div><div class="charge loading"></div></div>
+<div id="fontAdjust" class="unselectable">
+<div class="divFont" onclick="setFontSize(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontSize(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+</div>
+<div id="duobutton">
+<a href="#" id="butMenu" title="Menu" onmouseover="showMenu()" onclick="showMenu();"><img id="logomenu" alt="Menu" src="images/menu.png" width="64" height="32"></a>
+<a href="#" onclick="majFav('listeResult.html');"><text id="mlist"></text></a>
+<!--  <a id="mapLink" target="_blank" href="#" onclick="sendMail(); return false;"><text id="email"></text></a> // -->
+</div>
+
+<div id="menuList">
+<a id="menuOptemail" class="inputButton" href="#" onclick="sendMail(false)" >&nbsp;&nbsp;&nbsp;&nbsp;Envoie par courriel</a>
+<a id="menuOptEdit" class="inputButton" href="#" onclick="editRecet(true)" title="&Eacute;diter la recette.">&nbsp;&nbsp;&nbsp;&nbsp;<text id="medit"></text></a>
+<a id="menuOptAdd" class="inputButton" href="#" onclick="editRecet(false)" title="Ajouter une recette.">&nbsp;&nbsp;&nbsp;&nbsp;<text id="majou"></text></a>
+</div>
+
+<div id="content">
+	<div id="recetInfo" class="itemdesc">
+	</div>
+<div id="pageZone" class="pageitem">
+
+</div>
+	<div id="recetDetail" class="">
+	</div>
+</div>
+
+<div id="bottombar" class="vert">
+	<div id="rightbutton"><a class="char_icon" href="#haut" alt="Haut de page">&#9650;</a></div>
+	<div id="message"></div>
+</div>
+
+<div id="copyright">
+<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2005-2020</a>
+</div>
+
+</body>
+
+</html>
