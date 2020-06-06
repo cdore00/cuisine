@@ -103,36 +103,41 @@ var pageZone = document.getElementById('pageZone');
 var CourseList = "";
 var favClass = "favOff";
 
-//5ec1626963f1571d78b4f8dd
+var rec = oRecet.rec[0];
+var user = oRecet.user.email;
+recetPrepList = rec.prep;
 
-//recetIngrList = oRecet[0].ingr;
-recetPrepList = oRecet[0].prep;
-
-var cInfo = oRecet[0].cat.desc;
+var cInfo = rec.cat.desc;
 recetInfo.innerHTML = cInfo;
 
-	var bElem = document.createElement("b");
+	var bElem = document.createElement("h2");
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem spanCenter gras');
-	spanElem.innerHTML = oRecet[0].nom;
+	spanElem.innerHTML = rec.nom;
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
-if (oRecet[0].temp != ""){
+if (rec.temp != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
-	spanElem.innerHTML = "<b><text>Préparation:</text></b>" + oRecet[0].temp;
+	spanElem.innerHTML = "<b><text>Préparation:</text>" + rec.temp;
 	pageZone.appendChild(spanElem);
 }
-if (oRecet[0].cuis != ""){
+if (rec.cuis != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
-	spanElem.innerHTML = "<b><text>Cuisson:</text></b>" + oRecet[0].cuis;
+	spanElem.innerHTML = "<b><text>Cuisson:</text></b>" + rec.cuis;
 	pageZone.appendChild(spanElem);
 }
-if (oRecet[0].port != ""){
+if (rec.port != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
-	spanElem.innerHTML = "<b><text>Portions:</text></b>" + oRecet[0].port + "</br></br>";
+	spanElem.innerHTML = "<b><text>Portions:</text></b>" + rec.port;
+	pageZone.appendChild(spanElem);
+}
+if (rec.port != ""){
+	var spanElem = document.createElement("span");
+	spanElem.setAttribute('class', 'listitem');
+	spanElem.innerHTML = "<b><text>Modification:</text></b>" + getDateTime(rec.dateM) + "&nbsp;:&nbsp;" + user + "</br></br>";
 	pageZone.appendChild(spanElem);
 }
 
@@ -143,7 +148,7 @@ if (oRecet[0].port != ""){
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
 	
-	pageZone.appendChild(numList(oRecet[0].ingr));
+	pageZone.appendChild(numList(rec.ingr));
 
 	var bElem = document.createElement("b");
 	var spanElem = document.createElement("span");
@@ -152,10 +157,10 @@ if (oRecet[0].port != ""){
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
 	
-	pageZone.appendChild(numList(oRecet[0].prep));
+	pageZone.appendChild(numList(rec.prep));
 	
-if (oRecet[0].url)
-	cInfo = 'Source : <a target="_blank" href=' + oRecet[0].url + '>' + oRecet[0].url + '</a>&nbsp;';
+if (rec.url)
+	cInfo = 'Source : <a target="_blank" href=' + rec.url + '>' + rec.url + '</a>&nbsp;';
 else
 	cInfo = "";
 //	cInfo += '&nbsp;<a class="itin" target="_blank" href="ClubTrajet.html?Lat=">' + langLbl["direc"] + '</a>';
@@ -213,6 +218,9 @@ display: inline-block;
 min-width: 6em;
 }
 
+h2{
+margin: 0;
+}
 
 </style>
 
@@ -243,8 +251,8 @@ min-width: 6em;
 </div>
 
 <div id="content">
-	<div id="recetInfo" class="itemdesc">
-	</div>
+	<h2 id="recetInfo" class="itemdesc">
+	</h2>
 <div id="pageZone" class="pageitem">
 
 </div>

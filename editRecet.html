@@ -62,6 +62,8 @@ recetForm.Fsource.value = oRecet.url;
 recetForm.Ftemps.value = oRecet.temp;
 recetForm.Fcuisson.value = oRecet.cuis;
 recetForm.Fportion.value = oRecet.port;
+document.getElementById('Fcree').innerHTML = getDateTime(oRecet.dateC);
+document.getElementById('Fmodif').innerHTML = getDateTime(oRecet.dateM)  + "&nbsp;:&nbsp;" + odata.user.email ;
 showIngr(oRecet.ingr);
 showPrep(oRecet.prep);
 }
@@ -319,11 +321,6 @@ font-weight: bold;
 font-size: 1.1em;
 }
 
-#butClub{
-visibility: hidden;
-display: inline;
-}
-
 strong{
 color: #0f0;
 }
@@ -359,6 +356,9 @@ height: 50px;
 list-style-type : none;
 }
 
+.smallFont{
+font-size: .5em;
+}
 
 
 </style>
@@ -393,12 +393,17 @@ list-style-type : none;
 	<div class="sectionTitle">
 	<label for="ingrList">Recette&nbsp;:&nbsp;&nbsp;</label><a class="itin" alt="Ajouter une recette" href="javascript:ajouteRecet();">Ajouter</a>
 	<a class="itin" alt="Supprimer la recette" href="javascript:delRecet(this);">Supprimer</a>
-	<div id="butClub">
-	<a class="itin" alt="Add club" href="javascript:addClub();">Ajouter une recette</a>
-	<a class="itin" alt="Remove club" href="javascript:return false;" onclick="delClub(this);">Supprimer la recette</a>
-	</div></div>
+	</div>
 
 <ul>
+<li class="listitem smallFont">
+	<div class="formLabel">
+	<label class="gras">Créé: </label></div><span id="Fcree"></span>
+</li>
+<li class="listitem smallFont">
+	<div class="formLabel">
+	<label class="gras">Modifié: </label></div><span id="Fmodif"></span>
+</li>
 <li class="listitem gras">
 	<div class="formLabel">	
 	<label for="FrecetName">Nom</label></div>
