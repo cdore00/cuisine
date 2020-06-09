@@ -110,12 +110,22 @@ recetPrepList = rec.prep;
 var cInfo = rec.cat.desc;
 recetInfo.innerHTML = cInfo;
 
+
 	var bElem = document.createElement("h2");
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem spanCenter gras');
 	spanElem.innerHTML = rec.nom;
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
+
+if (rec.imgURL){
+	var divElem = document.createElement("div");
+	divElem.setAttribute('id', 'zoneImg');
+	divElem.setAttribute('class', 'zoneRight');
+	divElem.innerHTML = rec.imgURL;
+	pageZone.appendChild(divElem);
+}
+	
 if (rec.temp != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
@@ -220,6 +230,21 @@ min-width: 6em;
 
 h2{
 margin: 0;
+}
+
+#zoneImg{
+max-width: 40%;
+padding-right: 15px;
+}
+#zoneImg img{
+width: 100%;
+border: buttonhighlight 3px outset;
+border-radius: 10px;
+padding: 3px;
+}
+
+.zoneRight{
+float: right;
 }
 
 </style>

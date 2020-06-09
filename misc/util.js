@@ -1,5 +1,5 @@
 
-var HOSTserv = "https://loupop.ddns.net/pyt/";
+var HOSTserv = "http://127.0.0.1:3000/";		//Portable Windows 10 Local host Node JS v6.10.0
 // "http://127.0.0.1:3000/";		//Portable Windows 10 Local host Node JS v6.10.0
 // "http://192.168.2.195:3000/";    //Ubuntu workstation 16.04
 // "http://192.168.2.195:8080/";    //Ubuntu workstation 16.04 docker 1.12.6 Node JS v4.2.3  MongoDB server v3.4.9
@@ -8,6 +8,7 @@ var HOSTserv = "https://loupop.ddns.net/pyt/";
 // "https://cdore.ddns.net/pyt/";  // VULTR Ubuntu Server 16.04 docker Python 3.6.4
 // "https://pyt-golf-cd-serv.1d35.starter-us-east-1.openshiftapps.com/";  // Python 3.6.3 
 // "https://loupop.ddns.net/pyt/";
+
 
 var progressBar, langSet;
 var THCall = "POST";
@@ -151,41 +152,34 @@ var formatDateTime = {
 
 
 function DelCookie(name) {
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/';
 }
 	
-function getCookieVal(offset){
-var endstr = document.cookie.indexOf(";", offset)
-var tostr = ""+document.cookie.indexOf(";", offset)
-if (tostr != ""){
-if (endstr == -1)
-	endstr = document.cookie.length;
-return unescape(document.cookie.substring(offset, endstr))
-}
-}
-
-function GetCookie(name){
-var arg = name + "=";
-var alen = arg.length;
-var clen = document.cookie.length;
-var i = 0;
-while (i < clen){
-	var j = i + alen;
-	if (document.cookie.substring(i, j) == arg){
-		return getCookieVal (j);
-		}
-	i = document.cookie.indexOf(" ", i) + 1;
-	if (i == 0) break;
-	}
-	return null;
+function GetCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
 }
 
-function SetCook(name,value){
-	var exp = new Date();
-	exp.setTime (exp.getTime() + (1000*60*60*24*720));
-	document.cookie = name + "="+ escape(value) + "; expires=" + exp.toGMTString() ;
-//alert(name + "="+ value + "; expires=" + exp.toGMTString())
+function SetCook(cname, cvalue, exdays) {
+	if (!exdays)
+		exdays = 365;
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires="+ d.toUTCString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 }
+
 
 function initPage(callBackFunct){
 topmenu = document.getElementById('topmenu');
@@ -660,7 +654,7 @@ if (rep.resp.result){
 	authLayer.style.visibility="hidden";
 	identLayer.style.display="none";
 	SetCook("userID",rep.resp.user._id + "");
-	SetCook("userName",rep.resp.user.Nom);
+	//SetCook("userName",rep.resp.user.Nom);
 	SetCook("userMail",rep.resp.user.courriel);
 	SetCook("userRole",rep.resp.user.niveau);
 	userId = rep.resp.user._id;
@@ -762,7 +756,7 @@ if (document.querySelector('meta[http-equiv="content-language"]'))
 	  case "fr":
 		langLbl["title"] = "Recettes";
 		langLbl["motcl"] = "Mot cl&eacute;";
-		langLbl["clubn"] = "Nom recette";
+		langLbl["clubn"] = "Nom";
 		langLbl["clubc"] = "Ingredients";
 		langLbl["regio"] = "Cat&eacute;gorie";
 		langLbl["toute"] = "Toutes";
@@ -889,7 +883,7 @@ if (document.querySelector('meta[http-equiv="content-language"]'))
 	  case "es":
 		langLbl["title"] = "Recetas";
 		langLbl["motcl"] = "Palabra clave";
-		langLbl["clubn"] = "Nombre del recetas";
+		langLbl["clubn"] = "Nombre";
 		langLbl["clubc"] = "Ciudad";
 		langLbl["regio"] = "Categoría";
 		langLbl["toute"] = "Todas";
@@ -1015,7 +1009,7 @@ if (document.querySelector('meta[http-equiv="content-language"]'))
 	  default:
 		langLbl["title"] = "Recipes";
 		langLbl["motcl"] = "Key Word";
-		langLbl["clubn"] = "Recipes name";
+		langLbl["clubn"] = "Name";
 		langLbl["clubc"] = "Ingredients";
 		langLbl["regio"] = "Category";
 		langLbl["toute"] = "All";

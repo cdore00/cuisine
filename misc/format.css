@@ -24,8 +24,10 @@ html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
     -webkit-text-size-adjust:none;
 }
 
-.gm-style .gm-style-iw{
-	/*font-size:0.9em;*/
+@font-face {
+	font-family: 'haviland';
+	font-style: normal;
+	src: url('https://cdore00.github.io/lou/misc/MrDeHaviland.ttf');
 }
 
 input, select{

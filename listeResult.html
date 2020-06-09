@@ -87,7 +87,7 @@ for (var i = 0; i < result.length; i++) {
 	aElem.setAttribute('class', 'itemdetail');
 
 	var nT = 0;
-	aElem.innerHTML = result[i].nom ;
+	aElem.innerHTML = result[i].nom + ((result[i].state != 1) ? '<span title="Non publié">🛑</span>':"");
 	liElem.appendChild(aElem);
 	
 	cntItem += 1;

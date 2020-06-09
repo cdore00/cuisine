@@ -399,7 +399,7 @@ function checkCookie(){
  
 
 function initPage(){
-
+//titRef
 setFontSize();
 
 var data = getURLdata();
@@ -414,6 +414,14 @@ if ('webkitSpeechRecognition' in window){
 }
 
 identified();
+
+var userRole = GetCookie("userRole");
+if (userRole){
+	var titRef = document.getElementById('titRef');
+	titRef.title = "Administration";
+	titRef.href = "admin.html";
+}
+
 
 //initPref();
 getInfo("getCat?", listCat);
@@ -601,6 +609,11 @@ text-decoration: none;
 display: none;
 }
 
+#titRef{
+font-family: haviland,cursive;
+font-size: 1.8em;
+text-decoration: none;
+}
 </style>
 
 </head>
@@ -615,7 +628,7 @@ display: none;
 <div id="topbar" class="vert">
 
 <div id="leftnav"><a title="Réinitialiser la recherche" href="index.html?data=clear"><img alt="home" src="images/favicon.gif" width="25" height="25"></a></div>
-<div id="titre"><a title="Traiteur Simpas" href="Tsimp.html"><text id="title">Recettes</text></a></div>
+<div id="titre"><a id="titRef" title="Clear form" href="index.html?data=clear"><text id="title">Recettes</text></a></div>
 <!--<div id="rightnav"> <a title="R&eacute;initialiser la recherche" href="index.html?data=clear"><img alt="home" height="25" width="25" src="images/home25.png" /></a> </div>// -->
 <div id="fontAdjust">
 <div class="divFont" onclick="setFontSize(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>

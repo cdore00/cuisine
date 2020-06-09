@@ -6,18 +6,24 @@
 <meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
 <meta name="format-detection" content="telephone=yes" />
 
-<link rel="shortcut icon" type="image/x-icon" href="images/golf.png">
-<link rel="shortcut icon" type="image/x-icon" href="images/golf.png?">
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
 <title>Recettes</title>
 <meta content="Recettes" name="keywords" />
 <meta content="Recettes" name="description" />
 
 <link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
 
+<link rel="stylesheet" href="misc/quill.snow.css">
+
 <script type="text/javascript" src="misc/util.js"></script>
+<script src="misc/quill.js"></script>
+
 <script type="text/javascript" language="Javascript">
 <!--
-
+var quill = null;
+var container, container2;
+var editChange = false;
 var userId;
 var recetID;
 
@@ -36,7 +42,12 @@ if (document.images)
 
 function initPage(){
 recetForm = document.getElementById('recetForm');
+container2 = document.getElementById('editor2');
 var data = getURLdata();
+
+recetForm.addEventListener("input", function () {
+	editorChange();
+});
 
 window.oTip = new messTipObject();
 window.oPick = new listPickerObject();
@@ -52,6 +63,110 @@ if (recetID == "NEW")
 getInfo("getRecette?data=" + recetID + mode, getRecetteData);
 }
 
+
+function onEditorReady(editor) {
+    return editor.getModule('toolbar').addHandler('image', this.imageHandler);
+ //   console.log('editor ready!', editor);
+}
+
+function initQuill(){
+/*
+var options = {
+modules: {
+    toolbar: '#toolbar'
+  },
+  placeholder: 'Composer ici...',
+  theme: 'snow'
+};
+
+var FontStyle = Quill.import('attributors/style/font');
+//var FontStyle = Quill.import('formats/font');
+	  FontStyle.whitelist=['arial', 'monospace', 'serif', 'haviland', 'calibri', 'IsiniScript', 'Fredericka', 'Contrast']
+      Quill.register(FontStyle, true);
+
+quill = new Quill(container, options);
+quill.getModule('toolbar').addHandler('image', () => {
+  selectLocalImage(quill);
+});
+quill.on('text-change', function(delta, oldDelta, source) {
+  if (!editChange) {
+	editorChange();
+  } 
+});
+*/
+	  
+var options2 = {
+modules: { toolbar: '#toolbarImg' },
+  placeholder: '...',
+  theme: 'snow'
+};
+
+quill2 = new Quill(container2, options2);
+quill2.getModule('toolbar').addHandler('image', () => {
+  selectLocalImage(quill2);
+});
+quill2.on('text-change', function(delta, oldDelta, source) {
+  if (!editChange) {
+	editorChange();
+  } 
+});
+
+}
+
+function editorChange(){
+if (!editChange){
+	var butMenu = document.getElementById('butMenu');
+	butMenu.style.opacity = "1";
+	editChange = true;
+	}
+}
+
+function selectLocalImage(oQuill) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.click();
+
+      // Listen upload local image and save to server
+      input.onchange = () => {
+        const file = input.files[0];
+
+        // file type is only image.
+        if (/^image\//.test(file.type)) {
+          saveToServer(file, oQuill);
+        } else {
+          console.warn('You could only upload images.');
+        }
+      };
+}
+	
+function saveToServer(file, oQuill) {
+      const fd = new FormData();
+      fd.append('upfile', file);
+	  fd.append('type', "image");
+
+      const xhr = new XMLHttpRequest();
+      //xhr.open('POST', 'http://0.0.0.0:8080/addFile?', true);
+	  xhr.open('POST', HOSTserv + 'addFile?', true);
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          // this is callback data: url
+          var res = JSON.parse(xhr.responseText);
+          if (res.ok == 1)
+			 insertToEditor(res.url, oQuill)
+		  else
+             alert("Error");
+        }
+      };
+      xhr.send(fd);
+ }
+
+function insertToEditor(url, oQuill) {
+      // push image url to rich editor.
+      const range = oQuill.getSelection();
+	  oQuill.insertEmbed(range.index, 'image', url);
+}
+
+
 function getRecetteData(odata){
 var Fcat = document.getElementById('Fcat');
 
@@ -62,10 +177,13 @@ recetForm.Fsource.value = oRecet.url;
 recetForm.Ftemps.value = oRecet.temp;
 recetForm.Fcuisson.value = oRecet.cuis;
 recetForm.Fportion.value = oRecet.port;
+recetForm.Fpublie.checked = oRecet.state
 document.getElementById('Fcree').innerHTML = getDateTime(oRecet.dateC);
 document.getElementById('Fmodif').innerHTML = getDateTime(oRecet.dateM)  + "&nbsp;:&nbsp;" + odata.user.email ;
+
 showIngr(oRecet.ingr);
 showPrep(oRecet.prep);
+container2.innerHTML = oRecet.imgURL;
 }
 var cat = odata.cat;
 for (var i = 0; i < cat.length; i++) {
@@ -77,6 +195,7 @@ for (var i = 0; i < cat.length; i++) {
 	Fcat.appendChild(optElem);
 }
 showProgress(1);
+initQuill();
 }
 
 function addIngr(chkId, txtId, txt){
@@ -183,15 +302,18 @@ function saveAll(oButSave){
 var data = {};
 	var msg = "&nbsp;<b>Enregistrement : " + recetForm.FrecetName.value + " ...</b>";
 	window.oTip.show(msg, oButSave, true);
+
 data.ID = recetID;
 data.nom = recetForm.FrecetName.value;
 data.url = recetForm.Fsource.value;
 data.temp = recetForm.Ftemps.value;
 data.cuis = recetForm.Fcuisson.value;
 data.port = recetForm.Fportion.value;
+data.state = recetForm.Fpublie.checked;
 data.cat = {};
 data.cat._id = eval(recetForm.Fcat[recetForm.Fcat.selectedIndex].value);
 data.cat.desc = recetForm.Fcat[recetForm.Fcat.selectedIndex].innerHTML;
+var imgURL = encodeURI(quill2.root.innerHTML);
 
 for (var i = 0; i < recetForm.Fcat.length; i++) {
 	
@@ -211,7 +333,7 @@ for (var i = 0; i < x.length; i++) {
 }
 data.prep = arrPrep;
 
-getInfo("saveRecet?data=" + JSON.stringify(data) , recetSaved);
+getInfo("saveRecet?data=" + JSON.stringify(data) + "&imgURL=" + imgURL , recetSaved);
 
 }
 
@@ -230,6 +352,9 @@ if (!oRes.ok && oRes.message){
 		setTimeout(function() {
 			document.location = "editRecet.html?data=" + oRes.upserted.$oid;
 		}, 3000);
+	editChange = false;
+	var butMenu = document.getElementById('butMenu');
+	butMenu.style.opacity = "0.3";
 }
 }
 
@@ -313,6 +438,8 @@ height: auto;
 #butMenu {
     visibility: visible;
 	margin-left: 10px;
+	background: transparent;
+	opacity: 0.3;
 }
 
 .sectionTitle{
@@ -360,7 +487,26 @@ list-style-type : none;
 font-size: .5em;
 }
 
+.zoneRight, .zoneLeft{
+height: auto;
+}
 
+.zoneRight{
+float: right;
+max-width: 40%;
+}
+
+.metaInfo{
+margin-left: 10px;
+}
+
+#toolbarImg{
+padding: 0;
+}
+
+#toolbarImg, #editor2{
+/*width: 40%;*/
+}
 </style>
 
 </head>
@@ -395,7 +541,19 @@ font-size: .5em;
 	<a class="itin" alt="Supprimer la recette" href="javascript:delRecet(this);">Supprimer</a>
 	</div>
 
-<ul>
+<div id="zoneImg" class="zoneRight">
+<div id="toolbarImg">
+ <span class="ql-formats">
+  
+  <!-- <button class="ql-link"></button>  -->
+  <button class="ql-image"></button>
+ </span>
+</div>
+<div id="editor2"></div> 
+
+</div> <!-- End zone img  -->
+
+<ul class="metaInfo">
 <li class="listitem smallFont">
 	<div class="formLabel">
 	<label class="gras">Créé: </label></div><span id="Fcree"></span>
@@ -404,6 +562,7 @@ font-size: .5em;
 	<div class="formLabel">
 	<label class="gras">Modifié: </label></div><span id="Fmodif"></span>
 </li>
+
 <li class="listitem gras">
 	<div class="formLabel">	
 	<label for="FrecetName">Nom</label></div>
@@ -435,6 +594,10 @@ font-size: .5em;
 	<label for="Fsource">Source URL</label></div>
 	<input id="Fsource" class="inputtext" type="text" maxlength="200" value="" />
 </li>
+<li class="listitem gras">
+	<div class="formLabel">
+	<label class="gras">Publié: </label></div><input id="Fpublie" class="inputtext" type="checkbox" />
+</li>
 </ul>
 
 <hr>
@@ -449,6 +612,8 @@ font-size: .5em;
 <ol id="ingrList">
 
 </ol>
+
+
 
 <hr>
 <!-- Préparation list // -->	
