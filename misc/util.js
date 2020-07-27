@@ -1,5 +1,4 @@
-
-var HOSTserv = https://loupop.ddns.net/pyt/";
+var HOSTserv = "http://127.0.0.1:3000/";		//Portable Windows 10 Local host Node JS v6.10.0
 // "http://127.0.0.1:3000/";		//Portable Windows 10 Local host Node JS v6.10.0
 // "http://192.168.2.195:3000/";    //Ubuntu workstation 16.04
 // "http://192.168.2.195:8080/";    //Ubuntu workstation 16.04 docker 1.12.6 Node JS v4.2.3  MongoDB server v3.4.9
@@ -427,6 +426,8 @@ function menuObject(oAlign, alignRight, adjNbrOpt){
 // 	window.oTip.fadeout(millisecond);
 function messTipObject(){
 	this.oID = "o_messTip";
+	this.haveFocus = false;
+	this.timerID = null;
 	
 		var bodyobj = document.getElementsByTagName('body')[0];
 		var odiv = document.createElement("div");
@@ -437,6 +438,38 @@ function messTipObject(){
 		this.oFr = odiv;
 		this.oMess = this.oFr.childNodes[0];
 
+	var that = this;
+	this.oFr.addEventListener("mouseenter", function( event ) {
+			that.haveFocus = true;
+			})
+	this.oFr.addEventListener("mouseleave", function( event ) {
+			that.haveFocus = false;
+			})
+	this.oFr.addEventListener("touchstart", function( event ) {
+			that.haveFocus = true;
+			})
+	this.oFr.addEventListener("touchend", function( event ) {
+			that.haveFocus = false;
+			})
+
+	this.fade = function(objId,opacity) {
+	  if (document.getElementById) {
+		obj = document.getElementById(objId);
+		if (opacity >= 0) {
+		  if (!this.haveFocus)
+				opacity -= 10;
+		  else
+				opacity = 100;
+		  obj.style.opacity = opacity/100;
+		  this.timerID = setTimeout(function () {
+			that.fade(objId,opacity);
+			}, 100);
+		} else {
+		obj.style.visibility = 'hidden';
+		obj.style.opacity = 1;
+		}
+	  }
+	}
     this.initMess = function(mess){
 		this.oMess.innerHTML = mess;
 		}
@@ -445,17 +478,22 @@ function messTipObject(){
 		}
     this.fadeout = function(milli){
 		if (milli)
-			fadeOut(this.oID, milli);
+			this.fade(this.oID, milli);
 		else
-			fadeOut(this.oID, 0);
+			this.fade(this.oID, 0);
 		}
 	this.show = function(mess, oPos, showArrow, milli, adj){
+		this.timerID = null;
 		if (!adj)	// Top pixel adjust
 			adj = 0;
 		if (mess)
 			this.initMess(mess);
 		//if (!oPos || typeof oPos[0] == "number"){
-		if (typeof oPos == "object" || ( oPos && typeof oPos[0] == "number")){
+		if (typeof oPos == "object" && typeof oPos.id == "string"){
+			var pos=posObj(oPos);
+			this.oFr.style.top = (pos.y - oPos.offsetHeight + adj) + "px";
+			this.oFr.style.left = pos.x + "px";			
+		}else{if (typeof oPos == "object" || ( oPos && typeof oPos[0] == "number")){
 			if (typeof oPos == "object"){
 				this.oFr.style.top = adj + "px";
 				this.oFr.style.left = "0px";			
@@ -463,18 +501,14 @@ function messTipObject(){
 			this.oFr.style.top = oPos[0] + "px";
 			this.oFr.style.left = oPos[1] + "px";				
 			}
-		}else{
-			var pos=posObj(oPos);
-			this.oFr.style.top = (pos.y - oPos.offsetHeight + adj) + "px";
-			this.oFr.style.left = pos.x + "px";
-		}
+		}}
 		//addStylesheetRule("yArrow::after", "border-width", "10px !important");
 		this.oMess.style.maxWidth = (document.getElementsByTagName('body')[0].clientWidth - 10) + "px";
 		if (showArrow)	// Not show top arrow
 			this.oMess.classList.add("showArrow");
 		this.oFr.style.visibility = 'visible';
 		if (milli)
-			fadeOut(this.oID, milli);
+			this.fade(this.oID, milli);
 		}
 }
 
@@ -574,32 +608,24 @@ function adjustScreen(hauteurUtil){
 
 }
 
-function zoomMap(p_m){
-var mapZoom = map.getZoom();
 
-map.setZoom(mapZoom + p_m);
-
+function getWindowWidth() {
+	var windowWidth = 0;
+	if (typeof(window.innerWidth) == 'number') {
+		windowWidth = window.innerWidth;
+	}
+	else {
+		if (document.documentElement && document.documentElement.clientWidth) {
+			windowWidth = document.documentElement.clientWidth;
+		}
+		else {
+			if (document.body && document.body.clientWidth) {
+				windowWidth = document.body.clientWidth;
+			}
+		}
+	}
+	return windowWidth;
 }
-
-function setHole(map, location) {
-  var image = {url:'images/flag.png',
-			size: new google.maps.Size(40, 40),
-			origin: new google.maps.Point(0,0),
-			anchor: new google.maps.Point(5, 20)
-			};
-  var shape = {
-      coord: [1, 1, 40, 40],
-      type: 'rect'
-};
-    holeMarker = new google.maps.Marker({
-        position: location,
-        map: map,
-        icon: image,
-		draggable: true,
-        shape: shape
-		});
-	//holeMarker.position_changed = holePosChange;
-};
 
 function validEmail(email){
 	var emailReg = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
@@ -650,9 +676,13 @@ if (rep.resp.result){
 	var modalDiv = document.getElementById('modalDiv');
 	var identLayer = document.getElementById('identLayer');
 	var authLayer = document.getElementById('authLayer');
-	modalDiv.style.visibility="hidden";
-	authLayer.style.visibility="hidden";
-	identLayer.style.display="none";
+	if (modalDiv)
+		modalDiv.style.visibility="hidden";
+	if (authLayer)
+		authLayer.style.visibility="hidden";
+	if (identLayer)
+		identLayer.style.display="none";
+
 	SetCook("userID",rep.resp.user._id + "");
 	//SetCook("userName",rep.resp.user.Nom);
 	SetCook("userMail",rep.resp.user.courriel);

@@ -12,7 +12,6 @@
 <meta content="Recettes" name="keywords" />
 <meta content="Recettes" name="description" />
 
-
 <link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
 
 <script type="text/javascript" src="misc/util.js"></script>
@@ -22,11 +21,10 @@
 var userId;
 var recetID;
 var favChange = false, isFav = false;
-var goURL;
+
 var imgUser;
 var objRecet, versionId, actVersionId;
 
-/*
 if (document.images)
 {
  favOn= new Image(30,30);
@@ -36,6 +34,7 @@ if (document.images)
  favOff.src="images/favorisOff.png";
 }
 
+/*
 function changeFav(objImg){
 favChange = true;
 if (objImg.classList.contains("favOn")){
@@ -44,54 +43,29 @@ if (objImg.classList.contains("favOn")){
 	objImg.classList.replace("favOff", "favOn");
 }
 }
+*/
 
-function changeFav2(objImg){
-
+function changeFav(objImg){
 favChange = true;
-
 if (isFav)
 	objImg.src = favOff.src;
 else
 	objImg.src = favOn.src;
 isFav = !isFav;
 }
-*/
-function changeFav(objImg){
-
-favChange = true;
-
-if (isFav)
-	objImg.classList.replace("favOn", "favOff");
-else
-	objImg.classList.replace("favOff", "favOn");
-isFav = !isFav;
-}
 
 function majFav(nextURL){
 var action;
-var imgStat = document.getElementById('favIcon');
-
-goURL = nextURL;
 
 if (favChange){
 	if (isFav)
 		action=1;  //addAction
 	else
 		action=0;  //deleteAction
-		
-	if (nextURL)
-		getInfo("updateFav?data=" + recetID + "$" + userId + "$" + action, changeURL);
-	else
-		getInfo("updateFav?data=" + recetID + "$" + userId + "$" + action);
-}else
-if (nextURL)
-	changeURL();
-	
+getInfo("updateFav?data=" + recetID + "$" + userId + "$" + action);
+}
 }
 
-function changeURL(oRep){
-document.location.href = goURL;
-}
 
 function initPage(){
 var butMenu = document.getElementById("butMenu");
@@ -105,11 +79,11 @@ if ( GetCookie("userRole") != "ADM"){
 	document.getElementById("menuOptEdit").style.visibility = "hidden";
 	document.getElementById("menuOptAdd").style.visibility = "hidden";
 }
-setFontSize();
+	
 var data = getURLdata();
 window.oTip = new messTipObject();
 
-
+setFontSize();
 window.oMenu = new menuObject(document.getElementById('butMenu'));
 
 recetID = data;
@@ -143,7 +117,7 @@ if (versionId < 0 || versionId > objRecet.rec[0].hist.length-1){
 	histLimit = "Actuel";
 	if (versionId < 0){
 		versionId ++;
-		histLimit = "Initial";
+		histLimit = "History Limit";
 	}else{versionId --;}
 	window.oTip.show(histLimit, versionDate, true, 300, -10);
 }
@@ -156,20 +130,19 @@ if (actVersionId > 0){
 
 	for (const prop in flds) {
 	  var fld = flds[prop];
-	  //if (objRecet.rec[0][fld]){
+	  if (objRecet.rec[0][fld]){
 		//console.log("aV:" + actVersionId + ", " + `${prop}: ${flds[prop]}`);
 		if (sp < 0)
 			objRecet.rec[0][fld] = objRecet.rec[0].hist[actVersionId][fld];
 		else
 			objRecet.rec[0][fld] = objRecet.rec[0].hist[versionId]["act_" + fld];
-	 // }
+	  }
 	}
 
-	
+	versionDate.innerHTML = "Actuel";
 	if (versionId < objRecet.rec[0].hist.length-1)
 		versionDate.innerHTML = formatDateTime.datetime(objRecet.rec[0].hist[versionId].time);
-	else
-		versionDate.innerHTML = "Actuel " + formatDateTime.date(objRecet.rec[0].hist[versionId].time);
+	
 	showRecet(objRecet, versionId);
 }
 
@@ -210,7 +183,6 @@ recetInfo.innerHTML = cInfo;
 	function numList(collName){
 		var oColl = rec[collName];
 		var ulElem = document.createElement("ol");
-		ulElem.setAttribute('id', collName + 'List');
 		var res = collName.substring(0, 1).toUpperCase() + collName.substring(1, 3) + ". ";
 		for (var i = 0; i < oColl.length; i++) {
 			var olElem = document.createElement("li");
@@ -219,9 +191,6 @@ recetInfo.innerHTML = cInfo;
 			olElem.innerHTML = oColl[i];
 			ulElem.appendChild(olElem);
 			}
-		if (histo && histo[collName] && (histo[collName].length != rec[collName].lenght))
-			if (!objRecet.rec[0].hist[versionId]["act_" + collName])
-				objRecet.rec[0].hist[versionId]["act_" + collName] = objRecet.rec[0][collName];
 	return ulElem;
 	}
 	
@@ -242,7 +211,7 @@ recetInfo.innerHTML = cInfo;
 			if (histo[fld] && histo[fld][id] && histo[fld][id] != rec[fld][id])
 				addHistoInfo(histo[fld][id]);
 		}else{
-			if (histo[fld] || histo[fld] == "")
+			if (histo[fld])
 				addHistoInfo(histo[fld]);
 		}
 		}
@@ -250,14 +219,14 @@ recetInfo.innerHTML = cInfo;
 
 //<img id="favIcon" onclick="changeFav(this)" alt="Favoris" src="images/favorisOff.png" width="30" height="30">
 //<svg id="favIcon" class="favOff" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48"><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg>
-/*
+
 var fImg = document.createElement("img");
 fImg.setAttribute('id', 'favIcon');
 fImg.setAttribute('alt', 'Favoris');
 fImg.setAttribute('src', (isFav) ? 'images/favoris.png':'images/favorisOff.png');
 fImg.setAttribute('onclick', 'changeFav(this)');
 pageZone.appendChild(fImg);
-
+/*
 var fImg = document.createElement("svg");
 fImg.setAttribute('id', 'favIcon');
 fImg.setAttribute('class', 'favOff');
@@ -265,17 +234,9 @@ fImg.setAttribute('width', '34');
 fImg.setAttribute('height', '34');
 fImg.setAttribute('viewBox', '0 0 48 48');
 fImg.setAttribute('onclick', 'changeFav(this)');
-var sp = document.createElement("path");
-sp.setAttribute('d', 'M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35');
-fImg.appendChild(sp);
-//fImg.innerHTML = '<path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path>';
+fImg.innerHTML = '<path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path>';
 pageZone.appendChild(fImg);
 */
-var fImg = document.createElement("div");
-fImg.setAttribute('id', 'favIcon');
-fImg.innerHTML ='<svg id="favIcon" class="' + ((isFav) ? 'favOn':'favOff') + '" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48"><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop id="favColor0" offset="0" /><stop id="favColor1" offset="1" /></linearGradient><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg>';
-pageZone.appendChild(fImg);
-
 	var bElem = document.createElement("h2");
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem spanCenter gras');
@@ -298,36 +259,33 @@ if (histo && histo["imgURL"] && !oRecet.rec[0].hist[versionId]["act_imgURL"])
 	pageZone.appendChild(divElem);
 }
 	
-if (rec.temp){
+if (rec.temp != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
 	checkHisto(spanElem, "temp", "Préparation: ");
 	spanElem.innerHTML = "<b><text>Préparation:</text>" + rec.temp;
 	pageZone.appendChild(spanElem);
 }
-if (rec.cuis){
+if (rec.cuis != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
 	checkHisto(spanElem, "cuis", "Cuisson: ");
 	spanElem.innerHTML = "<b><text>Cuisson:</text></b>" + rec.cuis;
 	pageZone.appendChild(spanElem);
 }
-if (rec.port){
+if (rec.port != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
 	checkHisto(spanElem, "port", "Portions: ");
 	spanElem.innerHTML = "<b><text>Portions:</text></b>" + rec.port;
 	pageZone.appendChild(spanElem);
 }
-imgUserT = "span";
-if (user.imgUser){
+if (user.imgUser)
 	imgUser = user.imgUser;
-	imgUserT = "a";
-}
 if (rec.dateM != ""){
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem');
-	spanElem.innerHTML = '<b><text>Modification:</text></b>' + getDateTime(rec.dateM) + '&nbsp;:&nbsp;<' + imgUserT + ( (imgUser && imgUser != "") ? ' onclick="showUser(this)"':'') + '>' + user.email + '</' + imgUserT + '></br></br>';
+	spanElem.innerHTML = '<b><text>Modification:</text></b>' + getDateTime(rec.dateM) + '&nbsp;:&nbsp;<span onclick="showUser(this)">' + user.email + '</span></br></br>';
 	pageZone.appendChild(spanElem);
 }
 
@@ -375,7 +333,7 @@ window.oTip.addMess('<img id="imgUser" alt="imgHistUser" src="' + imgHistUser + 
 function sendMail(){
 
 	if (confirm("Envoyer la recette par courriel ?")) {
-		getInfo("sendRecetMail?data=" + GetCookie("userMail") + "$" + recetID + "$" + document.location, recetSent);
+		getInfo("sendRecetMail?data=" + GetCookie("userMail") + "$" + recetID , recetSent);
 	}
 }
 
@@ -396,34 +354,32 @@ else
 	
 	showPhoto.style.visibility="visible";
 	showPhoto.style.transition = "all 0.4s";
+	//showPhoto.style.transform = "rotate(360deg)";
 	showPhoto.style.left = pageZone.offsetLeft + 'px';
 	showPhoto.style.width = pageZone.offsetWidth + 'px';	
+//showPhoto.style.transition = "none";
+//	window.oTip.fadeout(0);
+//showPhoto.style.transform = "rotate(360deg)";
 }
 
 function hideShow(p){
 var showPhoto = document.getElementById('showPhoto');
 var objImg = document.getElementById('zoneImg');
 
-	if (!p)
-		objImg.style.visibility="hidden";
-	objImg.style.transform = null;
 	showPhoto.style.top = ((posY(objImg)) + 0) + 'px';
 	showPhoto.style.left = ((posX(objImg)) + 0) + 'px';
 	showPhoto.style.width = objImg.offsetWidth + 'px';
 	
 	showPhoto.addEventListener("transitionend", function(event) {
 	if (event.propertyName == "width" && !p){
-		//objImg.style.transition = "transform 0.4s";
-		objImg.style.visibility="visible";
-		if (objImg.style.transform == "")
-			objImg.style.transform = "rotate(360deg)";
 		objImg.style.transition = "transform 0.4s";
-		}
+		objImg.style.transform = "rotate(360deg)";
+	}
   //console.log(event.propertyName);
-	}, false);
+}, false);
 	
 	showPhoto.style.visibility="hidden";
-
+	//objImg.src = "";
 }
 
 // -->
@@ -486,10 +442,10 @@ display:inline-block;
 
 </head>
 
-<body onload="initPage()" ><a name="haut"></a>
+<body onload="initPage()" onunload="majFav(); true;"><a name="haut"></a>
 
 <div id="topbar" class="vert">
-<div id="leftnav"><a title="Formulaire de recherche" href="#" onclick="majFav('index.html');"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
+<div id="leftnav"><a title="Formulaire de recherche" href="index.html" ><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
 
 
 
@@ -503,7 +459,7 @@ display:inline-block;
 </div>
 <div id="duobutton">
 <a href="#" id="butMenu" title="Menu" onmouseover="showMenu()" onclick="showMenu();"><img id="logomenu" alt="Menu" src="images/menu.png" width="64" height="32"></a>
-<a href="#" onclick="majFav('listeResult.html');"><text id="mlist"></text></a>
+<a href="listeResult.html" ><text id="mlist"></text></a>
 <!--  <a id="mapLink" target="_blank" href="#" onclick="sendMail(); return false;"><text id="email"></text></a> // -->
 </div>
 
@@ -519,9 +475,8 @@ display:inline-block;
 	<span id="versionDate" >Actuel</span>
 	<button class="char_icon" onclick="showHisto(1)">&#9654;</button>
 </div>
-	<h3 id="recetInfo" class="itemdesc">
-	</h3> 
-
+	<h2 id="recetInfo" class="itemdesc">
+	</h2>
 <div id="pageZone" class="pageitem">
 
 </div>

@@ -7,8 +7,8 @@
 <meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
 <meta name="format-detection" content="telephone=no" />
 
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
-<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico?">
+<link href="misc/favicon.ico" rel="icon" />
+<link href="misc/favicon.ico" rel="shortcut icon" />
 <title>Recettes</title>
 <meta content="Recettes" name="keywords" />
 <meta content="Recettes" name="description" />
@@ -46,9 +46,9 @@ var locColl = {
 function manageIdent(action){
 var modLayer = document.getElementById('modalDiv');
 var authLayer = document.getElementById('authLayer');
-var favGolfList = document.getElementById('favGolfList');
-if (favGolfList)
-	favGolfList.parentNode.removeChild(favGolfList);
+var favRecList = document.getElementById('favRecList');
+if (favRecList)
+	favRecList.parentNode.removeChild(favRecList);
 closePref();
 var xmlhttp = new XMLHttpRequest();
   xmlhttp.onloadend = function() {
@@ -440,14 +440,14 @@ window.addEventListener("focus", function(event)
 }
 
 function getFav(){
-var favGolfList = document.getElementById('favGolfList');
+var favRecList = document.getElementById('favRecList');
 var accountForm = document.getElementById('accountForm');
 var authLayer = document.getElementById('authLayer');
 if (accountForm)
 	accountForm.parentNode.removeChild(accountForm);
-if (!favGolfList){
+if (!favRecList){
 	var divElem = document.createElement("div");
-	divElem.setAttribute('id', 'favGolfList');
+	divElem.setAttribute('id', 'favRecList');
 	authLayer.appendChild(divElem);
 	var butElem = document.createElement("button");
 	butElem.setAttribute('class', 'bouton');
@@ -459,21 +459,22 @@ if (!favGolfList){
 authLayer.style.visibility="visible";
 }
 
-function listFav(clubList){
-var favGolfList = document.getElementById('favGolfList');
+function listFav(recList){
+var favRecList = document.getElementById('favRecList');
 var divLoad = document.getElementById('divLoad');
 if (divLoad)
 	divLoad.style.display = "none";
 var ulElem = document.createElement("ul");
 ulElem.setAttribute('class', 'favItems');
-favGolfList.insertBefore(ulElem, favGolfList.firstChild);
-for (var i = 0; i < clubList.length; i++) {
+favRecList.insertBefore(ulElem, favRecList.firstChild);
+for (var i = 0; i < recList.length; i++) {
 	var liElem = document.createElement("li");
 	liElem.setAttribute('class', 'listitem');
-	liElem.innerHTML = '<a class="itemdesc" href="ficheClub.html?data=' + clubList[i]._id + '">' + clubList[i].nom + '</a></li>';
+	liElem.innerHTML = '<a class="itemdesc" href="ficheRec.html?data=' + recList[i]._id.$oid + '">' + recList[i].nom + '</a></li>';
 	ulElem.appendChild(liElem);
 }
 }
+
 function listCat(oCat){
 var formCrit = document.getElementById('critere');
 var IdCat = document.getElementById('IdCat');
@@ -675,7 +676,7 @@ text-decoration: none;
 
 <div id="bottombar" class="vert">
 <!--<div id="message"></div>  // -->
-<div id="leftbutton"> <a title="Favoris" href="#" onclick="getFav()"><svg id="favIcon" class="favOff" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48" ><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg></a> </div>
+<div id="leftbutton"> <a title="Favoris" href="#" onclick="getFav()"><svg id="favIcon" class="favOn" width="34" height="34" viewBox="0 0 48 48" ><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop id="favColor0" offset="0" /><stop id="favColor1" offset="1" /></linearGradient><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg></a> </div>
 <div id="rightbutton"> <a title="Pr&eacute;f&eacute;rences" href="javascript:setPref();"><img alt="R&eacute;glages" width="32" height="32" src="images/reglages.png" /></a> </div>
 </div>
 

@@ -24,13 +24,17 @@ html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 {
     -webkit-text-size-adjust:none;
 }
 
+h3{
+	margin:0;
+}
+
 @font-face {
 	font-family: 'haviland';
 	font-style: normal;
 	src: url('https://cdore00.github.io/lou/misc/MrDeHaviland.ttf');
 }
 
-input, select{
+input, select, textarea{
 	background-color: #f8fff8;
 }
 
@@ -100,18 +104,18 @@ progress {
 progress::-webkit-progress-value { background: #00A4AC; }  
 progress::-webkit-progress-bar { background: #fff; }  
 
-/* vert gazon; 3A9D23*/
+/* vert gazon; 98dbfd99*/
 #topbar{min-height:34px; text-align:center;}
 #bottombar{display:block;height: auto; min-height:34px}
-#topbar.vert{background-color:#3A9D23;filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#3A9D23',endcolorstr='#3A9D23')}
-#bottombar.vert{background-color:#00bb00;filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#00bb00',endcolorstr='#00bb00')}
+#topbar.vert{background-color:#98dbfd99;filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#98dbfd99',endcolorstr='#98dbfd99')}
+#bottombar.vert{background-color:#1db2fd99;filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#1db2fd99',endcolorstr='#1db2fd99')}
 
 #leftnav,#leftbutton{position:absolute;font-size:15px;left:10px}
 #leftnav a,#leftbutton a,#rightbutton a,#rightbuttonItem a{display:block;color:#ccc;text-decoration:none}
-#leftnav{position:relative;float:left;top:7px}
+#leftnav{float:left;top:7px}
 #rightnav, #rightnav2{position:absolute;font-size:0px;right:10px;top:7px;background:transparent;border:0px;cursor:pointer}
 #rightnav2{top:0px}
-#rightbutton{position:relative;float:right;top:-7px;right:15px; font-size: 35px;}
+#rightbutton{position:relative;float:right;right:15px;}
 #leftbutton{margin-top: -5px;left:15px; visibility:hidden; font-size: 30px;}
 #rightbuttonItem{position:relative;clear:both;float:right;top:16px;right:5px;font-size:12px;font-weight:bold;text-align:left}
 #message, #messageErreur {position:relative;display:block;width:85%;left:10px;color:#222222;font-weight:bold;padding-bottom:5px}
@@ -141,7 +145,8 @@ background:-moz-linear-gradient(top,#ddd,#666);text-align:center;
 #pressed{color:#ffffff!important}
 
 #butMenu {
-float: left;
+position: absolute;
+left: 0px;
 visibility: hidden;
 min-width: 0px !important;
 }
@@ -247,10 +252,10 @@ display: flex;
 }
 
 #content{width:100%;position:relative;min-height:200px;height:auto;z-index:0;overflow:hidden;
-filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#3A9D23',endcolorstr='#00bb00');
-background: -ms-linear-gradient(top, #3A9D23 0%, #00bb00 100%);
-background:-webkit-gradient(linear,0% 0,0% 100%,from(#3A9D23),to(#00bb00));
-background:-moz-linear-gradient(top,#3A9D23,#00bb00)}
+filter:progid:DXImageTransform.Microsoft.gradient(startcolorstr='#98dbfd99',endcolorstr='#1db2fd99');
+background: -ms-linear-gradient(top, #98dbfd99 0%, #1db2fd99 100%);
+background:-webkit-gradient(linear,0% 0,0% 100%,from(#98dbfd99),to(#1db2fd99));
+background:-moz-linear-gradient(top,#98dbfd99,#1db2fd99)}
 #footer{text-align:center;position:relative;height:auto;width:auto;bottom:10px;color:#CCC;text-shadow:#000 0 1px 0}
 #directionsPanel, #destCoord{visibility:hidden;}
 
@@ -259,7 +264,7 @@ background:-moz-linear-gradient(top,#3A9D23,#00bb00)}
 	overflow:hidden;
 }
 
-.pageitem{-webkit-border-radius:8px;background-color:#f0f0f0;border:#444444 solid 1px;overflow:auto;padding:1px;padding-bottom:5px;position:relative;display:block;margin:10px 8px;border-radius: 20px;}
+.pageitem{-webkit-border-radius:8px;background-color:#f0f0f0;border:#f7f2f2 solid 1px;overflow:auto;padding:1px;padding-bottom:5px;position:relative;display:block;margin:10px 8px;border-radius: 20px;}
 
 .favItems{background-color:#f0f0f0;border:#444444 solid 1px;overflow:hidden; overflow-y:scroll;margin:10px 10px;text-align:left;height:150px}
 
@@ -312,7 +317,7 @@ box-shadow: 1px 1px 1px #ccccdd, 3px 3px 3px #aaaaaa inset;
 #localisation,#localiser{visibility:hidden;}
 
 .listitem {display:block;overflow:auto;padding:0px 0px 2px 5px;border:0px solid #aaa;}
-.listitem a {color:#33d;text-decoration:none;font-weight:bold}
+.listitem a {color:#33d;text-decoration:none;font-weight:bold; cursor: pointer;}
 .listitem a:hover {color:#d33}
 
 .prefList{clear:both;left: 0px; padding-left: 0px;margin: 2px; min-height:40px; border:0px solid #aaa}
@@ -353,25 +358,36 @@ stroke-width: 0px;
 vertical-align: bottom;
 }
 
+#favColor0 {
+  stop-color: #f7f2af;
+}
+
+#favColor1 {
+  stop-color: #fbc605;
+}
+
 .favOff{
 fill: rgb(200, 200, 200) !important;
 }
 .favOn{
-fill: rgb(255, 211, 51) !important;
+/*fill: rgb(255, 211, 51) !important;*/
+fill: url(#lg);
 }
 
-/*
 #favIcon{
-position: relative;
-font-size: 1.4em;
+position: absolute;
+left: 2px;
+width: 40px;
+height: 40px;
+text-shadow: 2px 2px #999;
 }
 
+#favIcon svg:hover{
+opacity: 0.5;
+}
+/*
 #favIcon a{
 color: #ccc !important;
-}
-
-#favIcon a:hover{
-color:#d33 !important;
 }
 */
 
@@ -629,7 +645,7 @@ margin: 1.5%;
 margin-top: 10%;
 width: 96%;
 background: #f0f0f0;
-border: 3px solid #3A9D23;
+border: 3px solid #98dbfd99;
 -webkit-border-radius: 20px;
 border-radius: 20px; 
 padding: 0px 0px 7px 0px;
@@ -656,7 +672,7 @@ z-index: 1502;
 
 .winLayer{
 background: #eee !important;
-border: 3px solid #3A9D23 !important;
+border: 3px solid #98dbfd99 !important;
 }
 
 #prefOptions, #identOptions{
@@ -739,6 +755,38 @@ font-size:30px;
 width:40px;
 font-weight:bold;
 text-align: center;
+}
+
+#showPhoto{
+visibility:hidden;
+position:absolute;
+width: 100px;
+top: 0px;
+left: 0px;
+text-align:center;
+cursor:zoom-out;
+border: buttonhighlight 3px outset;
+border-radius: 10px;
+/*animation: w3-spin 1s one linear;*/
+/*transform: rotate(180deg);
+margin-right: 13px;*/
+/*cursor: url(zoomout.cur),default;*/
+/*transition-property: width;
+transition: all 0.4s, transform 0.4s;*/
+transition-timing-function: ease-in-out;
+}
+
+#objUlrImg{
+	cursor:zoom-in;
+}
+
+#objImg{
+	/*position:relative;
+max-width:100%;
+max-height:100%;
+padding: 0px;
+margin-top: 0px;
+transition-duration: 0.4s;*/
 }
 
 #menu{
@@ -982,6 +1030,9 @@ height:50px;
 }
 #fontAdjust {
     display: none;
+}
+.formLabel{
+    text-align: left;
 }
 }
 

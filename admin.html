@@ -13,8 +13,10 @@
 <meta content="R&eacute;pertoire des clubs de golf du Qu&eacute;bec. GPS golf." name="description" />
 <link href="misc/init.css" rel="stylesheet" media="screen" type="text/css" />
 <link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
+<link rel="stylesheet" type="text/css" href="misc/takePhoto.css" />
 
 <script type="text/javascript" src="misc/util.js"></script>
+<script type="text/javascript" src="misc/takePhoto.js"></script>
 
 <script type="text/javascript" language="Javascript">
 <!--
@@ -47,18 +49,18 @@ if (!Array.isArray(oList)){
 var pageZone = document.getElementById('pageZone');
 remChilds(pageZone);
 for (var i = 0; i < oList.length; i++){
-	var liElem = document.createElement("option");
+	var liElem = document.createElement("li");
 	liElem.setAttribute('class', "listitem");
 	if (typeof oList[i]._id == "object")
 		var oId = oList[i]._id.$oid;
 	else
 		var oId = oList[i]._id;
-	iList = '<span>' + oList[i].courriel + '</span>';
+	iList = '<span>' + oList[i].courriel + '</span>&nbsp;';
 	iList += '<span>' + oList[i].Nom + '</span>';
 	iList += ((oList[i].actif) ? "":"inactif") ;
 	liElem.innerHTML = '<a href="javascript:editUser(\'' + oId + '\')" class="itemdetail">' + iList + '</a>';	
 	pageZone.appendChild(liElem);
-}	
+}
 }
 
 function editUser(ui){
@@ -71,6 +73,7 @@ var xmlhttp = new XMLHttpRequest();
     authLayer.innerHTML = xmlhttp.responseText;
 	initAccountForm();
 	  setLanguage();
+	 authLayer.style.display='inherit';
 	 authLayer.style.visibility="visible";
   }
 
@@ -91,6 +94,7 @@ if (oUser._id){
 	user_name = oUser.Nom;
 	formIdent.courUser.value = oUser.courriel;
 	user_mail = oUser.courriel;
+	
 	var optVal = "";
 	for (var i = 0; i < oUser.role.length; i++){
 		optVal += '<option value="' + oUser.role[i] + '">' + oUser.role[i] + '</option>';
@@ -100,13 +104,15 @@ if (oUser._id){
 	formIdent.roleUser.innerHTML = optVal;
 	formIdent.roleUser.selectedIndex = si;
 	formIdent.stateUser.checked = oUser.actif;
+	if (oUser.imgUser)
+		document.getElementById('imgObj').src = oUser.imgUser;
 }
 }
 
 function closePref(notEdit){
 var modLayer = document.getElementById('modalDiv');
 var authLayer = document.getElementById('authLayer');
-authLayer.style.visibility="hidden";
+authLayer.style.display="none";
 modLayer.style.visibility="hidden";
 setFontSize();
 if (!notEdit)
@@ -127,12 +133,14 @@ xmlhttp.send();
 
 function updUser(){
 var formIdent = document.getElementById('formIdent');
+var imgUser = document.getElementById('imgObj').src;
 window.oTip.show("Saving account...", [0,20]);
 var name = formIdent.nomUser.value;
 var email = formIdent.courUser.value;
 var role = formIdent.roleUser.options[formIdent.roleUser.selectedIndex].value;
 var active = (formIdent.stateUser.checked) ? '1':'0';
-getInfo("updUser?id=" + user_id + "&user=" + email + "&name=" + name + "&role=" + role + "&active=" + active , updRes);
+var imgUser = document.getElementById('imgObj').src;
+getInfo("updUser?id=" + user_id + "&user=" + email + "&name=" + name + "&role=" + role + "&active=" + active + "&imgUser=" + imgUser, updRes);
 }
 
 function updRes(oRes){
@@ -166,14 +174,38 @@ editUser(user_id);
 .listitem{
 margin-left: 20px;
 }
-
+/*
 a span{
 width: 300px;
 display: inline-block;
 }
-
+*/
 #pageZone{
 	visibility: hidden;
+}
+
+#subPhoto{
+font-size: 0.7em;
+}
+
+.zoneRight, .zoneLeft{
+height: auto;
+}
+.zoneRight{
+float: right;
+max-width: 40%;
+}
+
+#toolbarImg{
+padding: 0;
+}
+
+.identLbl {
+    min-width: 20%;
+}
+
+.prefList {
+    clear: inherit;
 }
 
 </style>

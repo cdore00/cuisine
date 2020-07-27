@@ -1,0 +1,71 @@
+
+
+#obj_AuthUser{
+display:none;
+position:absolute;
+top: 0px;
+left: 0px;
+margin: 1.5%;
+margin-top: 10%;
+width: 96%;
+background: #f0f0f0;
+border: 3px solid #3A9D23;
+-webkit-border-radius: 20px;
+border-radius: 20px; 
+padding: 0px 0px 7px 0px;
+text-align:center;
+z-index: 11000;
+}
+
+
+#obj_AuthUser_title{
+font-size:24px;font-weight:bold;padding-top:5px;display: inline-block;
+}
+#objModal{
+position: absolute;
+visibility: hidden;
+top: 0px;
+left: 0px;	
+background: #eee;
+opacity: 0.7;
+width: 100%;
+height: 100%;
+z-index: 10000;
+}
+
+#obj_AuthUser_identOptions{
+/*font-size: 0.7em;*/
+border: 3px solid #9EA0A1;
+-webkit-border-radius: 5px;
+border-radius: 5px; 
+margin: 0px 5px 5px 5px;
+padding: 10px 0px 10px 0px;
+min-height: 150px;
+text-align:left;
+}
+
+ #identOptions a{
+ color: #33d;
+ }
+
+.obj_AuthUser_prefList{clear:both;left: 0px; padding-left: 0px;margin: 2px; min-height:40px; }
+
+.obj_AuthUser_prefVal,  .obj_AuthUser_identLbl{
+margin: 0;
+padding: 0;
+display: inline-block;
+margin-left: 3px;
+text-align: right;
+margin-right: 1em;
+}
+
+ .obj_AuthUser_identLbl{
+min-width: 33%;
+
+}
+
+ .obj_AuthUser_identLbl{
+text-align: left;
+}
+
+.inputtext {position:relative;display:inline;left:0px;right:0px;font-weight:bold;top:0px;text-align:left; height:25px}
