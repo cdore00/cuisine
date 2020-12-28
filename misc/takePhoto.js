@@ -293,7 +293,7 @@ buttonZone.appendChild(butElem);
 var butFile = document.createElement("input");
 butFile.setAttribute('id', 'butFile');
 butFile.setAttribute('type', 'file');
-butFile.setAttribute('accept', 'image/*;capture=camera');
+butFile.setAttribute('accept', '.jpg, .png, .jpeg, .gif,|image/*;capture=camera');
 buttonZone.appendChild(butFile);
 
 objClip.appendChild(buttonZone);

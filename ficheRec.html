@@ -12,10 +12,12 @@
 <meta content="Recettes" name="keywords" />
 <meta content="Recettes" name="description" />
 
-
+<link rel="stylesheet" href="misc/quill.snow.css" >
 <link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
 
 <script type="text/javascript" src="misc/util.js"></script>
+
+
 <script type="text/javascript" language="Javascript">
 <!--
 
@@ -280,10 +282,11 @@ pageZone.appendChild(fImg);
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem spanCenter gras');
 	spanElem.innerHTML = rec.nom;
+	document.title = rec.nom + ' - recette';
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
 
-if (rec.imgURL){
+if (rec.imgURL && rec.imgURL != "undefined"){
 	var divElem = document.createElement("div");
 	divElem.setAttribute('id', 'zoneImg');
 	divElem.setAttribute('class', 'zoneRight');
@@ -346,8 +349,11 @@ if (rec.dateM != ""){
 	spanElem.innerHTML = "Préparation";
 	bElem.appendChild(spanElem);
 	pageZone.appendChild(bElem);
-	
-	pageZone.appendChild(numList("prep"));
+
+	if (rec.edit && rec.edit != "<p><br></p>")
+		pageZone.appendChild(richPrep(rec.edit));
+	else
+		pageZone.appendChild(numList("prep"));
 	
 if (rec.url)
 	cInfo = 'Source : <a target="_blank" href=' + rec.url + '>' + rec.url + '</a>&nbsp;';
@@ -425,6 +431,13 @@ var objImg = document.getElementById('zoneImg');
 	showPhoto.style.visibility="hidden";
 
 }
+
+function richPrep(data){
+	var divElem = document.createElement("div");
+	divElem.innerHTML = data.replace(/pvirg/g, ';');
+	return divElem;
+}
+
 
 // -->
 </script>
@@ -535,7 +548,7 @@ display:inline-block;
 </div>
 
 <div id="copyright">
-<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2005-2020</a>
+<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2020-2021</a>
 </div>
 
 <!--<div id="showPhoto"  title="Cliquer pour fermer" onclick="hideShow()"></div>// -->

@@ -30,7 +30,7 @@ var quill = null;
 var container;
 var editChange = false;
 var cursorPos = null;
-var userId, recetID, oRecet;
+var userId, recetID, oRecet, winEmo;
 
 var goURL;
 var recetForm;
@@ -264,7 +264,10 @@ for (var i = 0; i < oPrep.length; i++){
 function saveAll(oButSave){
 if (!editChange)
 	return;
-
+if (recetForm.FrecetName.value == ""){
+	alert("Un nom est requis.");
+	return;
+}
 var data = {};
 	var msg = "&nbsp;<b>Enregistrement : " + recetForm.FrecetName.value + " ...</b>";
 	window.oTip.show(msg, oButSave, true);
@@ -303,9 +306,12 @@ if (quill){
 
 
 var imgURL = document.getElementById('imgObj').getAttribute('src');
-
-//getInfo("saveRecet?data=" + JSON.stringify(data) , recetSaved);
-getInfo("saveRecet?data=" + JSON.stringify(data) + "&editor=" + editor + "&imgURL=" + imgURL , recetSaved);
+data = JSON.stringify(data);
+if ( data.indexOf(';') != -1){
+	window.oTip.fadeout();
+	alert("Illegal caracter ';' ");
+}else
+	getInfo("saveRecet?data=" + data + "&editor=" + editor + "&imgURL=" + imgURL , recetSaved);
 }
 
 function recetSaved(oRes){
@@ -457,6 +463,96 @@ switch(oToolFont.value) {
 } 
 }
 
+function insertButton(oBut){
+var divEmoC = document.getElementById('divEmoC');
+
+if (divEmoC.style.visibility == "visible")
+	divEmoC.style.visibility = "hidden";
+else{
+	var p = posObj(oBut);
+	cursorPos = quill.getSelection();
+	divEmoC.style.left = p.x + "px";
+	divEmoC.style.top = p.y + "px";
+	divEmoC.style.visibility = "visible";
+}
+//https://twemoji.maxcdn.com/2/test/preview.html
+//https://en.wikipedia.org/wiki/Emoji
+}
+
+function insertEmoji(oBut){
+var divEmoC = document.getElementById('divEmoC');
+
+if (typeof(oBut) == "object"){
+	if (oBut.id == "form_emoji"){
+		var but = oBut.car_icon.value;  //Call from Other form
+		if (but == ""){
+			divEmoC.style.visibility = "hidden";
+			return;
+		}
+	}else{
+		var but = oBut.innerHTML;  //Call from toolBar
+		}
+}else{
+	var divEmoC = document.getElementById('divEmoC');
+	if (divEmoC.style.visibility == "visible")
+		divEmoC.style.visibility = "hidden";
+	var but = oBut;	//Call from Window winEmo
+}
+if (cursorPos == null){
+	cursorPos = quill.getSelection();
+	if (cursorPos == null)
+		cursorPos = 0;
+	}
+toUpd = updEmoHist(but);
+if (toUpd)
+	updPrefEmo(toUpd);
+quill.insertText(cursorPos, but);
+}
+
+function otherEmo(){
+formEmo = document.getElementById('form_emoji');
+cursorPos = quill.getSelection();
+if (winEmo)
+	winEmo.close();
+winEmo = window.open("emoji.html", "emojW", "width=500, height=500");
+}
+
+function updEmoHist(but){
+var collEmo = document.getElementById('collEmo');
+arrEmo = [];
+var isToUpd = true;
+
+for (i = 0; i < collEmo.childNodes.length; i++) {
+if (collEmo.childNodes[i].nodeName == "SPAN"){
+		//console.log(collEmo.childNodes[i].innerHTML);
+		var emo = collEmo.childNodes[i].innerHTML;
+		arrEmo[arrEmo.length] = emo;
+		if (emo == but)
+			isToUpd = false;
+	}
+}
+if (isToUpd){
+	isToUpd = arrEmo.slice(arrEmo.length - 5, arrEmo.length - 1);
+	isToUpd.unshift(but);
+}
+return isToUpd;
+}
+
+function updPrefEmo(arrEmo){
+var collEmo = document.getElementById('collEmo');
+var cnt = 4;
+localStorage.setItem("favIcon", JSON.stringify(arrEmo));
+
+for (i = collEmo.childNodes.length - 1; i >= 0; i--) {
+	if (collEmo.childNodes[i].nodeName == "SPAN"){
+		collEmo.childNodes[i].innerHTML = arrEmo[cnt];
+		cnt--
+		if (cnt < 0)
+			break;
+	}
+}
+}
+
 // -->
 </script>
 
@@ -577,6 +673,18 @@ stroke: #06c;
 #editor{
 background-color: #f8fff8;
 }
+
+#divEmoC{
+position: absolute;
+background: white;
+visibility: hidden;
+width: 150px;
+cursor: pointer;
+border: buttonhighlight 4px outset;
+border-radius: 10px;
+padding: 3px;
+}
+
 
 </style>
 
@@ -816,6 +924,40 @@ background-color: #f8fff8;
 </div>
 <!-- Quill editor zone // -->
 <div id="editor" onclick="setPos();"></div>
+
+
+
+<div id="divEmoC">
+  <span id="collEmo" class="ql-picker-options" aria-hidden="false" tabindex="-1" >
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😀</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😂</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😍</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😎</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😳</span>
+
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😛</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🙄</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😇</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >👶</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >👿</span>
+  
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >❤</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🍷</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🛒</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🥧</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🥕</span>
+  
+  </span> 
+  <span class="ql-picker-options" aria-hidden="false" tabindex="-1" >
+	<form id="form_emoji">
+	<a href="javascript:otherEmo()">&nbsp;&nbsp;Autre...</a><input id="car_icon" type="text" size="1" /><input type="button" value="Ok" onclick="insertEmoji(this.form);" />
+	<!-- <a target="_blank" href="https://twemoji.maxcdn.com/2/test/preview.html">&nbsp;&nbsp;Autre...</a> -->
+	</form>
+  </span> 
+</div>
+
+
+
 </div>  <!-- FIN  editZone // -->
 <hr>
 
@@ -836,7 +978,7 @@ background-color: #f8fff8;
 </div>
 
 <div id="copyright">
-<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2005-2020</a>
+<a href="mailto:cdore00@yahoo.ca?Subject=Golfs%20du%20Qu&eacute;bec">Copyright &copy; 2020-2021</a>
 </div>
 
 <!--<div id="modalDiv"></div> -->

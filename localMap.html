@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="yes" name="apple-mobile-web-app-capable" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
+<meta name="format-detection" content="telephone=no" />
+
+<link rel="shortcut icon" type="image/x-icon" href="images/golf.png?">
+<title>Golfs du Qu&eacute;bec</title>
+<meta content="Golf GPS, Qu&eacute;bec, Canada, Golf du Qu&eacute;bec, Clubs de golf au Qu&eacute;bec, Qu&eacute;bec golf" name="keywords" />
+<meta content="R&eacute;pertoire des clubs de golf du Qu&eacute;bec. GPS golf." name="description" />
+<link href="misc/init.css" rel="stylesheet" media="screen" type="text/css" />
+<link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" /> 
+<link href="misc/datepicker.css" rel="stylesheet">
+    <script type="text/javascript" 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA15nyiYmWG_0IkG9H5r4Qc8KhZxwRw_xA&sensor=false"> 
+    </script> 
+	<script src="misc/util.js"></script>
+	<!--<script type="text/javascript" src="misc/markerLabel.js"></script> // -->
+	<script src="misc/geoLocal.js"></script>
+	<script src="misc/dateP.js"></script>
+	
+<script type="text/javascript"> 
+<!--
+
+var userId, savCollList, map, markers = [];
+var posMarker;
+var watchId = null;
+var locTimer = null;
+var locCollection = [];
+var watchLoc = false, paramDate;
+var AffLoc = false, recenter = true, showST = true, showSR = false, showIT = false;
+var path, polyLine = new google.maps.Polyline({
+strokeColor: '#0000ff',
+clickable: false,
+strokeOpacity: 1.0,
+strokeWeight: 2
+});
+var directionsDisplay = new google.maps.DirectionsRenderer();
+var directionsService = new google.maps.DirectionsService();
+
+function initPage(){
+	userId = GetCookie("userID");
+	if (opener && opener.locColl)
+		locCollection = opener.locColl.coord;
+	speedTime.locHist = locCollection;
+	window.oTip = new messTipObject();
+	window.oMenu = new menuObject();
+	
+	AffLoc = GetCookie("AffLoc");
+setFontSize();
+paramDate = getURLdata();
+initialize();
+if (paramDate)
+	var paramList = paramDate.split("$")
+	if (paramList && paramList.length > 1)
+		getInfo("getPosition?data=" + paramList[0] + "$" + paramList[1] + "$1", getPosList);
+	else
+		showMarker(true);
+}
+
+function savedPos(res){
+//if (showST)
+	window.oTip.show('<text class="fontGreen">Saved</text>', false, false, 300, -40);
+}
+
+
+// Speed Time object
+var speedTime = {
+	hist : [0,0,0],
+	locHist : locCollection,
+	startTime : null,
+	saveFreq : 60000,	
+	lastTime : 0,
+	lastSaveTime : 0,
+	lastPos : null,
+	calcul : function (position, mapsLatLng) {
+		var sp = 0, elapsMilli = 0, startLoc = false;
+		var accTime = Date.now();
+		if (this.lastPos){
+			var dist = calculDistance(this.lastPos, mapsLatLng);
+		}else{
+			this.startTime = accTime;	// Start
+			this.lastSaveTime = accTime;
+			startLoc = true;
+			if (window.oTip)
+				window.oTip.show(false, false, false, false, -40);
+		}	
+		this.lastPos = mapsLatLng;
+		if (this.locHist.length > 19)
+			this.locHist.shift();
+
+		if (this.lastTime)
+			elapsMilli = accTime - this.lastTime; 
+		if (dist){
+			sp = (dist / 1760) / elapsMilli * 3600000;
+			sp = Math.round(sp * 1.609344);
+		}
+		if (startLoc || accTime - this.lastSaveTime > this.saveFreq){
+			if (position.coords.accuracy < 500){
+				var oLoc = {};
+				oLoc.lat=position.coords.latitude;
+				oLoc.lng=position.coords.longitude;
+				oLoc.acc=position.coords.accuracy;
+				oLoc.time=accTime;
+				this.locHist[this.locHist.length] = oLoc;		
+				var info = userId + "$" + this.startTime + "$" + accTime + "$" + oLoc.lat + "$" + oLoc.lng + "$" + oLoc.acc;
+				if (userId)
+					getInfo("setPosition?data=" + info, savedPos);
+				this.lastSaveTime = accTime;
+			}
+		}
+		this.lastTime = accTime;
+
+		/*
+		this.hist.shift()
+		this.hist[this.hist.length] = sp;
+		var tot = 0, n = 0;
+		for (var i = 0; i < this.hist.length; i++) {
+			tot += this.hist[i];
+			if (this.hist[i] > 0)
+				n++;
+		}
+		//console.log(this.hist)
+		*/
+		return {'s':sp, 'e':elapsMilli, 't':accTime};	//Math.round( (tot == 0) ? 0:tot/n );
+	}
+};
+
+function initialize() { 
+
+	if (AffLoc)
+		AffLoc = eval(AffLoc);
+	var isCenter = null;
+	if (locCollection.length > 0)
+		isCenter = new google.maps.LatLng(locCollection[locCollection.length-1].lat,locCollection[locCollection.length-1].lng);
+	var myOptions = { 
+	  center: isCenter, 
+	  zoom: 19, 
+	  panControl: false,    
+	  zoomControl: false, 	  
+	  scaleControl: false,
+	  streetViewControl: false,
+	  fullscreenControl: false, 
+	  tilt: 0,
+	  mapTypeControl: true,    
+	  mapTypeControlOptions: { style: google.maps.MapTypeControlStyle.DROPDOWN_MENU, position: google.maps.ControlPosition.TOP_RIGHT   },
+	  mapTypeId: google.maps.MapTypeId.HYBRID
+	}; 
+	map = new google.maps.Map(document.getElementById("map_canvas"), myOptions); 
+	polyLine.setMap(map);
+	path = polyLine.getPath();
+	adjustScreen(0);
+	setFontSize();
+	if (isCenter)
+		setMyPosition(map, locCollection[locCollection.length-1].lat,locCollection[locCollection.length-1].lng);
+	else
+		setMyPosition(map, 0, 0);
+	//alert(locCollection[locCollection.length-1].lat);
+}
+
+function placeRoute(position) {
+
+  var request = {
+    origin: posMarker.getPosition(),
+    destination: position,
+    travelMode: google.maps.TravelMode.DRIVING
+  };
+  directionsService.route(request, function(response, status) {
+    if (status == google.maps.DirectionsStatus.OK) {
+      directionsDisplay.setDirections(response);
+	  window.oTip.initMess('A:&nbsp;' + response.routes[0].legs[0].start_address.replace(/ /g,"&nbsp;") + '</br>B: ' + response.routes[0].legs[0].end_address + '</br>' + response.routes[0].legs[0].distance.text + ', ' + response.routes[0].legs[0].duration.text);
+	  
+    }
+  });
+ directionsDisplay.setMap(map);
+}
+
+function setMyPosition(map, lat, lng) {
+  // Add markers to the map
+  var image = new google.maps.MarkerImage('images/ici.png',
+      new google.maps.Size(14, 14),
+      new google.maps.Point(0,0),
+      new google.maps.Point(7, 7));
+  var shape = {
+      coord: [-10, -10, -10, 24, 24, 24, 24 , -10],
+      type: 'poly'
+  };
+  //alert(location[1]);
+    var myLatLng = new google.maps.LatLng(lat, lng);
+    posMarker = new google.maps.Marker({
+        position: myLatLng,
+        map: map,
+        icon: image,
+        shape: shape,
+        title: "Ma localisation",
+        zIndex: 1000
+		})
+}
+
+	function pinSymbol(color) {
+		return {	//path: 'M 0,0 -1,-2 V -43 H 1 V -2 z M 1,-40 H 30 V -20 H 1 z',
+					  "path": "M 0,0 -1,-2 V -23 H 1 V -2 z M 1,-20 H 30 V -5 H 1 z",
+			"fillColor": color,
+			"fillOpacity": 1,
+			"labelOrigin": new google.maps.Point(15, -12),
+			"scale": 1.5,
+	   };
+	}
+	
+	function getMarkerColor(hot){
+		col = (hot) ? "#f99":"#fff";
+		if (hot == 2)
+			col = "#99f";
+	return col;
+	}
+
+	function finfInd(id){
+		for (var i=0; i < markers.length; i++){
+			if (markers[i].id == id){
+				break;}
+		}
+		return i;}
+
+function addMarker(id, t, mLL, ac, hot){
+
+	function moveP(){
+		path.setAt(finfInd(this.id) , this.getPosition());
+		}
+	var col = getMarkerColor(hot);
+    var marker = new google.maps.Marker({
+        position: mLL,
+		draggable: true,
+		title: "Acc:" + ac,
+		icon: pinSymbol(col),
+		  label: {
+			text: formatDateTime.time(t, true),
+			color: "#000",
+			fontSize: "16px",
+			fontWeight: "bold",
+		  }
+		});
+		if (savCollList && savCollList.length == 1){
+			marker.id = id;
+			marker.time = t;
+			//marker.hot = hot;
+			marker.addListener('click', function() {
+			  editMark(this);
+			});
+			marker.position_changed = moveP;
+		}
+return marker;
+}
+
+function setMarkers(map, locations, mmXY) {
+
+if (locations.length == 0)
+	return;
+if (!mmXY.maxX){
+	mmXY.maxX = locations[0].lat;
+	mmXY.minX = locations[0].lat;
+	mmXY.maxY = locations[0].lng;
+	mmXY.minY = locations[0].lng;
+}
+  var image = new google.maps.MarkerImage('images/ici.png',
+      new google.maps.Size(25, 25),
+      new google.maps.Point(0,0),
+      new google.maps.Point(0, 25));
+  var shape = {
+      coord: [1, 1, 1, 25, 25, 25, 25 , 1],
+      type: 'poly'
+  };
+  for (var i = 0; i < locations.length; i++) {
+    var loc = locations[i];
+    var myLatLng = new google.maps.LatLng(loc.lat, loc.lng);
+	
+	markers[markers.length] = addMarker(markers.length, loc.time, myLatLng, loc.acc, loc.hot);
+	mmXY.maxX = Math.max(mmXY.maxX, loc.lat);
+	mmXY.minX = Math.min(mmXY.minX, loc.lat);
+	mmXY.maxY = Math.max(mmXY.maxY, loc.lng);
+	mmXY.minY = Math.min(mmXY.minY, loc.lng);
+	}
+}
+
+function setMapOnAll(map){
+for (var i = 0; i < markers.length; i++) {
+  markers[i].setMap(map);
+  if (map)
+	path.push(markers[i].getPosition());
+}
+}
+
+function clearMarkers(noClear){
+path.clear();
+setMapOnAll(null);
+if (!noClear)
+	markers = [];
+}
+
+function showRoute(){
+if (userId && !showSR && THCall == "POST"){
+	window.oMenu.close();
+	showSpeedTime(true);
+	var divLayer = document.getElementById("prefLayer");
+	var valDate = (speedTime.startTime) ?  formatDateTime.date(speedTime.startTime):"";	//2018/10/28
+	var htmlCode = '<text>Start date</text></br>';
+	htmlCode += '<form><input id="prefDate" value="' + valDate +'" placeholder="aaaa-mm-jj" /><a id="calIcon" href="javascript:popDtPicker(\'prefDate\');">&#128197;</a></br></br>';
+	htmlCode += '<input class="bouton" type="submit" onclick="showMarker(true,this.form)" value="Ok"/><input class="bouton" type="button" onclick="showMarker(false)" value="Cancel"/></form>';
+	divLayer.innerHTML = htmlCode;
+	divLayer.style.visibility="visible";
+}else{
+	showMarker(true);
+}
+}
+
+function popDtPicker(oTxtDt){
+if (!window.dtPicker){
+	window.dtPicker = new Datepicker(document.getElementById(oTxtDt));
+}
+window.dtPicker.show(document.getElementById(oTxtDt));
+}
+
+function editMark(oMark){
+var divLayer = document.getElementById("prefLayer");
+var htmlCode = '<h2>Édit marker</h2><form action="#">';
+var oLoc = savCollList[0].locList[finfInd(oMark.id)];
+//htmlCode += ' <svg height="210" width="400">  <path d="M150 0 L75 200 L225 200 Z" /> </svg> ';
+if (!oLoc.hot)
+	oLoc.hot = 0;
+htmlCode += '<div>' + formatDateTime.datetime(oLoc.time) + ' <img onclick="saveMarker(false, ' + oMark.id + ')" src="images/delete.png" width="24" height="24"></br>';
+htmlCode += '<div>Accuracy: ' + oLoc.acc ;
+htmlCode += (oLoc.alt) ? (' Alt.: ' + oLoc.alt + '</div>'):('</div>');
+htmlCode += '<input id="mId" type="hidden" value="' + oMark.id + '" />'
+htmlCode += '<input id="lat" type="hidden" value="' + oMark.position.lat() + '" />'
+htmlCode += '<input id="lng" type="hidden" value="' + oMark.position.lng() + '" />'
+htmlCode += '<input id="time" type="hidden" value="' + oLoc.time + '" />'
+htmlCode += '<div>';
+htmlCode += '<input id="chxW" type="radio" ' + ((oLoc.hot == "0") ? "checked":'') + ' name="typeHot" value="0"><label for="chxW"><svg height="40" width="60"><polyline points="0,5 0,5 50,5 50,30 0,30 0,0" style="fill:#fff;stroke:black;stroke-width:1" /><rect width="3" height="39" style="fill:#fff;stroke-width:1;stroke:rgb(0,0,0)" /></svg></label></input>';
+htmlCode += '<input id="chxR" type="radio" ' + ((oLoc.hot == "1") ? "checked":'') + ' name="typeHot" value="1"><label for="chxR"><svg height="40" width="60"><polyline points="0,5 0,5 50,5 50,30 0,30 0,0" style="fill:#f99;stroke:black;stroke-width:1" /><rect width="3" height="39" style="fill:#f99;stroke-width:1;stroke:rgb(0,0,0)" /></svg></label></input>';
+htmlCode += '<input id="chxB" type="radio" ' + ((oLoc.hot == "2") ? "checked":'') + ' name="typeHot" value="2"><label for="chxB"><svg height="40" width="60"><polyline points="0,5 0,5 50,5 50,30 0,30 0,0" style="fill:#99f;stroke:black;stroke-width:1" /><rect width="3" height="39" style="fill:#99f;stroke-width:1;stroke:rgb(0,0,0)" /></svg></label></input>';
+htmlCode += '</div>';
+htmlCode += '<input class="bouton" type="button" onclick="saveMarker(this.form)" value="Ok"/><input class="bouton" type="button" onclick="saveMarker(false,false); return false;" value="Cancel"/></form>';
+divLayer.innerHTML = htmlCode;
+divLayer.style.visibility="visible";
+//alert(oMark.time);
+return false;
+}
+
+function saveMarker(oForm, del){
+var divLayer = document.getElementById("prefLayer");
+var st = savCollList[0].startTime
+
+if (oForm){
+	var Ind = finfInd(oForm.mId.value);
+	hotVal = parseInt(oForm.typeHot.value);
+	savCollList[0].locList[Ind].hot = hotVal;
+	p = pinSymbol(getMarkerColor(hotVal));
+	ot = {"text": formatDateTime.time(oForm.time.value, true), "color": "#000","fontSize": "16px", "fontWeight": "bold" };
+	markers[Ind].setIcon(p, {"label": ot});
+	var acc = savCollList[0].locList[Ind].acc;
+	if (savCollList[0].locList[Ind].lat != oForm.lat.value){
+		acc = 1;
+		savCollList[0].locList[Ind].acc = acc;
+		markers[Ind].setTitle("Acc:"+acc);
+	}
+		
+	var info = userId + "$" + st + "$" + oForm.time.value + "$" + oForm.lat.value + "$" + oForm.lng.value + "$" + acc + "$" + hotVal + "$0$" + oForm.time.value;
+	getInfo("setPosition?data=" + info, savedPos);
+}else{
+	if (del !== false){
+		del = finfInd(del);
+		if (confirm("Delete marker: \n" + formatDateTime.datetime(markers[del].time) + " ?")){
+			var info = userId + "$" + st + "$" + markers[del].time ;
+			getInfo("delPosition?data=" + info, savedPos);	
+			markers[del].setMap(null);
+			path.removeAt(del);
+			d = markers.splice(del,1);
+			d = savCollList[0].locList.splice(del,1);
+		}
+	}
+ }
+divLayer.style.visibility="hidden";
+return false;
+}
+
+
+function showMarker(isShow, oForm){
+var optSR = document.getElementById("optSR");
+var mmXY = {};
+if (isShow){
+	clearMarkers();
+	if (showSR){
+		showSR = false;
+		optSR.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;Show route";
+		if (!showST)
+			window.oTip.initMess("");
+	}else{
+		showSR = true;
+		optSR.innerHTML = "&#10004;&nbsp;Show route";
+		if (userId && (oForm || paramDate) && THCall == "POST"){
+			if (paramDate)
+				dt = eval(paramDate);
+			else{
+				var dt = oForm.prefDate.value;
+				if (dt == '*' || dt == "")
+					dt = 0;
+				if (dt !== 0){
+					dt = Date.parse(dt);
+					if (!dt){
+						showSR = false;
+						optSR.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;Show route";
+						alert("(" + oForm.prefDate.value + ") Not valid a date!");
+						return false;
+					}
+				}			
+			}
+			getInfo("getPosition?data=" + userId + "$" + dt, getPosList);
+		}else{
+			setMarkers(map, locCollection, mmXY);
+			window.oTip.initMess(markers.length + "&nbsp;locations&nbsp;" + ( (watchId) ? '<a class="itin" href="javascript:showFollow();">' + langLbl["mWatc"] + '</a>':'' ));
+			setMapOnAll(map);
+		}
+	}
+}
+	window.dtPicker = null;
+	var divLayer = document.getElementById("prefLayer");
+	divLayer.style.visibility="hidden";
+}
+
+function getPosList(oPos){
+if (oPos.length == 0){
+	showMarker(true);
+	window.oTip.initMess("0 record after " + formatDateTime.date(oPos.timeStart));
+	return;
+}
+var divLayer = document.getElementById("prefLayer");
+savCollList = oPos;
+if (oPos && oPos.length > 1 && oPos[0].locList){
+	var htmlCode = '<form><ul id="pageZone" class="pageitem">';
+	for (var i=0;i<oPos.length;i++){
+		var chk = (i == oPos.length-1) ? "checked":"";
+		htmlCode += '<li class="listitem"><a href="#"><input id="chx' + i + '" type="checkbox" ' + chk + '>&nbsp;&nbsp;<label for="chx' + i + '">' + formatDateTime.date(oPos[i].startTime) + '&nbsp;&nbsp;' + formatDateTime.time(oPos[i].startTime,true) + '&nbsp;(' + oPos[i].locList.length + ')&nbsp;' + formatDateTime.time(oPos[i].locList[oPos[i].locList.length-1].time,true) + '</label></input></a></li>';
+	}
+	htmlCode += '<input class="bouton" type="submit" onclick="getRoute(this.form)" value="Ok"/><input class="bouton" type="button" onclick="getRoute(false, true)" value="Cancel"/></ul></form>';
+	divLayer.innerHTML = htmlCode;
+	divLayer.style.visibility="visible";
+}else
+	//startList[0] = oPos;
+	getRoute();
+}
+
+function getRoute(oForm, cancel){
+var mmXY = {}, startDT;
+var divLayer = document.getElementById("prefLayer");
+divLayer.style.visibility="hidden";
+if (cancel)
+	return;
+if (savCollList && savCollList.length > 0){
+	if (oForm){
+		for (var i=0; i < oForm.length; i++){
+			if (oForm[i].type == "checkbox" && oForm[i].checked){
+				if (!startDT)
+					startDT = formatDateTime.datetime(savCollList[i].startTime);
+				setMarkers(map, savCollList[i].locList, mmXY);
+			}
+		}
+	}else{
+		if (!startDT)
+			startDT = formatDateTime.datetime(savCollList[0].startTime);
+		setMarkers(map, savCollList[0].locList, mmXY);
+	}
+	
+setMapOnAll(map);
+// Locations center
+var vLat = ((mmXY.maxX + mmXY.minX) / 2);
+var vLng = ((mmXY.maxY + mmXY.minY) / 2);
+var maxLoc = new google.maps.LatLng(mmXY.maxX, mmXY.maxY);
+var minLoc = new google.maps.LatLng(mmXY.minX, mmXY.minY);
+var centerLatLng = new google.maps.LatLng(vLat, vLng);
+var intM = calculDistance(maxLoc, minLoc);
+
+map.setCenter(centerLatLng);
+if (watchId)
+	resetAff(true);
+intZoom = 21;
+if (intM)
+	intZoom = 22 - parseInt(Math.log(intM));
+map.setZoom(intZoom);
+//https://stackoverflow.com/questions/11454229/how-to-set-zoom-level-in-google-map
+window.oTip.show(startDT + ',&nbsp;' + markers.length + "&nbsp;locations&nbsp;" + ( (watchId) ? '<a class="itin" href="javascript:showFollow();">' + langLbl["mWatc"] + '</a>':'' ) , false, false, false, -40);
+}
+}
+
+// https://stackoverflow.com/questions/13987365/how-to-insert-an-element-to-mongodb-internal-list
+function lister(optLister) {
+var divLayer = document.getElementById("prefLayer");
+
+if (divLayer.style.visibility == "visible" ){
+	divLayer.style.visibility="hidden";
+	optLister.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;" + langLbl["mlist"];
+}else{
+ divLayer.style.visibility="visible";
+ optLister.innerHTML = "&#10004;&nbsp;" + langLbl["mlist"];
+	var donn = "";
+	for (var i=0;i<speedTime.locHist.length;i++){
+	donn = donn + "</br>" + (i+1) + ": " + speedTime.locHist[i].lat + ", " + speedTime.locHist[i].lng + ", Pr&eacute;c: " + Math.round(speedTime.locHist[i].acc);
+	}
+divLayer.innerHTML = donn;
+}
+ //alert(locCollection.length);
+}
+
+function localiser(){
+if (!showST)
+	showSpeedTime();
+watchLoc = document.typeLoc.typeLoc[0].checked;
+
+//navigator.geolocation.stop();
+//navigator.geolocation.start();
+if (watchLoc){
+	clearGeo();
+	getLocalisationErr();
+	}else
+	getLocalisation();
+	
+if (watchId == 0)
+	localiser();
+}
+
+function clearGeo(){
+navigator.geolocation.clearWatch(watchId);
+}
+
+function onLocSuccess(position) {
+var myLatLng = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
+
+posMarker.setPosition(myLatLng);
+
+var sp = speedTime.calcul(position, myLatLng);
+if (showST){
+	var tim = formatDateTime.time(sp.t) + ((recenter) ? '&nbsp;&nbsp;&nbsp;<img alt="Watch" src="images/ici.png" width="14" height="14">':'');
+	window.oTip.initMess( '<div><span><span class="txtSpeed">' + (Math.round(sp.e * .01)/10) + '</span>s.&nbsp;Speed:<span class="txtSpeed"><b>' + sp.s + '</b></span></span></div><div>' + tim + '</div>');
+}
+
+if (recenter)
+	map.setCenter(myLatLng);
+if (!watchLoc)
+	locTimer = setTimeout("getLocalisation();", 500);
+}
+
+function resetAff(forceOff){
+optCenter = document.getElementById("optCE");
+if (recenter || forceOff){
+	recenter = false;
+	optCenter.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;" + langLbl["mWatc"] + '&nbsp;&nbsp;&nbsp;<img alt="Watch" src="images/ici.png" width="14" height="14">';
+}else{
+	recenter = true;
+	optCenter.innerHTML = "&#10004;&nbsp;" + langLbl["mWatc"] + '&nbsp;&nbsp;&nbsp;<img alt="Watch" src="images/ici.png" width="14" height="14">';
+}
+}
+
+
+function showItin(optIT){
+//var optST = document.getElementById("optST");
+window.oTip.initMess("");
+if (showIT){
+	showIT = false;
+	optIT.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;Itinéraire";
+	//placeRoute(posMarker.getPosition());
+	//directionsDisplay.setPanel(null);
+	directionsDisplay.setMap(null);
+	google.maps.event.clearListeners(map, 'click');
+}else{
+	showSpeedTime(true);
+	showIT = true;
+	optIT.innerHTML = "&#10004;&nbsp;Itinéraire";
+	map.addListener('click', function(e) {
+		placeRoute(e.latLng);
+	});
+	//directionsDisplay.setMap(map);
+}
+}
+
+function showSpeedTime(forceClose){
+var optST = document.getElementById("optST");
+window.oTip.initMess("");
+if (showST || forceClose){
+	showST = false;
+	optST.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;Speed/Time";
+}else{
+	showST = true;
+	optST.innerHTML = "&#10004;&nbsp;Speed/Time";
+}
+}
+
+function quitter(){
+	clearTimeout(locTimer);
+	clearGeo();
+	window.close();
+}
+
+function getLocalisation(){
+	if (navigator.geolocation) {
+			//var options = { enableHighAccuracy:true, maximumAge:10000, timeout:10000, frequency: 2000 };
+		var options = { enableHighAccuracy:true, maximumAge:0, timeout:400 };
+		watchId = navigator.geolocation.getCurrentPosition(onLocSuccess, onLocAffError, options);
+	}						
+}
+
+function showFollow(){
+resetAff();
+showSpeedTime();
+}
+
+	// -->
+    </script>
+
+<style>
+
+#butMenu {
+visibility: visible;
+}
+
+.fontGreen{
+color: #0e0;
+}
+
+input[type=checkbox] {
+  transform: scale(2);
+}
+
+#pageZone {
+    visibility: inherit;
+}
+
+.txtSpeed{
+width: 1.5em;
+display: inline-block;
+text-align: right;
+}
+
+.o_messTipTxt span, o_messTipTxt div{
+display: inline-block;
+}
+
+.o_messTipTxt{
+min-width: 7.5em;
+}
+
+#calIcon{
+font-size: 2em;
+text-decoration: none;
+}
+
+</style>
+
+  </head>
+  <body  onload="initPage();" onUnload='clearGeo()'> 
+
+
+
+<div id="duobutton">
+<div id="fontAdjust">
+<div class="divFont" onclick="setFontSize(0.2, this)"><div class="divFontSize">A</div><div class="fontLogo">&#8593;</div></div>
+<div class="divFont" onclick="setFontSize(-0.2, this)"><div class="divFontSize fontSmall">A</div><div class="fontLogo">&#8595;</div></div>
+</div>
+<a href="#" id="butMenu" title="Menu" onmouseover="window.oMenu.show()" onclick="window.oMenu.show();"><img id="logomenu" alt="Menu" src="images/menu.png" ></a>
+<a href="#"  onclick="quitter(); return false;">Fermer</a>
+<a href="javascript:localiser()" >Localiser</a>
+</div>
+<div id="menuList">
+<a id="optCE" class="inputButton" onclick="resetAff()" href="#">&#10004;&nbsp;<text id="mWatc"></text>&nbsp;&nbsp;&nbsp;<img alt="Watch" src="images/ici.png" width="14" height="14"></a>
+<a class="inputButton" onclick="lister(this)" href="#">&nbsp;&nbsp;&nbsp;&nbsp;<text id="mlist"></text></a>
+<a id="optIT" class="inputButton" onclick="showItin(this)" href="#">&nbsp;&nbsp;&nbsp;&nbsp;Itinéraire</a>
+<a id="optST" class="inputButton" onclick="showSpeedTime()" href="#">&#10004;&nbsp;Speed/Time</a>
+<a id="optSR" class="inputButton" onclick="showRoute()" href="#">&nbsp;&nbsp;&nbsp;&nbsp;Show route</a>
+<a class="inputButton" href="#">
+<form id="typeLoc" name="typeLoc" >
+<input id="chxWatch" type="radio" checked name="typeLoc"><label for="chxWatch">Watch</label></input>&nbsp;
+<input id="chxGet" type="radio" name="typeLoc" value="Get"><label for="chxGet">Get</label></input></form>
+</a>
+</div>
+
+<div id="mapzone">
+
+<div id="map_canvas" ></div> 
+</div>
+
+<div id="mapZoom">
+<button class="boutonZoom" title="Zoom in" onclick="zoomMap(1); return false;">+</button>
+<button class="boutonZoom" title="Zoom out" onclick="zoomMap(-1); return false;">-</button>
+</div>
+
+
+ <div id="prefLayer"></div>
+  </body> 
+</html>
