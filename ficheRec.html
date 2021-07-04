@@ -273,11 +273,12 @@ fImg.appendChild(sp);
 //fImg.innerHTML = '<path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path>';
 pageZone.appendChild(fImg);
 */
-var fImg = document.createElement("div");
-fImg.setAttribute('id', 'favIcon');
-fImg.innerHTML ='<svg id="favIcon" class="' + ((isFav) ? 'favOn':'favOff') + '" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48"><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop id="favColor0" offset="0" /><stop id="favColor1" offset="1" /></linearGradient><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg>';
-pageZone.appendChild(fImg);
-
+if (userId){
+	var fImg = document.createElement("div");
+	fImg.setAttribute('id', 'favIcon');
+	fImg.innerHTML ='<svg id="favIcon" class="' + ((isFav) ? 'favOn':'favOff') + '" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48"><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop id="favColor0" offset="0" /><stop id="favColor1" offset="1" /></linearGradient><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg>';
+	pageZone.appendChild(fImg);
+}
 	var bElem = document.createElement("h2");
 	var spanElem = document.createElement("span");
 	spanElem.setAttribute('class', 'listitem spanCenter gras');
