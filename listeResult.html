@@ -55,6 +55,9 @@ var message = document.getElementById('message');
 
 mess = localStorage.getItem("message");
 
+if (!mess)
+	mess = "";
+
 if (typeof oResult.ph == "boolean"){
 	if (oResult.ph)
 		mess = mess.replace("phonetic", langLbl["Iphon"]);
