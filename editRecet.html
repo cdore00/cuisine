@@ -44,6 +44,26 @@ if (document.images)
  favOff.src="images/favorisOff.png";
 }
 
+function acceptQuit(){
+window.removeEventListener('beforeunload', askQuit);
+}
+
+function askQuit(){
+  // Cancel the event as stated by the standard.
+  event.preventDefault();
+  // Chrome requires returnValue to be set.
+  event.returnValue = '';
+};
+
+
+function confirmQuit(){
+window.addEventListener('beforeunload', askQuit )
+}
+/*
+window.onbeforeunload = function() {
+    return "If you leave this page, you will lose any unsaved changes.";
+}
+*/
 
 function initPage(){
 recetForm = document.getElementById('recetForm');
@@ -123,7 +143,10 @@ if (!editChange){
 	var butMenu = document.getElementById('butMenu');
 	butMenu.style.opacity = "1";
 	editChange = true;
+	confirmQuit();
 	}
+if (document.getElementById('imgObj').getAttribute('src'))
+	document.getElementById('delPhoto').style.display = "";
 }
 
 function getRecetteData(odata){
@@ -144,10 +167,15 @@ if ( recetID != "NEW"){
 	showPrep(oRecet.prep);
 	if (oRecet.edit && oRecet.edit != "<p><br></p>")
 		richEdit(oRecet.edit);
-
-	document.getElementById('imgObj').src = oRecet.imgURL;
+	if (oRecet.imgURL && oRecet.imgURL != "")
+		document.getElementById('imgObj').src = oRecet.imgURL;
+	else{
+		document.getElementById('delPhoto').style.display = "none";
+		document.getElementById('imgObj').src = "";
+		}
 }else{
 	document.getElementById('imgObj').src = "";
+	document.getElementById('delPhoto').style.display = "none";
 }
 
 var cat = odata.cat;
@@ -160,6 +188,14 @@ for (var i = 0; i < cat.length; i++) {
 	Fcat.appendChild(optElem);
 }
 showProgress(1);
+}
+
+
+function delRefPhoto(){
+//delPhoto
+document.getElementById('imgObj').src = "";
+document.getElementById('delPhoto').style.display = "none";
+editorChange();
 }
 
 function addIngr(chkId, txtId, txt){
@@ -333,6 +369,7 @@ if (!oRes.ok && oRes.message){
 	editChange = false;
 	var butMenu = document.getElementById('butMenu');
 	butMenu.style.opacity = "0.3";
+	acceptQuit();
 }
 }
 
@@ -690,7 +727,7 @@ padding: 3px;
 
 </head>
 
-<body onload="initPage()"><a name="haut"></a>
+<body onload="initPage()" onbeforeunload="return acceptQuit()><a name="haut"></a>
 
 <div id="topbar" class="vert">
 <div id="leftnav"><a title="Formulaire de recherche" href="index.html"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
@@ -723,8 +760,8 @@ padding: 3px;
 <div id="zoneImg" class="zoneRight">
 <div id="toolbarImg">
  <span class="ql-formats">
-  
   <button class=""><a id="subPhoto" class="cart-button" title="Joindre une photo" href="javascript:callCamImgCapture('imgObj', editorChange)" >&nbsp;Photo&nbsp;<span class="char_icon">📸</span></a></button>
+  <button class=""><a id="delPhoto" class="cart-button" title="Supprimer la photo" href="javascript:delRefPhoto()">Supprimer</a></button>
  </span>
 </div>
 <div>
