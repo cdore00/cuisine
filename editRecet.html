@@ -85,6 +85,14 @@ if (recetID == "NEW")
 	mode = "$NEW";
 //userId = GetCookie("userID");
 
+var menuRec = document.getElementById('fichRec');
+if (recetID == "NEW")
+	menuRec.style.display = "none";
+else{
+	menuRec.href = menuRec.href + recetID;
+	menuRec.innerHTML=menuRec.innerHTML.replace("s","") 
+}
+
 getInfo("getRecette?data=" + recetID + mode, getRecetteData);
 }
 
@@ -742,6 +750,7 @@ padding: 3px;
 <div id="duobutton">
 <a href="#" id="butMenu" class="char_icon" title="Save data" onclick="saveAll(this); return false;">&#x1f4be;</a>
 <a href="listeResult.html" ><text id="mlist"></text></a>
+<a id="fichRec" href="ficheRec.html?data="><text id="title"></text></a>
 </div>
 
 
