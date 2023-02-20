@@ -203,6 +203,7 @@ prefLayer.style.visibility="visible";
 }
 
 function setPref(){
+setEsc(closePref);
 var modLayer = document.getElementById('modalDiv');
 var prefLayer = document.getElementById('prefLayer');
 var formPref = document.getElementById('preferences');
@@ -479,10 +480,12 @@ function listCat(oCat){
 var formCrit = document.getElementById('critere');
 var IdCat = document.getElementById('IdCat');
 					//<OPTION value="0"><text id="toute">Toutes</text></OPTION>
+/*
 	var optElem = document.createElement("option");
 	optElem.setAttribute('value', '0');
 	optElem.innerHTML = langLbl["toute"];
 	IdCat.appendChild(optElem);
+*/
 for (var i = 0; i < oCat.length; i++) {
 	var optElem = document.createElement("option");
 	optElem.setAttribute('value', oCat[i]._id);

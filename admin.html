@@ -8,7 +8,7 @@
 
 <link rel="shortcut icon" type="image/x-icon" href="images/golf.png">
 <link rel="shortcut icon" type="image/x-icon" href="images/golf.png?">
-<title>Golfs du Qu&eacute;bec</title>
+<title>Recettes</title>
 <meta content="Golf GPS, Qu&eacute;bec, Canada, Golf du Qu&eacute;bec, Clubs de golf au Qu&eacute;bec, Qu&eacute;bec golf" name="keywords" />
 <meta content="R&eacute;pertoire des clubs de golf du Qu&eacute;bec. GPS golf." name="description" />
 <link href="misc/init.css" rel="stylesheet" media="screen" type="text/css" />
@@ -36,7 +36,9 @@ setFontSize();
 }
 
 function listUsers(ui){
-var word = document.getElementById('iword').value;
+var word="";
+if (document.getElementById('iword'))
+	word = document.getElementById('iword').value;
 word = (word=="") ? "xxxxx":word;
 getInfo("getUser?word=" + word, initListUser);
 }
@@ -131,15 +133,23 @@ xmlhttp.send();
 
 }
 
+function deleteUser(){
+var res = confirm("Delete user ?" +"\n"+ user_name +"\n"+ user_mail);
+if (res){
+getInfo("delUser?id=" + user_id , delRes);
+//alert("deleted");
+}
+
+}
+
 function updUser(){
 var formIdent = document.getElementById('formIdent');
-var imgUser = document.getElementById('imgObj').src;
 window.oTip.show("Saving account...", [0,20]);
 var name = formIdent.nomUser.value;
 var email = formIdent.courUser.value;
 var role = formIdent.roleUser.options[formIdent.roleUser.selectedIndex].value;
 var active = (formIdent.stateUser.checked) ? '1':'0';
-var imgUser = document.getElementById('imgObj').src;
+var imgUser = document.getElementById('imgObj').getAttribute('src');
 getInfo("updUser?id=" + user_id + "&user=" + email + "&name=" + name + "&role=" + role + "&active=" + active + "&imgUser=" + imgUser, updRes);
 }
 
@@ -147,6 +157,11 @@ function updRes(oRes){
 window.oTip.initMess("Account&nbsp;saved:</br>&nbsp;&nbsp;");
 window.oTip.addMess((oRes.nModified) ? "updated":"unchanged");
 window.oTip.fadeout(200);
+}
+
+function delRes(oRes){
+listUsers(userId);
+closePref(true);
 }
 
 function savePass(){
@@ -174,12 +189,13 @@ editUser(user_id);
 .listitem{
 margin-left: 20px;
 }
-/*
-a span{
-width: 300px;
-display: inline-block;
+
+.itemdetail span {
+  min-width: 30%;
+  display: inline-block;
+  margin-left: 10px;
 }
-*/
+
 #pageZone{
 	visibility: hidden;
 }
@@ -207,6 +223,8 @@ padding: 0;
 .prefList {
     clear: inherit;
 }
+
+
 
 </style>
 

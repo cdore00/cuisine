@@ -16,21 +16,21 @@
 <link rel="stylesheet" type="text/css" href="misc/takePhoto.css" />
 <link rel="stylesheet" type="text/css" href="misc/auth.css" />
 
-<!--<link rel="stylesheet" href="misc/quill.snow.css"></div> -->
+<link rel="stylesheet" href="misc/quill.snow.css"></div>
 
 
 <script type="text/javascript" src="misc/util.js"></script>
 <script type="text/javascript" src="misc/takePhoto.js"></script>
 <script type="text/javascript" src="misc/auth.js"></script>
-<!--<script src="misc/quill.js"></script>-->
+<script src="misc/quill.js"></script>
 
 <script type="text/javascript" language="Javascript">
 <!--
 var quill = null;
-var container, container2;
+var container;
 var editChange = false;
-var userId;
-var recetID;
+var cursorPos = null;
+var userId, recetID, oRecet, winEmo;
 
 var goURL;
 var recetForm;
@@ -44,10 +44,30 @@ if (document.images)
  favOff.src="images/favorisOff.png";
 }
 
+function acceptQuit(){
+window.removeEventListener('beforeunload', askQuit);
+}
+
+function askQuit(){
+  // Cancel the event as stated by the standard.
+  event.preventDefault();
+  // Chrome requires returnValue to be set.
+  event.returnValue = '';
+};
+
+
+function confirmQuit(){
+window.addEventListener('beforeunload', askQuit )
+}
+/*
+window.onbeforeunload = function() {
+    return "If you leave this page, you will lose any unsaved changes.";
+}
+*/
 
 function initPage(){
 recetForm = document.getElementById('recetForm');
-container2 = document.getElementById('editor2');
+container = document.getElementById('editor');
 var data = getURLdata();
 
 recetForm.addEventListener("input", function () {
@@ -75,7 +95,7 @@ function onEditorReady(editor) {
 }
 
 function initQuill(){
-/*
+
 var options = {
 modules: {
     toolbar: '#toolbar'
@@ -98,8 +118,8 @@ quill.on('text-change', function(delta, oldDelta, source) {
 	editorChange();
   } 
 });
-*/
-	  
+
+/*	  
 var options2 = {
 modules: { toolbar: '#toolbarImg' },
   placeholder: '...',
@@ -115,7 +135,7 @@ quill2.on('text-change', function(delta, oldDelta, source) {
 	editorChange();
   } 
 });
-
+*/
 }
 
 function editorChange(){
@@ -123,37 +143,39 @@ if (!editChange){
 	var butMenu = document.getElementById('butMenu');
 	butMenu.style.opacity = "1";
 	editChange = true;
+	confirmQuit();
 	}
+if (document.getElementById('imgObj').getAttribute('src'))
+	document.getElementById('delPhoto').style.display = "";
 }
 
 function getRecetteData(odata){
 var Fcat = document.getElementById('Fcat');
 
 if ( recetID != "NEW"){
-var oRecet = odata.rec[0];
-recetForm.FrecetName.value = oRecet.nom;
-recetForm.Fsource.value = oRecet.url;
-recetForm.Ftemps.value = oRecet.temp;
-recetForm.Fcuisson.value = oRecet.cuis;
-recetForm.Fportion.value = oRecet.port;
-recetForm.Fpublie.checked = oRecet.state
-document.getElementById('Fcree').innerHTML = getDateTime(oRecet.dateC);
-document.getElementById('Fmodif').innerHTML = getDateTime(oRecet.dateM)  + "&nbsp;:&nbsp;" + odata.user.email ;
+	oRecet = odata.rec[0];
+	recetForm.FrecetName.value = oRecet.nom;
+	recetForm.Fsource.value = oRecet.url;
+	recetForm.Ftemps.value = oRecet.temp;
+	recetForm.Fcuisson.value = oRecet.cuis;
+	recetForm.Fportion.value = oRecet.port;
+	recetForm.Fpublie.checked = oRecet.state
+	document.getElementById('Fcree').innerHTML = getDateTime(oRecet.dateC);
+	document.getElementById('Fmodif').innerHTML = getDateTime(oRecet.dateM)  + "&nbsp;:&nbsp;" + odata.user.email ;
 
-showIngr(oRecet.ingr);
-showPrep(oRecet.prep);
-/*
-x=oRecet.imgURL
-if (x && x.indexOf("</p>") != -1){
-x = x.substring(x.indexOf("https"));
-x = x.substring(0,x.indexOf("></p>"));
-x = x.substring(0,x.length-1);
-	document.getElementById('imgObj').src = x;
-}else
-*/
-	document.getElementById('imgObj').src = oRecet.imgURL;
+	showIngr(oRecet.ingr);
+	showPrep(oRecet.prep);
+	if (oRecet.edit && oRecet.edit != "<p><br></p>")
+		richEdit(oRecet.edit);
+	if (oRecet.imgURL && oRecet.imgURL != "")
+		document.getElementById('imgObj').src = oRecet.imgURL;
+	else{
+		document.getElementById('delPhoto').style.display = "none";
+		document.getElementById('imgObj').src = "";
+		}
 }else{
 	document.getElementById('imgObj').src = "";
+	document.getElementById('delPhoto').style.display = "none";
 }
 
 var cat = odata.cat;
@@ -166,7 +188,14 @@ for (var i = 0; i < cat.length; i++) {
 	Fcat.appendChild(optElem);
 }
 showProgress(1);
-//initQuill();
+}
+
+
+function delRefPhoto(){
+//delPhoto
+document.getElementById('imgObj').src = "";
+document.getElementById('delPhoto').style.display = "none";
+editorChange();
 }
 
 function addIngr(chkId, txtId, txt){
@@ -271,7 +300,10 @@ for (var i = 0; i < oPrep.length; i++){
 function saveAll(oButSave){
 if (!editChange)
 	return;
-
+if (recetForm.FrecetName.value == ""){
+	alert("Un nom est requis.");
+	return;
+}
 var data = {};
 	var msg = "&nbsp;<b>Enregistrement : " + recetForm.FrecetName.value + " ...</b>";
 	window.oTip.show(msg, oButSave, true);
@@ -287,13 +319,6 @@ data.cat = {};
 data.cat._id = eval(recetForm.Fcat[recetForm.Fcat.selectedIndex].value);
 data.cat.desc = recetForm.Fcat[recetForm.Fcat.selectedIndex].innerHTML;
 
-var imgURL = document.getElementById('imgObj').getAttribute('src');
-//encodeURI(quill2.root.innerHTML);
-
-for (var i = 0; i < recetForm.Fcat.length; i++) {
-	
-}
-
 var x = document.getElementsByName("txtIngr");
 var arrIngr = [];
 for (var i = 0; i < x.length; i++) {
@@ -308,19 +333,32 @@ for (var i = 0; i < x.length; i++) {
 }
 data.prep = arrPrep;
 
-getInfo("saveRecet?data=" + JSON.stringify(data) + "&imgURL=" + imgURL , recetSaved);
+var editor = "";
+if (quill){
+	editor = encodeURI(quill.root.innerHTML.replace(/;\"/g, '"'));
+	editor = editor.replace(/;/g, 'pvirg');
+	//&#59;
+}
 
+
+var imgURL = document.getElementById('imgObj').getAttribute('src');
+data = JSON.stringify(data);
+if ( data.indexOf(';') != -1){
+	window.oTip.fadeout();
+	alert("Illegal caracter ';' ");
+}else
+	getInfo("saveRecet?data=" + data + "&editor=" + editor + "&imgURL=" + imgURL , recetSaved);
 }
 
 function recetSaved(oRes){
 
 if (!oRes.ok && oRes.message){
-	var modLayer = document.getElementById('modalDiv');
+	//var modLayer = document.getElementById('modalDiv');
 	window.oTip.fadeout();
 	alert(langLbl[oRes.message]);
 	callAuthUser();
 	//authentifier();
-	modLayer.style.visibility="visible";
+	//modLayer.style.visibility="visible";
 }else{
 	window.oTip.initMess("Enregistré");
 	window.oTip.fadeout(300);
@@ -331,6 +369,7 @@ if (!oRes.ok && oRes.message){
 	editChange = false;
 	var butMenu = document.getElementById('butMenu');
 	butMenu.style.opacity = "0.3";
+	acceptQuit();
 }
 }
 
@@ -393,6 +432,164 @@ for (var i = 0; i < x.length; i++) {
 
 }
 
+function richEdit(data){
+var editList = document.getElementById('editList');
+var ctrlPrep = document.getElementById('ctrlPrep');
+var prepList = document.getElementById('prepList');
+var editZone = document.getElementById('editZone');
+if (editList.innerHTML == "Liste"){
+	editList.innerHTML = "Éditeur";
+	editZone.style.display = "none";
+	//ctrlPrep.style.display = "contents";
+	ctrlPrep.style.visibility = "visible";
+	prepList.style.display = "block";
+}else{
+	editList.innerHTML = "Liste";
+	//ctrlPrep.style.display = "none";
+	ctrlPrep.style.visibility = "hidden";
+	prepList.style.display = "none";
+	if (!quill){
+		if (!data){
+			var pCont = "";
+			if (oRecet.prep){
+				pCont += "<ol>";
+				oPrep = oRecet.prep;
+				for (var i = 0; i < oPrep.length; i++){
+					pCont += "<li>" + oPrep[i] + "</li>";
+				}
+				pCont += "</ol>";
+			}
+			container.innerHTML = pCont;
+		}else{
+			container.innerHTML = data.replace(/pvirg/g, ';');;
+		}
+		initQuill();
+	}
+	editZone.style.display = "contents";
+}
+
+
+}
+
+function setPos(){
+cursorPos = quill.getSelection();
+//console.log(cursorPos);
+}
+
+function changeFont(oToolFont){
+var oTollZize = document.getElementById('oTollZize');
+
+switch(oToolFont.value) {
+
+    case "small":
+        oToolFont.value = "normal";
+		oTollZize.childNodes[1].childNodes[1].click();
+        break;
+    case "normal":
+        oToolFont.value = "large";
+		oTollZize.childNodes[1].childNodes[2].click();
+        break;
+    case "large":
+        oToolFont.value = "huge";
+		oTollZize.childNodes[1].childNodes[3].click();
+        break;
+    case "huge":
+        oToolFont.value = "small";
+		oTollZize.childNodes[1].childNodes[0].click();
+        break
+} 
+}
+
+function insertButton(oBut){
+var divEmoC = document.getElementById('divEmoC');
+
+if (divEmoC.style.visibility == "visible")
+	divEmoC.style.visibility = "hidden";
+else{
+	var p = posObj(oBut);
+	cursorPos = quill.getSelection();
+	divEmoC.style.left = p.x + "px";
+	divEmoC.style.top = p.y + "px";
+	divEmoC.style.visibility = "visible";
+}
+//https://twemoji.maxcdn.com/2/test/preview.html
+//https://en.wikipedia.org/wiki/Emoji
+}
+
+function insertEmoji(oBut){
+var divEmoC = document.getElementById('divEmoC');
+
+if (typeof(oBut) == "object"){
+	if (oBut.id == "form_emoji"){
+		var but = oBut.car_icon.value;  //Call from Other form
+		if (but == ""){
+			divEmoC.style.visibility = "hidden";
+			return;
+		}
+	}else{
+		var but = oBut.innerHTML;  //Call from toolBar
+		}
+}else{
+	var divEmoC = document.getElementById('divEmoC');
+	if (divEmoC.style.visibility == "visible")
+		divEmoC.style.visibility = "hidden";
+	var but = oBut;	//Call from Window winEmo
+}
+if (cursorPos == null){
+	cursorPos = quill.getSelection();
+	if (cursorPos == null)
+		cursorPos = 0;
+	}
+toUpd = updEmoHist(but);
+if (toUpd)
+	updPrefEmo(toUpd);
+quill.insertText(cursorPos, but);
+}
+
+function otherEmo(){
+formEmo = document.getElementById('form_emoji');
+cursorPos = quill.getSelection();
+if (winEmo)
+	winEmo.close();
+winEmo = window.open("emoji.html", "emojW", "width=500, height=500");
+}
+
+function updEmoHist(but){
+var collEmo = document.getElementById('collEmo');
+arrEmo = [];
+var isToUpd = true;
+
+for (i = 0; i < collEmo.childNodes.length; i++) {
+if (collEmo.childNodes[i].nodeName == "SPAN"){
+		//console.log(collEmo.childNodes[i].innerHTML);
+		var emo = collEmo.childNodes[i].innerHTML;
+		arrEmo[arrEmo.length] = emo;
+		if (emo == but)
+			isToUpd = false;
+	}
+}
+if (isToUpd){
+	isToUpd = arrEmo.slice(arrEmo.length - 5, arrEmo.length - 1);
+	isToUpd.unshift(but);
+}
+return isToUpd;
+}
+
+function updPrefEmo(arrEmo){
+var collEmo = document.getElementById('collEmo');
+var cnt = 4;
+localStorage.setItem("favIcon", JSON.stringify(arrEmo));
+
+for (i = collEmo.childNodes.length - 1; i >= 0; i--) {
+	if (collEmo.childNodes[i].nodeName == "SPAN"){
+		collEmo.childNodes[i].innerHTML = arrEmo[cnt];
+		cnt--
+		if (cnt < 0)
+			break;
+	}
+}
+}
+
 // -->
 </script>
 
@@ -423,10 +620,6 @@ height: auto;
 margin-left: 10px;
 font-weight: bold;
 font-size: 1.1em;
-}
-
-strong{
-color: #0f0;
 }
 
 input[type=checkbox] {
@@ -490,17 +683,51 @@ font-size: 1em !important;
 	width: 100%;
 }
 
-    video {
-        width: 100% !important;
-        height: 100% !important;
-        max-height: 56.25vw !important;
-    }
+#ctrlPrep {
+    display: inline;
+}
+
+#editZone{
+display: none;
+}
+
+.scale15{
+scale: 1.5;
+}
+
+#oTollZize{
+display: none;
+}
+
+.ql-stroke-w1{
+    stroke-width: 1;
+}
+
+.ql-stroke-w1:hover{
+stroke: #06c;
+}
+
+#editor{
+background-color: #f8fff8;
+}
+
+#divEmoC{
+position: absolute;
+background: white;
+visibility: hidden;
+width: 150px;
+cursor: pointer;
+border: buttonhighlight 4px outset;
+border-radius: 10px;
+padding: 3px;
+}
+
 
 </style>
 
 </head>
 
-<body onload="initPage()"><a name="haut"></a>
+<body onload="initPage()" onbeforeunload="return acceptQuit()><a name="haut"></a>
 
 <div id="topbar" class="vert">
 <div id="leftnav"><a title="Formulaire de recherche" href="index.html"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>
@@ -533,8 +760,8 @@ font-size: 1em !important;
 <div id="zoneImg" class="zoneRight">
 <div id="toolbarImg">
  <span class="ql-formats">
-  
   <button class=""><a id="subPhoto" class="cart-button" title="Joindre une photo" href="javascript:callCamImgCapture('imgObj', editorChange)" >&nbsp;Photo&nbsp;<span class="char_icon">📸</span></a></button>
+  <button class=""><a id="delPhoto" class="cart-button" title="Supprimer la photo" href="javascript:delRefPhoto()">Supprimer</a></button>
  </span>
 </div>
 <div>
@@ -603,19 +830,172 @@ font-size: 1em !important;
 
 </ol>
 
-
-
 <hr>
 <!-- Préparation list // -->	
 	<div class="sectionTitle">
-	<label for="prepList">Pr&eacute;paration&nbsp;&nbsp;&nbsp;</label><a class="itin" alt="Ajouter pr&eacute;paration" href="javascript:ajoutPrep();">Ajouter</a>
-	<a class="itin" alt="Supprimer pr&eacute;paration" href="javascript:delPrep();">Supprimer</a>
+	<label for="prepList">Pr&eacute;paration&nbsp;&nbsp;&nbsp;</label>
+	<div id="ctrlPrep">
+	<a class="itin" alt="Ajouter pr&eacute;paration" href="javascript:ajoutPrep()">Ajouter</a>
+	<a class="itin" alt="Supprimer pr&eacute;paration" href="javascript:delPrep()">Supprimer</a>
 	&nbsp;Tous&nbsp;<input id="delAllIngr" class="inputtext" type="checkbox" onclick="selAllchx('chxPrep')" />
+	</div>
+	&nbsp;&nbsp;<a id="editList" class="itin" alt="Liste/&eacute;diteur pr&eacute;paration" href="javascript:richEdit()">Éditeur</a>
 	</div>
 <ol id="prepList">
 
 </ol>
 </form>
+
+<div id="editZone">
+<!-- Quill toolbar // -->
+<div id="toolbar">
+  <!-- Add font size dropdown -->
+  <span class="ql-formats noright">
+	<button id="preview-button" onclick="preview();" title="Visualiser"><img id="prevLogo" alt="Visualiser" height="24" width="24" src="misc/view.png"/></button>
+  </span>
+ 
+  <span class="ql-formats noright">
+  <select class="ql-header" title="Style...">
+    <option value="1">Titre 1</option>
+    <!-- Note a missing, thus falsy value, is used to reset to default -->
+    <option value="2">Titre 2</option>
+    <option value="3">Titre 3</option>
+	<option value="4">Titre 4 (centré)</option>
+	<option value="5">Titre 5</option>
+    <option selected>Normale</option>
+  </select>
+  
+  <select id="oTollZize" class="ql-size">
+    <option value="small">Petite</option>
+    <!-- Note a missing, thus falsy value, is used to reset to default -->
+    <option selected>Normale</option>
+    <option value="large">Grande</option>
+    <option value="huge">Très grande</option>
+  </select>
+  
+  <select class="ql-font" title="Police">
+    <option selected>Normale</option>
+	<option value="arial">Arial</option>
+	<option value="calibri">Calibri</option>
+	<option value="Contrast">Contrast</option>
+	<option value="monospace">Courier</option>
+	<option value="Fredericka">Fredericka</option>		
+	<option value="haviland">Haviland</option>
+	<option value="IsiniScript">Isini-Script</option>
+    <option value="serif">Serif</option>
+  </select>
+  </span>
+  
+  <!-- Add a bold button -->
+  <span class="ql-formats">
+  <button class="ql-bold"  title="Gras"></button>
+  <button class="ql-italic"  title="Italique"></button>
+  <button class="ql-underline"  title="Souligner"></button>
+
+	<button value="normal" onclick="changeFont(this);" title="Taille">
+	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+	<title>Font size</title>
+	<path class="ql-stroke" d="M14.801 7.453h-4.254v-4.254c0-0.214-0.173-0.387-0.387-0.387h-2.32c-0.214 0-0.387 0.173-0.387 0.387v4.254h-4.254c-0.214 0-0.387 0.173-0.387 0.387v2.32c0 0.214 0.173 0.387 0.387 0.387h4.254v4.254c0 0.214 0.173 0.387 0.387 0.387h2.32c0.214 0 0.387-0.173 0.387-0.387v-4.254h4.254c0.214 0 0.387-0.173 0.387-0.387v-2.32c0-0.214-0.173-0.387-0.387-0.387z"></path>
+	</svg>
+	</button>
+  <!-- <button class="scale15" value="normal" onclick="changeFont(this);" title="Taille">&#128164;</button>  // -->
+  </span>
+  <span class="ql-formats">
+  <button class="ql-link" title="Insérer lien..."></button>
+  <button class="ql-image" title="Insérer image..."></button>
+  </span>
+  <span class="ql-formats">
+  <button class="ql-list" value="ordered" title="Puces numérique"></button>
+  <button class="ql-list" value="bullet" title="Puces"></button>
+  <button class="ql-indent" value="-1" title="Indenter"></button>
+  <button class="ql-indent" value="+1" title="Indenter"></button>
+    <select class="ql-align" title="Aligner...">
+    <option selected>Normale</option>
+    <option value="center">centre</option>
+	<option value="right">droite</option>
+	<option value="justify">justifié</option>
+    </select>
+  </span>  
+  <span class="ql-formats">
+    <select class="ql-color" title="Couleur...">
+    <option value="#000000"></option>
+    <option value="#ffffff"></option>
+	<option value="#ff0000"></option>
+	<option value="#00ff00"></option>
+	<option value="#0000ff"></option>
+	<option value="#ffff00"></option>
+	<option value="#ff9900"></option>
+    </select>  
+    <select class="ql-background" title="Couleur de fond...">
+    <option value="#000000"></option>
+    <option value="#ffffff"></option>
+	<option value="#ff0000"></option>
+	<option value="#00ff00"></option>
+	<option value="#0000ff"></option>
+	<option value="#ffff00"></option>
+	<option value="#ff9900"></option>
+  </select>
+
+  </span>  
+  <span class="ql-formats noright">  
+  <!-- Add subscript and superscript buttons -->
+  <button class="ql-script" value="sub"></button>
+  <button class="ql-script" value="super"></button>
+
+	<button class="ql-clean" title="Supprimer mise en forme de la sélection"></button>
+
+  </span>
+  
+   <span class="ql-formats noright scale15">
+   
+	<button value="normal" onclick="insertButton(this);" title="Taille">
+	<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+	<title>Font size</title>
+	<path class="ql-stroke-w1" d="M9 18c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zM9 1.688c4.039 0 7.313 3.274 7.313 7.313s-3.274 7.313-7.313 7.313-7.313-3.274-7.313-7.313 3.274-7.313 7.313-7.313zM9 10.525c2.038 0 3.977-0.542 5.625-1.493-0.256 3.137-2.692 5.593-5.625 5.593s-5.369-2.459-5.625-5.595c1.648 0.951 3.587 1.495 5.625 1.495zM4.5 6.188c0-0.932 0.504-1.688 1.125-1.688s1.125 0.756 1.125 1.688c0 0.932-0.504 1.688-1.125 1.688s-1.125-0.756-1.125-1.688zM11.25 6.188c0-0.932 0.504-1.688 1.125-1.688s1.125 0.756 1.125 1.688c0 0.932-0.504 1.688-1.125 1.688s-1.125-0.756-1.125-1.688z"></path>
+	</svg>
+	</button>
+   
+ <!-- <button id="custom-but" onclick="insertButton(this);" title="Insérer Émoji...">&#128512; </button> -->
+
+     </span>
+</div>
+<!-- Quill editor zone // -->
+<div id="editor" onclick="setPos();"></div>
+
+
+
+<div id="divEmoC">
+  <span id="collEmo" class="ql-picker-options" aria-hidden="false" tabindex="-1" >
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😀</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😂</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😍</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😎</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😳</span>
+
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😛</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🙄</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >😇</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >👶</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >👿</span>
+  
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >❤</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🍷</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🛒</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🥧</span>
+  <span tabindex="0" role="button" class="ql-picker-item ql-primary" onclick="insertEmoji(this);" >🥕</span>
+  
+  </span> 
+  <span class="ql-picker-options" aria-hidden="false" tabindex="-1" >
+	<form id="form_emoji">
+	<a href="javascript:otherEmo()">&nbsp;&nbsp;Autre...</a><input id="car_icon" type="text" size="1" /><input type="button" value="Ok" onclick="insertEmoji(this.form);" />
+	<!-- <a target="_blank" href="https://twemoji.maxcdn.com/2/test/preview.html">&nbsp;&nbsp;Autre...</a> -->
+	</form>
+  </span> 
+</div>
+
+
+
+</div>  <!-- FIN  editZone // -->
 <hr>
 
 <form id="tabTextF">

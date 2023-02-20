@@ -25,39 +25,9 @@ var userId;
 var recetID;
 var favChange = false, isFav = false;
 var goURL;
-var imgUser;
-var objRecet, versionId, actVersionId;
+var histuser;
+var objRecet, versionAff;
 
-/*
-if (document.images)
-{
- favOn= new Image(30,30);
- favOn.src="images/favoris.png";  
-
- favOff= new Image(30,30);
- favOff.src="images/favorisOff.png";
-}
-
-function changeFav(objImg){
-favChange = true;
-if (objImg.classList.contains("favOn")){
-	objImg.classList.replace("favOn", "favOff");
-}else{
-	objImg.classList.replace("favOff", "favOn");
-}
-}
-
-function changeFav2(objImg){
-
-favChange = true;
-
-if (isFav)
-	objImg.src = favOff.src;
-else
-	objImg.src = favOn.src;
-isFav = !isFav;
-}
-*/
 function changeFav(objImg){
 
 favChange = true;
@@ -133,51 +103,56 @@ else
 
 function showHisto(sp){
 var versionDate = document.getElementById('versionDate');
-if (sp > 0 && actVersionId == 0 && versionId == 0)
-	versionId = -1;
-actVersionId = versionId;
-versionId += sp;
 
-if (sp > 0 && actVersionId > 0)
-	actVersionId = versionId;
-
-if (versionId < 0 || versionId > objRecet.rec[0].hist.length-1){
-	histLimit = "Actuel";
-	if (versionId < 0){
-		versionId ++;
+histLimit = "";
+if ((sp > 0 && versionAff < objRecet.rec[0].hist.length+1) || (sp < 0 && versionAff > 1) )
+	versionAff += sp;
+else{
+	if (versionAff == 1)
 		histLimit = "Initial";
-	}else{versionId --;}
+	else
+		histLimit = "Actuel";
 	window.oTip.show(histLimit, versionDate, true, 300, -10);
-}
-var flds = null;
-if (actVersionId > 0){
-	if (objRecet.rec[0].hist[actVersionId])
-	flds = Object.keys(objRecet.rec[0].hist[actVersionId]);
-}else
-	flds = Object.keys(objRecet.rec[0].hist[versionId]);
-
-	for (const prop in flds) {
-	  var fld = flds[prop];
-	  //if (objRecet.rec[0][fld]){
-		//console.log("aV:" + actVersionId + ", " + `${prop}: ${flds[prop]}`);
-		if (sp < 0)
-			objRecet.rec[0][fld] = objRecet.rec[0].hist[actVersionId][fld];
-		else
-			objRecet.rec[0][fld] = objRecet.rec[0].hist[versionId]["act_" + fld];
-	 // }
 	}
 
-	
-	if (versionId < objRecet.rec[0].hist.length-1)
-		versionDate.innerHTML = formatDateTime.datetime(objRecet.rec[0].hist[versionId].time);
+var flds = null;
+if (sp < 0)
+	flds = Object.keys(objRecet.rec[0].hist[versionAff-1]);
+else
+	flds = Object.keys(objRecet.rec[0].hist[versionAff-2]);
+
+for (const prop in flds) {
+  var fld = flds[prop];
+  if (fld != "userID"){
+	if (sp < 0)
+		objRecet.rec[0][fld] = objRecet.rec[0].hist[versionAff-1][fld];
 	else
-		versionDate.innerHTML = "Actuel " + formatDateTime.date(objRecet.rec[0].hist[versionId].time);
-	showRecet(objRecet, versionId);
+		objRecet.rec[0][fld] = objRecet.rec[0].hist[versionAff-2]["act_" + fld];
+}}
+	
+versionDate.innerHTML = histLimit + " Version : " + versionAff;
+showRecet(objRecet, versionAff - ((versionAff == 1) ? 1:2));
+
 }
 
 	
 function affTip(obj, time, lienNom, imgUrl, histVal){
+if (imgUrl == "")
+	window.oTip.show(time + ' - ' + lienNom + '  ' + histVal, obj, true, 300, -10);
+else
 	window.oTip.show(time + ', <a href=\"javascript:showHistUser(\'' + imgUrl + '\')\">' + lienNom + '</a>' + histVal, obj, true, 300, -10);
+}
+
+function getUser(oid, email){
+	var x, obj = objRecet.histUser;
+	for (let elem in obj){
+		if (oid && oid.$oid === obj[elem]._id.$oid )
+			x = obj[elem];
+		else
+			if (email && email == obj[elem].courriel)
+				x = obj[elem];
+	}
+	return x;
 }
 
 function showRecet(oRecet, vId){
@@ -191,23 +166,30 @@ isFav = oRecet.isFav;
 
 var rec = oRecet.rec[0];
 var user = oRecet.user;
-var histo = null, histuser = null;
+var histo = null
+histuser = null;
+
 if (rec.hist){
-	if (vId || vId == 0)
-		versionId = vId;
-	else
-		versionId = rec.hist.length-1;
-		
+	if (!vId && vId != 0){
+		vId = rec.hist.length-1;
+		versionAff = rec.hist.length + 1;	
+	}
+
 	document.getElementById('navHisto').style.display = "inline-block";
-	histo = rec.hist[versionId];
-	histuser = oRecet.histuser;
-	if (actVersionId == 0 && versionId == 0)
-		histo = null;
-		
+	
+	histo = rec.hist[vId];
+	oRecet.histUser.forEach((elem) => {
+		if (histo.userID.$oid === elem._id.$oid ){
+			histuser = elem;
+		}
+	});
 }
+
+//console.log("  vId= " + vId + " versionAff= " + versionAff);
 
 var cInfo = rec.cat.desc;
 recetInfo.innerHTML = cInfo;
+
 
 	function numList(collName){
 		var oColl = rec[collName];
@@ -222,8 +204,8 @@ recetInfo.innerHTML = cInfo;
 			ulElem.appendChild(olElem);
 			}
 		if (histo && histo[collName] && (histo[collName].length != rec[collName].lenght))
-			if (!objRecet.rec[0].hist[versionId]["act_" + collName])
-				objRecet.rec[0].hist[versionId]["act_" + collName] = objRecet.rec[0][collName];
+			if (!objRecet.rec[0].hist[vId]["act_" + collName])
+				objRecet.rec[0].hist[vId]["act_" + collName] = objRecet.rec[0][collName];
 	return ulElem;
 	}
 	
@@ -231,14 +213,12 @@ recetInfo.innerHTML = cInfo;
 	function checkHisto(el, fld, lbl, id){
 	if (histo){
 		function addHistoInfo(info){
-				if (!oRecet.rec[0].hist[versionId]["act_" + fld])
-					oRecet.rec[0].hist[versionId]["act_" + fld] = oRecet.rec[0][fld];
+				if (!oRecet.rec[0].hist[vId]["act_" + fld])
+					oRecet.rec[0].hist[vId]["act_" + fld] = oRecet.rec[0][fld];
 				el.classList.add("histoModif");
-				//var lienNom =  ', <div onclick=\"expansion(false, \'' + histuser.imgUser + '\')\">' + histuser.nom + '</div>'; // 'expansion(false, "' + histuser.imgUser + '")';
-				var lienNom = histuser.imgUser;
-				var msg = formatDateTime.datetime(histo.time) + ((histuser.nom != "") ?  lienNom:"") + "</br>" + ((lbl) ? lbl:"") + info;
 				var hist = "</br>" + ((lbl) ? lbl:"") + info;
-				el.setAttribute('onclick', 'affTip(this,\"' + formatDateTime.datetime(histo.time) + '\",\"' + histuser.nom + '\",\"' + histuser.imgUser + '\",\"' + hist + '\")');
+				el.setAttribute('onclick', 'affTip(this,\"' + formatDateTime.datetime(rec.hist[versionAff-2].time) + '\",\"' + histuser.Nom + '\",\"' + histuser.imgUser + '\",\"' + hist + '\")');
+				
 		}
 		if (id || id == 0){
 			if (histo[fld] && histo[fld][id] && histo[fld][id] != rec[fld][id])
@@ -250,29 +230,6 @@ recetInfo.innerHTML = cInfo;
 		}
 	}
 
-//<img id="favIcon" onclick="changeFav(this)" alt="Favoris" src="images/favorisOff.png" width="30" height="30">
-//<svg id="favIcon" class="favOff" onclick="changeFav(this)" width="34" height="34" viewBox="0 0 48 48"><path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path></svg>
-/*
-var fImg = document.createElement("img");
-fImg.setAttribute('id', 'favIcon');
-fImg.setAttribute('alt', 'Favoris');
-fImg.setAttribute('src', (isFav) ? 'images/favoris.png':'images/favorisOff.png');
-fImg.setAttribute('onclick', 'changeFav(this)');
-pageZone.appendChild(fImg);
-
-var fImg = document.createElement("svg");
-fImg.setAttribute('id', 'favIcon');
-fImg.setAttribute('class', 'favOff');
-fImg.setAttribute('width', '34');
-fImg.setAttribute('height', '34');
-fImg.setAttribute('viewBox', '0 0 48 48');
-fImg.setAttribute('onclick', 'changeFav(this)');
-var sp = document.createElement("path");
-sp.setAttribute('d', 'M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35');
-fImg.appendChild(sp);
-//fImg.innerHTML = '<path d="M35.53 43.496c-.294 0-.587-.074-.852-.22l-10.68-5.946-10.678 5.945c-.607.34-1.35.288-1.907-.132-.553-.414-.81-1.12-.653-1.795l2.685-11.688-9.292-8.565c-.515-.476-.7-1.212-.464-1.874.23-.66.834-1.117 1.534-1.163l12.252-.802 4.905-11.68c.274-.65.913-1.074 1.618-1.074.704 0 1.34.423 1.614 1.075l4.908 11.68 12.25.805c.703.046 1.308.503 1.542 1.165.232.662.05 1.4-.465 1.874l-9.295 8.564 2.688 11.688c.154.673-.103 1.38-.657 1.793-.31.235-.68.35-1.054.35"></path>';
-pageZone.appendChild(fImg);
-*/
 if (userId){
 	var fImg = document.createElement("div");
 	fImg.setAttribute('id', 'favIcon');
@@ -296,8 +253,8 @@ if (rec.imgURL && rec.imgURL != "undefined"){
 	imgElem.setAttribute('src', rec.imgURL);
 	imgElem.setAttribute('onclick', 'expansion(this)');
 	imgElem.onload = function() { hideShow(true); };
-if (histo && histo["imgURL"] && !oRecet.rec[0].hist[versionId]["act_imgURL"])
-	oRecet.rec[0].hist[versionId]["act_imgURL"] = oRecet.rec[0]["imgURL"];
+if (histo && histo["imgURL"] && !oRecet.rec[0].hist[vId]["act_imgURL"])
+	oRecet.rec[0].hist[vId]["act_imgURL"] = oRecet.rec[0]["imgURL"];
 	divElem.appendChild(imgElem);
 	pageZone.appendChild(divElem);
 }
@@ -323,17 +280,31 @@ if (rec.port){
 	spanElem.innerHTML = "<b><text>Portions:</text></b>" + rec.port;
 	pageZone.appendChild(spanElem);
 }
-imgUserT = "span";
-if (user.imgUser){
-	imgUser = user.imgUser;
-	imgUserT = "a";
+
+var spanElem = document.createElement("span");
+var leUser = "", ladate = "";
+if (histo){
+	 if (versionAff == rec.hist.length+1){ //Dernière version plus récente
+		ladate = getDateTime(rec.dateM);
+		Cuser = getUser(rec.userID);
+		}
+	 else{
+		if (versionAff != 1){	// version historique
+			ladate = getDateTime(rec.hist[versionAff-1].time);
+			Cuser = getUser(rec.hist[versionAff - 1].userID);
+		}else{
+			ladate = getDateTime(rec.hist[0].time);	//Première version
+			Cuser = getUser(rec.hist[0].userID);
+			}
+		}
+}else{
+	var ladate = "<span>" + getDateTime(rec.dateM);	// Pas d'historique
+	Cuser = getUser(rec.userID);
 }
-if (rec.dateM != ""){
-	var spanElem = document.createElement("span");
-	spanElem.setAttribute('class', 'listitem');
-	spanElem.innerHTML = '<b><text>Modification:</text></b>' + getDateTime(rec.dateM) + '&nbsp;:&nbsp;<' + imgUserT + ( (imgUser && imgUser != "") ? ' onclick="showUser(this)"':'') + '>' + user.email + '</' + imgUserT + '></br></br>';
+	leUser = '&nbsp;<a onclick="showUser(this,\'' + Cuser.courriel + '\')"' + '>' + Cuser.courriel + '<a></br></br>';
+	spanElem.innerHTML = '<b><text>Modification:&nbsp;</text></b><span>' + ladate + "&nbsp;-&nbsp;</span>" + leUser;
 	pageZone.appendChild(spanElem);
-}
+
 
 	var bElem = document.createElement("b");
 	var spanElem = document.createElement("span");
@@ -367,14 +338,17 @@ showProgress(1);
 	
 }
 
-function showUser(oElem){
-window.oTip.show('<img id="imgUser" alt="imgUser" src="' + imgUser + '" width="130">', oElem, true, 300, -10);
-//alert(imgUser);
+function showUser(oElem, userMail){
+Cuser = getUser(null, userMail);
+if (Cuser.imgUser == "")
+	window.oTip.show( '<div>' + Cuser.Nom + '</div>', oElem, true, 300, -10);
+else
+	window.oTip.show('<img id="imgUser" alt="imgUser" src="' + Cuser.imgUser + '" width="130"><div>' + Cuser.Nom + '</div>', oElem, true, 300, -10);
 }
 
 function showHistUser(imgHistUser){
 if (window.oTip.oMess.innerHTML.indexOf("<img") == -1)
-window.oTip.addMess('<img id="imgUser" alt="imgHistUser" src="' + imgHistUser + '" width="130">');
+window.oTip.addMess('<img id="imgUser" alt="" src="' + imgHistUser + '" width="130">');
 //alert(imgUser);
 }
 
@@ -426,7 +400,6 @@ var objImg = document.getElementById('zoneImg');
 			objImg.style.transform = "rotate(360deg)";
 		objImg.style.transition = "transform 0.4s";
 		}
-  //console.log(event.propertyName);
 	}, false);
 	
 	showPhoto.style.visibility="hidden";
