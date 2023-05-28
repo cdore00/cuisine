@@ -16,11 +16,13 @@
 <link href="misc/init.css" rel="stylesheet" media="screen" type="text/css" />
 <link href="misc/format.css" rel="stylesheet" media="screen" type="text/css" />
 
+
 <!--<script type="text/javascript" src="misc/googGeo.js"></script>
 <script type="text/javascript" src="misc/geoLocal.js"></script>
  <script type="text/javascript" src="js/config.js"></script> // -->
  
-<script type="text/javascript" src="misc/util.js"></script> 
+<script type="text/javascript" src="misc/util_OLD.js"></script> 
+<script type="text/javascript" src="misc/chat.js"></script> 
 <script type="text/javascript" language="Javascript">
 <!-- 
 var userId = null;
@@ -480,12 +482,12 @@ function listCat(oCat){
 var formCrit = document.getElementById('critere');
 var IdCat = document.getElementById('IdCat');
 					//<OPTION value="0"><text id="toute">Toutes</text></OPTION>
-/*
+
 	var optElem = document.createElement("option");
 	optElem.setAttribute('value', '0');
 	optElem.innerHTML = langLbl["toute"];
 	IdCat.appendChild(optElem);
-*/
+
 for (var i = 0; i < oCat.length; i++) {
 	var optElem = document.createElement("option");
 	optElem.setAttribute('value', oCat[i]._id);
@@ -494,24 +496,21 @@ for (var i = 0; i < oCat.length; i++) {
 }
 if (localStorage.getItem("motsCleContext"))
 	formCrit.Mots.value = localStorage.getItem("motsCleContext");
-if (localStorage.getItem("regionIdContext"))
-	formCrit.IdCat.selectedIndex = localStorage.getItem("regionIdContext");
-if (localStorage.getItem("cpContext"))
-	formCrit.codePostal.value = localStorage.getItem("cpContext");
-if (localStorage.getItem('cpDist'))
-	formCrit.kiloM.selectedIndex = localStorage.getItem('cpDist');
+if (localStorage.getItem("catIdContext"))
+	formCrit.IdCat.selectedIndex = localStorage.getItem("catIdContext");
+if (localStorage.getItem("checkNom"))
+	formCrit.checkNom.checked = eval(localStorage.getItem("checkNom"));
+if (localStorage.getItem('checkIng'))
+	formCrit.checkIng.checked = eval(localStorage.getItem('checkIng'));
 }
 
 function clearContext(){
 	localStorage.removeItem('idList');
 	localStorage.removeItem('motsCleContext');
 	localStorage.removeItem('checkNom');
-	localStorage.removeItem('checkVille');
-	localStorage.removeItem('regionIdContext');
-	localStorage.removeItem('cpContext');
+	localStorage.removeItem('checkIng');
+	localStorage.removeItem('catIdContext');
 	localStorage.removeItem('message');
-	localStorage.removeItem('cpDist');
-	//localStorage.removeItem('myPos');
 }
 
 function rechercher(){
@@ -529,12 +528,12 @@ if (formCrit.Mots.value != ""){
 		URLresult += "qn=";
 		URLresult += encodeURI(formCrit.Mots.value) + "&";
 		mess += langLbl["I0007"];
-		if (formCrit.checkVille.checked)
+		if (formCrit.checkIng.checked)
 			mess += langLbl["I0005"];
 	}else{
 		URLresult += "qn=xxxxx&";
 	}	
-	if (formCrit.checkVille.checked){
+	if (formCrit.checkIng.checked){
 		URLresult += "qv=";
 		URLresult += encodeURI(formCrit.Mots.value)  + "&";
 		if (!formCrit.checkNom.checked)
@@ -548,12 +547,14 @@ if (formCrit.Mots.value != ""){
 if (formCrit.IdCat.value != 0){
 	crit = true;
 	URLresult += "qr=";
-	localStorage.setItem('regionIdContext', formCrit.IdCat.selectedIndex);
-	localStorage.setItem('regionContext', formCrit.IdCat.options[formCrit.IdCat.selectedIndex].innerHTML);
+	localStorage.setItem('catIdContext', formCrit.IdCat.selectedIndex);
+	//localStorage.setItem('regionContext', formCrit.IdCat.options[formCrit.IdCat.selectedIndex].innerHTML);
 	mess += langLbl["I0003"] + formCrit.IdCat.options[formCrit.IdCat.selectedIndex].innerHTML + "&#187;" + langLbl["I00ET"] ;
 	URLresult += formCrit.IdCat.value + "&";
 }
-	
+localStorage.setItem('checkNom', formCrit.checkNom.checked);
+localStorage.setItem('checkIng', formCrit.checkIng.checked);
+
 	mess = mess.substring(0, mess.length - 3);
 	localStorage.setItem('message', " " + langLbl["title"] + ", " + mess + ".");
 	URLresult = URLresult.substr(0,URLresult.length-1);
@@ -564,10 +565,12 @@ if (formCrit.IdCat.value != 0){
 }
 
 
-function sayKeyWord(){
+function sayKeyWord(oMic){
 //alert("ok");
 //document.querySelector('meta[http-equiv="content-language"]').content
 //recognition.lang = 'en-US';
+if (!window.oTip)
+	window.oTip = new messTipObject();
 if ('webkitSpeechRecognition' in window){
 	const recognition = new window.webkitSpeechRecognition();
 	recognition.lang = document.querySelector('meta[http-equiv="content-language"]').content;
@@ -653,7 +656,7 @@ text-decoration: none;
 			  <div class="formrow1" >
 			  <div id="divMot"><label for="Mots"><text id="motcl">Mot cl&eacute; </text></label></div>
 			  <div class="mlinediv">
-				<div class="divChxChamp"><input id="checkNom" type="checkbox" checked value="Nom"><label for="checkNom">&nbsp;<text id="clubn">Club</text></label>&nbsp;&nbsp;<input id="checkVille" type="checkbox" checked value="Ville"><label for="checkVille">&nbsp;<text id="clubc">Ville</text></label></div>
+				<div class="divChxChamp"><input id="checkNom" type="checkbox" checked value="Nom"><label for="checkNom">&nbsp;<text id="clubn">Club</text></label>&nbsp;&nbsp;<input id="checkIng" type="checkbox" checked value="Ville"><label for="checkIng">&nbsp;<text id="clubc">Ville</text></label></div>
 			    
 			    <div id="inputtextmot"><input id="Mots" class="inputtext" type="text" size="" maxlength="50" value=""/>
 				<a id="microphone" href="javascript:sayKeyWord();">&#x1f3a4;</a>
@@ -662,7 +665,7 @@ text-decoration: none;
 			  </div>
 			  
 			  <div class="formrow1">
-			    <div id="divReg"><label for="IdCat">Catégorie</label></div>
+			    <div id="divReg"><label for="IdCat"><text id="regio">Catégorie</text></label></div>
 			    <div id="inputselectreg">
 			    <SELECT id="IdCat" class="inputselect inSelReg" name="IdCat">
 			      </SELECT></div>

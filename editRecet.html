@@ -126,24 +126,6 @@ quill.on('text-change', function(delta, oldDelta, source) {
 	editorChange();
   } 
 });
-
-/*	  
-var options2 = {
-modules: { toolbar: '#toolbarImg' },
-  placeholder: '...',
-  theme: 'snow'
-};
-
-quill2 = new Quill(container2, options2);
-quill2.getModule('toolbar').addHandler('image', () => {
-  selectLocalImage(quill2);
-});
-quill2.on('text-change', function(delta, oldDelta, source) {
-  if (!editChange) {
-	editorChange();
-  } 
-});
-*/
 }
 
 function editorChange(){
@@ -735,7 +717,7 @@ padding: 3px;
 
 </head>
 
-<body onload="initPage()" onbeforeunload="return acceptQuit()><a name="haut"></a>
+<body onload="initPage()" onbeforeunload=return acceptQuit();><a name="haut"></a>
 
 <div id="topbar" class="vert">
 <div id="leftnav"><a title="Formulaire de recherche" href="index.html"><img alt="Formulaire de recherche" height="22" width="25" src="images/home22.png" /></a></div>

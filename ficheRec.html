@@ -253,7 +253,7 @@ if (rec.imgURL && rec.imgURL != "undefined"){
 	imgElem.setAttribute('src', rec.imgURL);
 	imgElem.setAttribute('onclick', 'expansion(this)');
 	imgElem.onload = function() { hideShow(true); };
-if (histo && histo["imgURL"] && !oRecet.rec[0].hist[vId]["act_imgURL"])
+if (histo && typeof(oRecet.rec[0].hist[vId]["act_imgURL"]) == "undefined" )
 	oRecet.rec[0].hist[vId]["act_imgURL"] = oRecet.rec[0]["imgURL"];
 	divElem.appendChild(imgElem);
 	pageZone.appendChild(divElem);

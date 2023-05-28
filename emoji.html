@@ -44,10 +44,52 @@ x=3;
 
 }
 
+      function copyToClipboard(e) {
+		x = this.alt;
+		//console.log(x);
+		if ( opener && opener.formEmo.car_icon ){
+			//opener.formEmo.car_icon.value = x;
+			opener.insertEmoji(x);
+			//opener.formEmo.car_icon.focus();
+			//
+		}else
+			prompt('Copier au presse-papier via ' + metaKey + '+C et Enter', this.alt);
+      }
+	  
+function showEmoj(){
+
+var emo = this.innerHTML;
+//alert(emo);
+if (confirm("Copy to clipboard ? "  + "\n" + emo) == true) {
+navigator.clipboard.writeText(emo);
+opener.insertEmoji(emo);
+document.close();
+}
+}
+	  
+	  
+function initPage(){
+var ulList = document.getElementsByTagName('li');
+
+for (i = 0; i < ulList.length; ulList[i++].onclick = showEmoj) {}
+
+/*
+for (i = 0; i < ulList.length; i++ ) {
+	ulList[i].onclick = showEmoj(ulList[i]);
+}
+*/
+
+//for(var i = 0; i < checkList.length; i++)
+
+x=1;
+
+}	  
+	  
+	  
 	// -->
 </script> 
   </head>
-  <body>
+  <body onload="initPage()">
   <div class="divMore"><h2 id="icoCount"></h2></div>
   <div class="divMore"><h2><a href="javascript:moreEmo()">Plus d'icônes</a></h2></div>
   
@@ -547,6 +589,7 @@ x=3;
       <li>&#xAE;</li>
       <li>&#xE50A;</li>
     </ul>
+<!--
     <script>
     var ul = document.getElementsByTagName('ul')[0];
     var total = ul.getElementsByTagName('li').length;
@@ -557,24 +600,14 @@ x=3;
 	var icoCount = document.getElementById('icoCount');
 	icoCount.innerHTML = total + " Emoji icônes";
     (function (img, metaKey, i) {
-      function copyToClipboard(e) {
-		x = this.alt;
-		//console.log(x);
-		if ( opener && opener.formEmo.car_icon ){
-			//opener.formEmo.car_icon.value = x;
-			opener.insertEmoji(x);
-			//opener.formEmo.car_icon.focus();
-			//
-		}else
-			prompt('Copier au presse-papier via ' + metaKey + '+C et Enter', this.alt);
-      }
+
       for (i = 0; i < img.length; img[i++].onclick = copyToClipboard) {}
     }(
       document.getElementsByTagName('img'),
       /\b(?:Mac |i)OS\b/i.test(navigator.userAgent) ? 'Command' : 'Ctrl'
     ));
     </script>
-	
+// -->	
 	
 	<div class="divMore"><h2><a href="javascript:moreEmo()">Plus d'icônes</a></h2></div>
   </body>
