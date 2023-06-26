@@ -1,18 +1,13 @@
-var chatLangLbl = [];
-chatLangLbl["S0010"] = "Veuillez entrer le code de confirmation envoyé à l'adresse: ";
-chatLangLbl["S0011"] = "Le code de confirmation '%1' ne correspons pas à celui envoyé à l'adresse: ";
-chatLangLbl["S0012"] = "Adresse confirmé!";
-
 function addChatPanel(){
-//var pageZone = document.getElementById('testScroll');
+var pageZone = document.getElementById('testScroll');
 var bodyobj = document.getElementsByTagName('body')[0];
 
 //console.log("Chat...");
-bodyobj.appendChild(buildChatPanel());
+bodyobj.appendChild(buildPanel());
    
 }
 
-function buildChatPanel(oPanel){
+function buildPanel(oPanel){
 
 var Paneldiv = document.createElement("div");   
 Paneldiv.setAttribute('id', 'panel-container');
@@ -34,7 +29,7 @@ Paneldiv.setAttribute('class', 'desktop-panel');
 		 
 var Wdiv = document.createElement("div");   
 Wdiv.setAttribute('id', 'head-wrapper');
-Wdiv.setAttribute('style', 'background-color: ' + chat_color_background);
+Wdiv.setAttribute('style', 'background-color: rgb(57, 170, 0)');
    var Hdiv = document.createElement("header");
   
       var Adiv = document.createElement("div");   
@@ -87,11 +82,6 @@ Paneldiv.appendChild(Wdiv);
 
 var Odiv = document.createElement("div");   
 Odiv.setAttribute('id', 'options-modal');
-               var Cspa = document.createElement("span");   
-               Cspa.setAttribute('class', 'btn-close');
-               Cspa.setAttribute('onclick', 'closeAll();');
-			   Cspa.innerHTML = 'X';
-			Odiv.appendChild(Cspa);
    var div1 = document.createElement("div");
       var ul1 = document.createElement("ul");   
          var li1 = document.createElement("li");
@@ -104,7 +94,7 @@ Odiv.setAttribute('id', 'options-modal');
 		var li1 = document.createElement("li");
 		   var Sdiv = document.createElement("div");
 		   Sdiv.setAttribute('id', 'connectStatus');
-		   //Sdiv.innerHTML = 'Connect&eacute;';
+		   Sdiv.innerHTML = 'Connect&eacute;';
 		   li1.appendChild(Sdiv);
 		ul1.appendChild(li1);  	  
 	div1.appendChild(ul1); 
@@ -152,7 +142,6 @@ Vdiv.setAttribute('id', 'view-wrapper');
          TCdiv.setAttribute('id', 'typing-container');
             var Pdiv = document.createElement("div");
             Pdiv.setAttribute('id', 'presence-container');
-			Pdiv.setAttribute('style', 'background-color:' + chat_color_background_other + '; color:' + chat_color_text_other);
                var PSdiv = document.createElement("div");
                PSdiv.setAttribute('class', 'presence-summary');
                //<!-- 1 personne sur cette page (de 1 sur ce site)// -->  
@@ -161,7 +150,6 @@ Vdiv.setAttribute('id', 'view-wrapper');
 
             var Rdiv = document.createElement("div");
             Rdiv.setAttribute('id', 'respond-container');
-			Rdiv.setAttribute('style', 'background-color:' + chat_color_background + '; color:' + chat_color_text);
                var Cspa = document.createElement("span");   
                Cspa.setAttribute('class', 'btn-close');
                Cspa.setAttribute('onclick', 'closeRespond();');
@@ -179,7 +167,7 @@ Vdiv.setAttribute('id', 'view-wrapper');
    
 	  var COdiv = document.createElement("div");
 	  COdiv.setAttribute('class', 'compose-container');
-	  COdiv.setAttribute('style', 'background-color:' + chat_color_background);
+	  COdiv.setAttribute('style', 'background-color: rgb(57, 170, 0)');
 	  var Pdiv = document.createElement("div");
 	  Pdiv.setAttribute('id', 'picker-container');
 	  Pdiv.setAttribute('class', 'rc-picker-container');
@@ -226,7 +214,7 @@ Vdiv.setAttribute('id', 'view-wrapper');
 				  TAdiv.setAttribute('rows', '1');
 				  TAdiv.setAttribute('placeholder', 'Saisir un message');
 				  TAdiv.setAttribute('class', 'input-area focus-cont');
-				  TAdiv.setAttribute('style', 'color: ' + chat_color_text + '; background-color: ' + chat_color_background + '; caret-color: rgb(255, 255, 255);');
+				  TAdiv.setAttribute('style', 'color: rgb(255, 255, 255); background-color: rgb(57, 170, 0); caret-color: rgb(255, 255, 255);');
 			   IAdiv.appendChild(TAdiv);   
 			Idiv.appendChild(IAdiv);
 
@@ -356,15 +344,15 @@ class objEmojPicker {
 	if (Remo)
 		this.#recentEmoj = JSON.parse(Remo);
 	
-	const emoSmilyList = [["&#x1F642", "Visage légèrement souriant"], ["&#x1F600", "Visage rieur"], ["&#x1F603", "Visage souriant avec de grands yeux"], ["&#x1F604", "Visage souriant, bouche ouverte et yeux souriants"], ["&#x1F601", "Visage rayonnant aux yeux souriants"], ["&#x1F605", "Visage souriant, bouche ouverte et transpiration"], ["&#x1F606", "Visage souriant, bouche ouverte et yeux fermés"], ["&#x1F923", "Visage roulant sur le sol en riant"], ["&#x1F602", "Visage avec larmes de joie"], ["&#x1F643", "Visage renversé"], ["&#x1F609", "Visage clin d'oeil"], ["&#x1F60A", "Visage souriant, yeux fermés"], ["&#x1F607", "Smiling face with halo"], ["&#x1F60E", "Visage souriant, lunette de soleil"], ["&#x1F913", "Visage de niais"], ["&#x1F9D0", "Visage avec monocle"], ["&#x1F973", "Visage avec corne et chapeau de fête"], ["&#x1F970", "Visage souriant avec des yeux souriants et trois coeurs"], ["&#x1F60D", "Visage souriant, yeux en coeur"], ["&#x1F929", "Visage avec des étoiles à la place des yeux"], ["&#x1F618", "Visage qui lance un bisou"], ["&#x1F617", "Visage faisant un bisou"], ["&#x1F61A", "Visage faisant un bisou et yeux fermés"], ["&#x1F619", "Visage faisant un bisou et yeux souriants"], ["&#x1F972", "Visage souriant avec une larme"], ["&#x1F60B", "Visage savourant de la bonne cuisine"], ["&#x1F61B", "Visage langue tirée"], ["&#x1F61C", "Visage langue tirée et clin d'oeil"], ["&#x1F92A", "Visage souriant avec un grand et un petit oeil"], ["&#x1F61D", "Visage langue tirée et yeux bien fermés"], ["&#x1F911", "Visage avec bouche d'argent"], ["&#x1F917", "Visage étreignant"], ["&#x1F92D", "Face with hand in mouth"], ["&#x1F92B", "Visage avec les doigts couvrant les lèvres fermées"], ["&#x1F914", "Visage pensant"], ["&#x1F610", "Visage neutre"], ["&#x1F910", "Visage avec bouche à glissière"], ["&#x1F928", "Visage avec un sourcil levé"], ["&#x1F611", "Visage inexpressif"], ["&#x1F636", "Visage sans bouche"], ["&#x1F60F", "Visage souriant d'un air satisfait"], ["&#x1F612", "Visage renfrogné"], ["&#x1F644", ">Visage avec les yeux qui roulent"], ["&#x1F62C", "Visage grimaçant"], ["&#x1F62E", "Visage bouche ouverte"], ["&#x1F925", "Visage avec un long nez"], ["&#x1F62A", "Visage somnolent"], ["&#x1F634", "Visage qui dort"], ["&#x1F60C", "Visage soulagé"], ["&#x1F614", "Visage pensif"], ["&#x1F924", "Visage bavant"], ["&#x1F637", "Visage avec masque médical"], ["&#x1F912", "Visage avec thermomètre"], ["&#x1F915", "Visage avec bandeau"], ["&#x1F922", "Visage nauséeux"], ["&#x1F92E", "Visage avec vomissement la bouche ouverte"], ["&#x1F927", "Visage éternuement"], ["&#x1F975", "Visage surchauffé"], ["&#x1F976", "Visage gelé"], ["&#x1F974", "Visage avec des yeux inégaux et la bouche ondulée"], ["&#x1F635", "Visage étourdi"], ["&#x1F92F", "Visage choqué avec la tête qui explose"], ["&#x1F615", "Visage confus"], ["&#x1F61F", "Visage inquiet"], ["&#x1F641", "Visage légèrement renfrogné"], ["&#x2639", "Visage blanc grimassant"], ["&#x1F62E", "Visage bouche ouverte"], ["&#x1F62F", "Visage feutré"], ["&#x1F632", "Visage étonné"], ["&#x1F633", "Visage rougissant"], ["&#x1F97A", "Visage avec les yeux suppliants"], ["&#x1F626", "Visage renfrogné avec la bouche ouverte"], ["&#x1F627", "Visage angoissé"], ["&#x1F628", "Visage craintif"], ["&#x1F630", "Visage bouche ouverte et goutte de sueur froide"], ["&#x1F625", "Visage déçu mais faisant face"], ["&#x1F622", "Visage pleurant"], ["&#x1F62D", "Visage pleurant à pleine larme"], ["&#x1F631", "Visage criant de peur"], ["&#x1F616", "Visage déconcerté"], ["&#x1F623", "Visage persévérant"], ["&#x1F61E", "Visage déçu"], ["&#x1F613", "Visage avec sueur froide"], ["&#x1F629", "Visage las"], ["&#x1F62B", "Visage fatigué"], ["&#x1F971", "Bâillement"], ["&#x1F624", "Visage avec la vapeur qui sort du nez"], ["&#x1F621", "Visage furieux"], ["&#x1F620", "Visage en colère"], ["&#x1F92C", "Visage qui dit des gros mots"], ["&#x1F608", "Visage souriant diabolique"], ["&#x1F47F", "Visage diabolique en colère"], ["&#x1F480", "Tête de mort"], ["&#x1F4A9", "Excrément"], ["&#x1F921", "Clown"], ["&#x1F479", "Masque de monstre"], ["&#x1F47A", "Tengu"], ["&#x1F47B", "Fantôme"], ["&#x1F47D", "Alien"], ["&#x1F47E", "Alien pixelisé"], ["&#x1F916", "Robot"]];
+	const emoSmilyList = [["&#x1F642", "Visage l&eacute;gèrement souriant"], ["&#x1F600", "Visage rieur"], ["&#x1F603", "Visage souriant avec de grands yeux"], ["&#x1F604", "Visage souriant, bouche ouverte et yeux souriants"], ["&#x1F601", "Visage rayonnant aux yeux souriants"], ["&#x1F605", "Visage souriant, bouche ouverte et transpiration"], ["&#x1F606", "Visage souriant, bouche ouverte et yeux ferm&eacute;s"], ["&#x1F923", "Visage roulant sur le sol en riant"], ["&#x1F602", "Visage avec larmes de joie"], ["&#x1F643", "Visage renvers&eacute;"], ["&#x1F609", "Visage clin d'oeil"], ["&#x1F60A", "Visage souriant, yeux ferm&eacute;s"], ["&#x1F607", "Smiling face with halo"], ["&#x1F60E", "Visage souriant, lunette de soleil"], ["&#x1F913", "Visage de niais"], ["&#x1F9D0", "Visage avec monocle"], ["&#x1F973", "Visage avec corne et chapeau de fête"], ["&#x1F970", "Visage souriant avec des yeux souriants et trois coeurs"], ["&#x1F60D", "Visage souriant, yeux en coeur"], ["&#x1F929", "Visage avec des &eacute;toiles à la place des yeux"], ["&#x1F618", "Visage qui lance un bisou"], ["&#x1F617", "Visage faisant un bisou"], ["&#x1F61A", "Visage faisant un bisou et yeux ferm&eacute;s"], ["&#x1F619", "Visage faisant un bisou et yeux souriants"], ["&#x1F972", "Visage souriant avec une larme"], ["&#x1F60B", "Visage savourant de la bonne cuisine"], ["&#x1F61B", "Visage langue tir&eacute;e"], ["&#x1F61C", "Visage langue tir&eacute;e et clin d'oeil"], ["&#x1F92A", "Visage souriant avec un grand et un petit oeil"], ["&#x1F61D", "Visage langue tir&eacute;e et yeux bien ferm&eacute;s"], ["&#x1F911", "Visage avec bouche d'argent"], ["&#x1F917", "Visage &eacute;treignant"], ["&#x1F92D", "Face with hand in mouth"], ["&#x1F92B", "Visage avec les doigts couvrant les lèvres ferm&eacute;es"], ["&#x1F914", "Visage pensant"], ["&#x1F610", "Visage neutre"], ["&#x1F910", "Visage avec bouche à glissière"], ["&#x1F928", "Visage avec un sourcil lev&eacute;"], ["&#x1F611", "Visage inexpressif"], ["&#x1F636", "Visage sans bouche"], ["&#x1F60F", "Visage souriant d'un air satisfait"], ["&#x1F612", "Visage renfrogn&eacute;"], ["&#x1F644", ">Visage avec les yeux qui roulent"], ["&#x1F62C", "Visage grimaçant"], ["&#x1F62E", "Visage bouche ouverte"], ["&#x1F925", "Visage avec un long nez"], ["&#x1F62A", "Visage somnolent"], ["&#x1F634", "Visage qui dort"], ["&#x1F60C", "Visage soulag&eacute;"], ["&#x1F614", "Visage pensif"], ["&#x1F924", "Visage bavant"], ["&#x1F637", "Visage avec masque m&eacute;dical"], ["&#x1F912", "Visage avec thermomètre"], ["&#x1F915", "Visage avec bandeau"], ["&#x1F922", "Visage naus&eacute;eux"], ["&#x1F92E", "Visage avec vomissement la bouche ouverte"], ["&#x1F927", "Visage &eacute;ternuement"], ["&#x1F975", "Visage surchauff&eacute;"], ["&#x1F976", "Visage gel&eacute;"], ["&#x1F974", "Visage avec des yeux in&eacute;gaux et la bouche ondul&eacute;e"], ["&#x1F635", "Visage &eacute;tourdi"], ["&#x1F92F", "Visage choqu&eacute; avec la tête qui explose"], ["&#x1F615", "Visage confus"], ["&#x1F61F", "Visage inquiet"], ["&#x1F641", "Visage l&eacute;gèrement renfrogn&eacute;"], ["&#x2639", "Visage blanc grimassant"], ["&#x1F62E", "Visage bouche ouverte"], ["&#x1F62F", "Visage feutr&eacute;"], ["&#x1F632", "Visage &eacute;tonn&eacute;"], ["&#x1F633", "Visage rougissant"], ["&#x1F97A", "Visage avec les yeux suppliants"], ["&#x1F626", "Visage renfrogn&eacute; avec la bouche ouverte"], ["&#x1F627", "Visage angoiss&eacute;"], ["&#x1F628", "Visage craintif"], ["&#x1F630", "Visage bouche ouverte et goutte de sueur froide"], ["&#x1F625", "Visage d&eacute;çu mais faisant face"], ["&#x1F622", "Visage pleurant"], ["&#x1F62D", "Visage pleurant à pleine larme"], ["&#x1F631", "Visage criant de peur"], ["&#x1F616", "Visage d&eacute;concert&eacute;"], ["&#x1F623", "Visage pers&eacute;v&eacute;rant"], ["&#x1F61E", "Visage d&eacute;çu"], ["&#x1F613", "Visage avec sueur froide"], ["&#x1F629", "Visage las"], ["&#x1F62B", "Visage fatigu&eacute;"], ["&#x1F971", "Bâillement"], ["&#x1F624", "Visage avec la vapeur qui sort du nez"], ["&#x1F621", "Visage furieux"], ["&#x1F620", "Visage en colère"], ["&#x1F92C", "Visage qui dit des gros mots"], ["&#x1F608", "Visage souriant diabolique"], ["&#x1F47F", "Visage diabolique en colère"], ["&#x1F480", "Tête de mort"], ["&#x1F4A9", "Excr&eacute;ment"], ["&#x1F921", "Clown"], ["&#x1F479", "Masque de monstre"], ["&#x1F47A", "Tengu"], ["&#x1F47B", "Fantôme"], ["&#x1F47D", "Alien"], ["&#x1F47E", "Alien pixelis&eacute;"], ["&#x1F916", "Robot"]];
 
-	const  emoHandList = [["&#x1F44D", "Pouce levé"],  ["&#x1F44E", "Pouce baissé"], ["&#x1F44B", "Salut de la main"],  ["&#x1F91A", "Dos de la main levée"],  ["&#x1F590", "Main levée doigts écartés"],  ["&#x270B", "Main levée"],  ["&#x1F596", "Salut vulcain"],  ["&#x1F44C", "Ok"],  ["&#x1F90C", "Doigts pincés vers le haut"],  ["&#x1F90F", "Main qui pince"],  ["&#x270C", "Doigts en V"],  ["&#x1F91E", "Doigts croisés"],  ["&#x1F91F", "Main qui veut dire je t'aime"],  ["&#x1F918", "Cornes du diable"],  ["&#x1F919", "Appel téléphonique avec la main"],  ["&#x1F448", "Index pointant vers la gauche"],  ["&#x1F449", "Index pointant vers la droite"],  ["&#x1F446", "Index pointant vers le haut"],  ["&#x1F447", "Index pointant vers le bas"],  ["&#x1F595", "Doigt d'honneur"],  ["&#x261D", "Paume de la main avec index vers le haut"], ["&#x270A", "Poing levé"],  ["&#x1F44A", "Coup de poing"],  ["&#x1F91B", "Poing serré vers la gauche"],  ["&#x1F91C", "Poing serré vers la droite"],  ["&#x1F44F", "Applaudir"],  ["&#x1F64C", "Mains levées"],  ["&#x1F450", "Paumes ouvertes"],  ["&#x1F932", "Paumes de mains côte à côte"],  ["&#x1F91D", "Poignée de main"],  ["&#x1F64F", "Prière"],  ["&#x270D", "Main qui écrit"],  ["&#x1F485", "Vernis à ongle"],  ["&#x1F933", "Selfie"]];
+	const  emoHandList = [["&#x1F44D", "Pouce lev&eacute;"],  ["&#x1F44E", "Pouce baiss&eacute;"], ["&#x1F44B", "Salut de la main"],  ["&#x1F91A", "Dos de la main lev&eacute;e"],  ["&#x1F590", "Main lev&eacute;e doigts &eacute;cart&eacute;s"],  ["&#x270B", "Main lev&eacute;e"],  ["&#x1F596", "Salut vulcain"],  ["&#x1F44C", "Ok"],  ["&#x1F90C", "Doigts pinc&eacute;s vers le haut"],  ["&#x1F90F", "Main qui pince"],  ["&#x270C", "Doigts en V"],  ["&#x1F91E", "Doigts crois&eacute;s"],  ["&#x1F91F", "Main qui veut dire je t'aime"],  ["&#x1F918", "Cornes du diable"],  ["&#x1F919", "Appel t&eacute;l&eacute;phonique avec la main"],  ["&#x1F448", "Index pointant vers la gauche"],  ["&#x1F449", "Index pointant vers la droite"],  ["&#x1F446", "Index pointant vers le haut"],  ["&#x1F447", "Index pointant vers le bas"],  ["&#x1F595", "Doigt d'honneur"],  ["&#x261D", "Paume de la main avec index vers le haut"], ["&#x270A", "Poing lev&eacute;"],  ["&#x1F44A", "Coup de poing"],  ["&#x1F91B", "Poing serr&eacute; vers la gauche"],  ["&#x1F91C", "Poing serr&eacute; vers la droite"],  ["&#x1F44F", "Applaudir"],  ["&#x1F64C", "Mains lev&eacute;es"],  ["&#x1F450", "Paumes ouvertes"],  ["&#x1F932", "Paumes de mains côte à côte"],  ["&#x1F91D", "Poign&eacute;e de main"],  ["&#x1F64F", "Prière"],  ["&#x270D", "Main qui &eacute;crit"],  ["&#x1F485", "Vernis à ongle"],  ["&#x1F933", "Selfie"]];
 
-	const emoActiList = [["&#x1F383", "Citrouille"], ["&#x1F384", "Arbre de noël"], ["&#x1F386", "Feu d'artifice"], ["&#x1F387", "Cierge magique"], ["&#x1F9E8", "Pétard"], ["&#x2728", "étincelles"], ["&#x1F388", "Balon de baudruche"], ["&#x1F389", "Cotillons"], ["&#x1F38A", "Confettis"], ["&#x1F38B", "Arbre à voeux"], ["&#x1F38D", "Bambou décoratif"], ["&#x1F38E", "Poupées japonaises"], ["&#x1F38F", "Koinibori"], ["&#x1F391", "Cérémonie de la lune"], ["&#x1F9E7", "Enveloppe rouge"], ["&#x1F380", "Ruban"], ["&#x1F381", "Cadeau"], ["&#x1F397", "Ruban de mémoire"], ["&#x1F39F", "Billet d'entrée"], ["&#x1F3AB", "Billet"], ["", ""], ["&#x1F396", "Médaille militaire"], ["&#x1F3C6", "Trophée"], ["&#x1F3C5", "Médaille sportive"], ["&#x1F947", "Médaille d'or - première place"], ["&#x1F948", "Médaille d'argent - seconde place"], ["&#x1F949", "Médaille de bronze - troisième place"], ["&#x26BD", "Ballon de football"], ["&#x26BE", "Baseball"], ["&#x1F94E", "Softball"], ["&#x1F3C0", "Basketball"], ["&#x1F3D0", "Volleyball"], ["&#x1F3C8", "Football américain"], ["&#x1F3C9", "Rugby"], ["&#x1F3BE", "Tennis"], ["&#x1F94F", "Disque volant"], ["&#x1F3B3", "Bowling"], ["&#x1F3CF", "Cricket"], ["&#x1F3D1", "Hockey sur gazon"], ["&#x1F3D2", "Hockey sur glace"], ["&#x1F94D", "Crosse"], ["&#x1F3D3", "Ping pong"], ["&#x1F3F8", "Badminton"], ["&#x1F94A", "Gant de boxe"], ["&#x1F94B", "Tenue d'Arts Martiaux"], ["&#x1F945", "Cage"], ["&#x26F3", "Drapeau de golf"], ["&#x26F8", "Patin à glace"], ["&#x1F3A3", "Câne à pêche"], ["&#x1F93F", "Masque de plongée"], ["&#x1F3BD", "Maillot de course"], ["&#x1F3BF", "Skis"], ["&#x1F6F7", "Luge"], ["&#x1F94C", "Pierre de curling"], ["&#x1F3AF", "Dans le mille"], ["&#x1FA80", "Yo-yo"], ["&#x1FA81", "Cerf-volant"], ["&#x1F3B1", "8Boule de billard"], ["&#x1F52E", "Boule de cristal"], ["&#x1FA84", "Baguette magique"], ["&#x1F9FF", "Mauvais oeil"], ["&#x1F3AE", "Jeu vidéo"], ["&#x1F579", "Joystick"], ["&#x1F3B0", "Machine à sous"], ["&#x1F3B2", "Dé"], ["&#x1F9E9", "Pièce de puzzle"], ["&#x1F9F8", "Ours en peluche"]];
+	const emoActiList = [["&#x1F383", "Citrouille"], ["&#x1F384", "Arbre de noël"], ["&#x1F386", "Feu d'artifice"], ["&#x1F387", "Cierge magique"], ["&#x1F9E8", "P&eacute;tard"], ["&#x2728", "&eacute;tincelles"], ["&#x1F388", "Balon de baudruche"], ["&#x1F389", "Cotillons"], ["&#x1F38A", "Confettis"], ["&#x1F38B", "Arbre à voeux"], ["&#x1F38D", "Bambou d&eacute;coratif"], ["&#x1F38E", "Poup&eacute;es japonaises"], ["&#x1F38F", "Koinibori"], ["&#x1F391", "C&eacute;r&eacute;monie de la lune"], ["&#x1F9E7", "Enveloppe rouge"], ["&#x1F380", "Ruban"], ["&#x1F381", "Cadeau"], ["&#x1F397", "Ruban de m&eacute;moire"], ["&#x1F39F", "Billet d'entr&eacute;e"], ["&#x1F3AB", "Billet"], ["", ""], ["&#x1F396", "M&eacute;daille militaire"], ["&#x1F3C6", "Troph&eacute;e"], ["&#x1F3C5", "M&eacute;daille sportive"], ["&#x1F947", "M&eacute;daille d'or - première place"], ["&#x1F948", "M&eacute;daille d'argent - seconde place"], ["&#x1F949", "M&eacute;daille de bronze - troisième place"], ["&#x26BD", "Ballon de football"], ["&#x26BE", "Baseball"], ["&#x1F94E", "Softball"], ["&#x1F3C0", "Basketball"], ["&#x1F3D0", "Volleyball"], ["&#x1F3C8", "Football am&eacute;ricain"], ["&#x1F3C9", "Rugby"], ["&#x1F3BE", "Tennis"], ["&#x1F94F", "Disque volant"], ["&#x1F3B3", "Bowling"], ["&#x1F3CF", "Cricket"], ["&#x1F3D1", "Hockey sur gazon"], ["&#x1F3D2", "Hockey sur glace"], ["&#x1F94D", "Crosse"], ["&#x1F3D3", "Ping pong"], ["&#x1F3F8", "Badminton"], ["&#x1F94A", "Gant de boxe"], ["&#x1F94B", "Tenue d'Arts Martiaux"], ["&#x1F945", "Cage"], ["&#x26F3", "Drapeau de golf"], ["&#x26F8", "Patin à glace"], ["&#x1F3A3", "Câne à pêche"], ["&#x1F93F", "Masque de plong&eacute;e"], ["&#x1F3BD", "Maillot de course"], ["&#x1F3BF", "Skis"], ["&#x1F6F7", "Luge"], ["&#x1F94C", "Pierre de curling"], ["&#x1F3AF", "Dans le mille"], ["&#x1FA80", "Yo-yo"], ["&#x1FA81", "Cerf-volant"], ["&#x1F3B1", "8Boule de billard"], ["&#x1F52E", "Boule de cristal"], ["&#x1FA84", "Baguette magique"], ["&#x1F9FF", "Mauvais oeil"], ["&#x1F3AE", "Jeu vid&eacute;o"], ["&#x1F579", "Joystick"], ["&#x1F3B0", "Machine à sous"], ["&#x1F3B2", "D&eacute;"], ["&#x1F9E9", "Pièce de puzzle"], ["&#x1F9F8", "Ours en peluche"]];
 
-	const emoFoodList = [["&#x1F347", "Raisin"], ["&#x1F348", "Melon"], ["&#x1F349", "Pastèque"], ["&#x1F34A", "Mandarine"], ["&#x1F34B", "Citron"], ["&#x1F34C", "Banane"], ["&#x1F34D", "Ananas"], ["&#x1F96D", "Mangue"], ["&#x1F34E", "Pomme rouge"], ["&#x1F34F", "Pomme verte"], ["&#x1F350", "Poire"], ["&#x1F351", "Pêche"], ["&#x1F352", "Cerises"], ["&#x1F353", "Fraise"], ["&#x1FAD0", "Myrtilles"], ["&#x1F95D", "Kiwi"], ["&#x1F345", "Tomate"], ["&#x1FAD2", "Olive"], ["&#x1F965", "Noix de coco"], ["&#x1F951", "Avocat"], ["&#x1F346", "Aubergine"], ["&#x1F954", "Pomme de terre"], ["&#x1F955", "Carrote"], ["&#x1F33D", "Maïs"], ["&#x1F336", "Piment"], ["&#x1FAD1", "Poivron"], ["&#x1F952", "Concombre"], ["&#x1F96C", "Légume à feuilles vertes"], ["&#x1F966", "Broccoli"], ["&#x1F9C4", "Ail"], ["&#x1F9C5", "Oignon"], ["&#x1F344", "Champignon"], ["&#x1F95C", "Cacahuète"], ["&#x1FAD8", "Haricot"], ["&#x1F330", "Châtaigne"], ["&#x1F35E", "Pain"], ["&#x1F950", "Croissant"], ["&#x1F956", "Baguette"], ["&#x1FAD3", "Galette"], ["&#x1F968", "Bretzel"], ["&#x1F96F", "Bagel"], ["&#x1F95E", "Pancakes"], ["&#x1F9C7", "Gauffre"], ["&#x1F9C0", "Part de fromage"], ["&#x1F356", "Viande sur un os"], ["&#x1F357", "Cuisse de poulet"], ["&#x1F969", "Morceau de viande"], ["&#x1F953", "Lard"], ["&#x1F354", "Hamburger"], ["&#x1F35F", "Frites"], ["&#x1F355", "Pizza"], ["&#x1F32D", "Hot dog"], ["&#x1F96A", "Sandwich"], ["&#x1F32E", "Taco"], ["&#x1F32F", "Burrito"], ["&#x1F959", "Kebab"], ["&#x1F9C6", "Falafel"], ["&#x1F95A", "Oeuf"], ["&#x1F373", "Oeuf au plat"], ["&#x1F958", "Plat mitonné"], ["&#x1F372", "Marmite"], ["&#x1FAD5", "Fondue"], ["&#x1F963", "Bol avec cuillère"], ["&#x1F957", "Salade"], ["&#x1F37F", "Popcorn"], ["&#x1F9C8", "Beurre"], ["&#x1F9C2", "Sel"], ["&#x1F96B", "Aliments en conserve"], ["&#x1F371", "Boîte déjeuner"], ["&#x1F358", "Galette de riz"], ["&#x1F359", "Boulette de riz"], ["&#x1F35A", "Bol de riz"], ["&#x1F35B", "Riz au curry"], ["&#x1F35C", "Bol fumant"], ["&#x1F35D", "Spaghetti"], ["&#x1F360", "Patate douce"], ["&#x1F362", "Brochette de poisson"], ["&#x1F363", "Sushi"], ["&#x1F364", "Beignet de crevette"], ["&#x1F365", "Croquette de poisson"], ["&#x1F96E", "Gâteau de lune"], ["&#x1F361", "Brochette de bonbons"], ["&#x1F95F", "Boulette de pâte"], ["&#x1F960", "Biscuit chinois"], ["&#x1F961", "Boîte à emporter"], ["&#x1F980", "Crabe"], ["&#x1F99E", "Homard"], ["&#x1F990", "Crevette"], ["&#x1F991", "Calamar"], ["&#x1F9AA", "Huître"], ["&#x1F368", "Crème glacée"], ["&#x1F367", "Granité"], ["&#x1F366", "Glace italienne"], ["&#x1F369", "Doughnut"], ["&#x1F36A", "Cookie"], ["&#x1F382", "Gâteau d'anniversaire"], ["&#x1F370", "Gâteau sablé"], ["&#x1F9C1", "Cupcake"], ["&#x1F967", "Tarte"], ["&#x1F36B", "Chocolat"], ["&#x1F36C", "Bonbon"], ["&#x1F36D", "Sucette"], ["&#x1F36E", "Crème renversée"], ["&#x1F36F", "Pot de miel"], ["&#x1F37C", "Biberon"], ["&#x1F95B", "Verre de lait"], ["&#x2615", "Boisson chaude"], ["&#x1FAD6", "Théière"], ["&#x1F375", "Tasse"], ["&#x1F376", "Saké"], ["&#x1F37E", "Bouteille de champagne"], ["&#x1F377", "Verre de vin"], ["&#x1F378", "Cocktail"], ["&#x1F379", "Cocktail tropical"], ["&#x1F37A", "Chope"], ["&#x1F37B", "Chopes de bière"], ["&#x1F942", "Trinquer"], ["&#x1F943", "Verre trumbler"], ["&#x1F964", "Gobelet avec paille"], ["&#x1F9CB", "Thé aux perles"], ["&#x1F9C3", "Briquette de jus"], ["&#x1F9C9", "Maté"], ["&#x1F9CA", "Glaçon"], ["&#x1F962", "Baguettes"], ["&#x1F37D", "Fourchette et couteau avec assiette"], ["&#x1F374", "Fourchette et couteau"], ["&#x1F944", "Cuillère"], ["&#x1F52A", "Couteau de cuisine"], ["&#x1FAD9", "Jar"], ["&#x1F3FA", "Amphora"]];
+	const emoFoodList = [["&#x1F347", "Raisin"], ["&#x1F348", "Melon"], ["&#x1F349", "Pastèque"], ["&#x1F34A", "Mandarine"], ["&#x1F34B", "Citron"], ["&#x1F34C", "Banane"], ["&#x1F34D", "Ananas"], ["&#x1F96D", "Mangue"], ["&#x1F34E", "Pomme rouge"], ["&#x1F34F", "Pomme verte"], ["&#x1F350", "Poire"], ["&#x1F351", "Pêche"], ["&#x1F352", "Cerises"], ["&#x1F353", "Fraise"], ["&#x1FAD0", "Myrtilles"], ["&#x1F95D", "Kiwi"], ["&#x1F345", "Tomate"], ["&#x1FAD2", "Olive"], ["&#x1F965", "Noix de coco"], ["&#x1F951", "Avocat"], ["&#x1F346", "Aubergine"], ["&#x1F954", "Pomme de terre"], ["&#x1F955", "Carrote"], ["&#x1F33D", "Maïs"], ["&#x1F336", "Piment"], ["&#x1FAD1", "Poivron"], ["&#x1F952", "Concombre"], ["&#x1F96C", "L&eacute;gume à feuilles vertes"], ["&#x1F966", "Broccoli"], ["&#x1F9C4", "Ail"], ["&#x1F9C5", "Oignon"], ["&#x1F344", "Champignon"], ["&#x1F95C", "Cacahuète"], ["&#x1FAD8", "Haricot"], ["&#x1F330", "Châtaigne"], ["&#x1F35E", "Pain"], ["&#x1F950", "Croissant"], ["&#x1F956", "Baguette"], ["&#x1FAD3", "Galette"], ["&#x1F968", "Bretzel"], ["&#x1F96F", "Bagel"], ["&#x1F95E", "Pancakes"], ["&#x1F9C7", "Gauffre"], ["&#x1F9C0", "Part de fromage"], ["&#x1F356", "Viande sur un os"], ["&#x1F357", "Cuisse de poulet"], ["&#x1F969", "Morceau de viande"], ["&#x1F953", "Lard"], ["&#x1F354", "Hamburger"], ["&#x1F35F", "Frites"], ["&#x1F355", "Pizza"], ["&#x1F32D", "Hot dog"], ["&#x1F96A", "Sandwich"], ["&#x1F32E", "Taco"], ["&#x1F32F", "Burrito"], ["&#x1F959", "Kebab"], ["&#x1F9C6", "Falafel"], ["&#x1F95A", "Oeuf"], ["&#x1F373", "Oeuf au plat"], ["&#x1F958", "Plat mitonn&eacute;"], ["&#x1F372", "Marmite"], ["&#x1FAD5", "Fondue"], ["&#x1F963", "Bol avec cuillère"], ["&#x1F957", "Salade"], ["&#x1F37F", "Popcorn"], ["&#x1F9C8", "Beurre"], ["&#x1F9C2", "Sel"], ["&#x1F96B", "Aliments en conserve"], ["&#x1F371", "Boîte d&eacute;jeuner"], ["&#x1F358", "Galette de riz"], ["&#x1F359", "Boulette de riz"], ["&#x1F35A", "Bol de riz"], ["&#x1F35B", "Riz au curry"], ["&#x1F35C", "Bol fumant"], ["&#x1F35D", "Spaghetti"], ["&#x1F360", "Patate douce"], ["&#x1F362", "Brochette de poisson"], ["&#x1F363", "Sushi"], ["&#x1F364", "Beignet de crevette"], ["&#x1F365", "Croquette de poisson"], ["&#x1F96E", "Gâteau de lune"], ["&#x1F361", "Brochette de bonbons"], ["&#x1F95F", "Boulette de pâte"], ["&#x1F960", "Biscuit chinois"], ["&#x1F961", "Boîte à emporter"], ["&#x1F980", "Crabe"], ["&#x1F99E", "Homard"], ["&#x1F990", "Crevette"], ["&#x1F991", "Calamar"], ["&#x1F9AA", "Huître"], ["&#x1F368", "Crème glac&eacute;e"], ["&#x1F367", "Granit&eacute;"], ["&#x1F366", "Glace italienne"], ["&#x1F369", "Doughnut"], ["&#x1F36A", "Cookie"], ["&#x1F382", "Gâteau d'anniversaire"], ["&#x1F370", "Gâteau sabl&eacute;"], ["&#x1F9C1", "Cupcake"], ["&#x1F967", "Tarte"], ["&#x1F36B", "Chocolat"], ["&#x1F36C", "Bonbon"], ["&#x1F36D", "Sucette"], ["&#x1F36E", "Crème renvers&eacute;e"], ["&#x1F36F", "Pot de miel"], ["&#x1F37C", "Biberon"], ["&#x1F95B", "Verre de lait"], ["&#x2615", "Boisson chaude"], ["&#x1FAD6", "Th&eacute;ière"], ["&#x1F375", "Tasse"], ["&#x1F376", "Sak&eacute;"], ["&#x1F37E", "Bouteille de champagne"], ["&#x1F377", "Verre de vin"], ["&#x1F378", "Cocktail"], ["&#x1F379", "Cocktail tropical"], ["&#x1F37A", "Chope"], ["&#x1F37B", "Chopes de bière"], ["&#x1F942", "Trinquer"], ["&#x1F943", "Verre trumbler"], ["&#x1F964", "Gobelet avec paille"], ["&#x1F9CB", "Th&eacute; aux perles"], ["&#x1F9C3", "Briquette de jus"], ["&#x1F9C9", "Mat&eacute;"], ["&#x1F9CA", "Glaçon"], ["&#x1F962", "Baguettes"], ["&#x1F37D", "Fourchette et couteau avec assiette"], ["&#x1F374", "Fourchette et couteau"], ["&#x1F944", "Cuillère"], ["&#x1F52A", "Couteau de cuisine"], ["&#x1FAD9", "Jar"], ["&#x1F3FA", "Amphora"]];
 
-	const emoAnimList = [["&#x1F435", "Tête de singe"], ["&#x1F412", "Singe"], ["&#x1F98D", "Gorille"], ["&#x1F9A7", "Orangoutan"], ["&#x1F436", "Tête de chien"], ["&#x1F415", "Chien"], ["&#x1F9AE", "Chien guide"], ["&#x1F415", "Chien d'assistance"], ["&#x1F429", "Caniche"], ["&#x1F43A", "Loup"], ["&#x1F98A", "Renard"], ["&#x1F99D", "Raton laveur"], ["&#x1F431", "Tête de chat"], ["&#x1F408", "Chat"], ["&#x1F981", "Lion"], ["&#x1F42F", "Tête de tigre"], ["&#x1F405", "Tigre"], ["&#x1F406", "Léopard"], ["&#x1F434", "Tête de cheval"], ["&#x1F40E", "Cheval"], ["&#x1F984", "Licorne"], ["&#x1F993", "Zèbre"], ["&#x1F98C", "Cerf"], ["&#x1F9AC", "Bison"], ["&#x1F42E", "Tête de vache"], ["&#x1F404", "Vache"], ["&#x1F402", "Boeuf"], ["&#x1F437", "Buffle"], ["&#x1F437", "Tête de cochon"], ["&#x1F416", "Cochon"], ["&#x1F417", "Sanglier"], ["&#x1F43D", "Groin"], ["&#x1F40F", "Bélier"], ["&#x1F411", "Mouton"], ["&#x1F410", "Chèvre"], ["&#x1F42A", "Dromadaire"], ["&#x1F42B", "Chameau"], ["&#x1F999", "Lama"], ["&#x1F992", "Girafe"], ["&#x1F418", "Eléphant"], ["&#x1F9A3", "Mammouth"], ["&#x1F98F", "Rhinocéros"], ["&#x1F99B", "Hippopotame"], ["&#x1F42D", "Tête de souris"], ["&#x1F401", "Souris"], ["&#x1F400", "Rat"], ["&#x1F439", "Hamster"], ["&#x1F430", "Tête de lapin"], ["&#x1F407", "Lapin"], ["&#x1F43F", "Ecureuil"], ["&#x1F9AB", "Castor"], ["&#x1F994", "Hérisson"], ["&#x1F987", "Chauve-souris"], ["&#x1F43B", "Ours"], ["&#x1F428", "Koala"], ["&#x1F43C", "Panda"], ["&#x1F9A5", "Paresseux"], ["&#x1F9A6", "Loutre"], ["&#x1F9A8", "Moufette"], ["&#x1F998", "Kangourou"], ["&#x1F9A1", "Blaireau"], ["&#x1F43E", "Empreintes d'animaux"], ["&#x1F983", "Dindon"], ["&#x1F414", "Poule"], ["&#x1F413", "Coq"], ["&#x1F423", "Poussin qui éclôt"], ["&#x1F424", "Poussin"], ["&#x1F425", "Poussin de face"], ["&#x1F426", "Oiseau"], ["&#x1F427", "Pingouin"], ["&#x1F54A", "Colombe"], ["&#x1F985", "Aigle"], ["&#x1F986", "Canard"], ["&#x1F9A2", "Cygne"], ["&#x1F989", "Chouette"], ["&#x1FAB6", "Plume"], ["&#x1F9A9", "Flamant rose"], ["&#x1F99C", "Perroquet"], ["&#x1F438", "Grenouille"], ["&#x1F40A", "Crocodile"], ["&#x1F422", "Tortue"], ["&#x1F98E", "Lézard"], ["&#x1F40D", "Serpent"], ["&#x1F432", "Tête de dragon"], ["&#x1F409", "Dragon"], ["&#x1F995", "Sauropode"], ["&#x1F996", "Tyranosaure"], ["&#x1F433", "Baleine soufflant par son évent"], ["&#x1F40B", "Baleine"], ["&#x1F42C", "Dauphin"], ["&#x1F41F", "Poisson"], ["&#x1F420", "Poisson tropical"], ["&#x1F421", "Poisson-lune"], ["&#x1F988", "Requin"], ["&#x1F419", "Pieuvre"], ["&#x1F41A", "Coquille en spirale"], ["&#x1F98B", "Papillon"], ["&#x1F41B", "Chenille"], ["&#x1F41C", "Fourmille"], ["&#x1F41D", "Abeille"], ["&#x1FAB2", "Scarabée"], ["&#x1F41E", "Coccinelle"], ["&#x1F997", "Criquet"], ["&#x1FAB3", "Cafard"],["&#x1F40C", "Escargot"], ["&#x1F577", "Araignée"], ["&#x1F578", "Toile d'araignée"], ["&#x1F982", "Scorpion"], ["&#x1F99F", "Moustique"], ["&#x1FAB0", "Mouche"], ["&#x1FAB1", "Ver de terre"], ["&#x1F9A0", "Microbe"], ["&#x1F490", "Bouquet"], ["&#x1F338", "Fleur de cerisier"], ["&#x1F4AE", "Fleur blanche"], ["&#x1F3F5", "Rosette"], ["&#x1F339", "Rose"], ["&#x1F940", "Fleur fanée"], ["&#x1F33A", "Hibiscus"], ["&#x1F33B", "Tournesol"], ["&#x1F33C", "Bourgeon"], ["&#x1F337", "Tulipe"], ["&#x1F331", "Jeune pousse"], ["&#x1FAB4", "Plante en pot"], ["&#x1F332", "Conifère"], ["&#x1F333", "Arbre à feuilles caduques"], ["&#x1F334", "Palmier"], ["&#x1F335", "Cactus"], ["&#x1F33E", "Plant de riz"], ["&#x1F33F", "Feuille"], ["&#x2618", "Trèfle"], ["&#x1F340", "Trèfle à quatre feuilles"], ["&#x1F341", "Feuille d'érable"], ["&#x1F342", "Feuille morte"], ["&#x1F343", "Feuille virevoltante"], ["&#x1FAB9", "Plante en pot"], ["&#x1FABA", "Nid avec oeufs"]];
+	const emoAnimList = [["&#x1F435", "Tête de singe"], ["&#x1F412", "Singe"], ["&#x1F98D", "Gorille"], ["&#x1F9A7", "Orangoutan"], ["&#x1F436", "Tête de chien"], ["&#x1F415", "Chien"], ["&#x1F9AE", "Chien guide"], ["&#x1F415", "Chien d'assistance"], ["&#x1F429", "Caniche"], ["&#x1F43A", "Loup"], ["&#x1F98A", "Renard"], ["&#x1F99D", "Raton laveur"], ["&#x1F431", "Tête de chat"], ["&#x1F408", "Chat"], ["&#x1F981", "Lion"], ["&#x1F42F", "Tête de tigre"], ["&#x1F405", "Tigre"], ["&#x1F406", "L&eacute;opard"], ["&#x1F434", "Tête de cheval"], ["&#x1F40E", "Cheval"], ["&#x1F984", "Licorne"], ["&#x1F993", "Zèbre"], ["&#x1F98C", "Cerf"], ["&#x1F9AC", "Bison"], ["&#x1F42E", "Tête de vache"], ["&#x1F404", "Vache"], ["&#x1F402", "Boeuf"], ["&#x1F437", "Buffle"], ["&#x1F437", "Tête de cochon"], ["&#x1F416", "Cochon"], ["&#x1F417", "Sanglier"], ["&#x1F43D", "Groin"], ["&#x1F40F", "B&eacute;lier"], ["&#x1F411", "Mouton"], ["&#x1F410", "Chèvre"], ["&#x1F42A", "Dromadaire"], ["&#x1F42B", "Chameau"], ["&#x1F999", "Lama"], ["&#x1F992", "Girafe"], ["&#x1F418", "El&eacute;phant"], ["&#x1F9A3", "Mammouth"], ["&#x1F98F", "Rhinoc&eacute;ros"], ["&#x1F99B", "Hippopotame"], ["&#x1F42D", "Tête de souris"], ["&#x1F401", "Souris"], ["&#x1F400", "Rat"], ["&#x1F439", "Hamster"], ["&#x1F430", "Tête de lapin"], ["&#x1F407", "Lapin"], ["&#x1F43F", "Ecureuil"], ["&#x1F9AB", "Castor"], ["&#x1F994", "H&eacute;risson"], ["&#x1F987", "Chauve-souris"], ["&#x1F43B", "Ours"], ["&#x1F428", "Koala"], ["&#x1F43C", "Panda"], ["&#x1F9A5", "Paresseux"], ["&#x1F9A6", "Loutre"], ["&#x1F9A8", "Moufette"], ["&#x1F998", "Kangourou"], ["&#x1F9A1", "Blaireau"], ["&#x1F43E", "Empreintes d'animaux"], ["&#x1F983", "Dindon"], ["&#x1F414", "Poule"], ["&#x1F413", "Coq"], ["&#x1F423", "Poussin qui &eacute;clôt"], ["&#x1F424", "Poussin"], ["&#x1F425", "Poussin de face"], ["&#x1F426", "Oiseau"], ["&#x1F427", "Pingouin"], ["&#x1F54A", "Colombe"], ["&#x1F985", "Aigle"], ["&#x1F986", "Canard"], ["&#x1F9A2", "Cygne"], ["&#x1F989", "Chouette"], ["&#x1FAB6", "Plume"], ["&#x1F9A9", "Flamant rose"], ["&#x1F99C", "Perroquet"], ["&#x1F438", "Grenouille"], ["&#x1F40A", "Crocodile"], ["&#x1F422", "Tortue"], ["&#x1F98E", "L&eacute;zard"], ["&#x1F40D", "Serpent"], ["&#x1F432", "Tête de dragon"], ["&#x1F409", "Dragon"], ["&#x1F995", "Sauropode"], ["&#x1F996", "Tyranosaure"], ["&#x1F433", "Baleine soufflant par son &eacute;vent"], ["&#x1F40B", "Baleine"], ["&#x1F42C", "Dauphin"], ["&#x1F41F", "Poisson"], ["&#x1F420", "Poisson tropical"], ["&#x1F421", "Poisson-lune"], ["&#x1F988", "Requin"], ["&#x1F419", "Pieuvre"], ["&#x1F41A", "Coquille en spirale"], ["&#x1F98B", "Papillon"], ["&#x1F41B", "Chenille"], ["&#x1F41C", "Fourmille"], ["&#x1F41D", "Abeille"], ["&#x1FAB2", "Scarab&eacute;e"], ["&#x1F41E", "Coccinelle"], ["&#x1F997", "Criquet"], ["&#x1FAB3", "Cafard"],["&#x1F40C", "Escargot"], ["&#x1F577", "Araign&eacute;e"], ["&#x1F578", "Toile d'araign&eacute;e"], ["&#x1F982", "Scorpion"], ["&#x1F99F", "Moustique"], ["&#x1FAB0", "Mouche"], ["&#x1FAB1", "Ver de terre"], ["&#x1F9A0", "Microbe"], ["&#x1F490", "Bouquet"], ["&#x1F338", "Fleur de cerisier"], ["&#x1F4AE", "Fleur blanche"], ["&#x1F3F5", "Rosette"], ["&#x1F339", "Rose"], ["&#x1F940", "Fleur fan&eacute;e"], ["&#x1F33A", "Hibiscus"], ["&#x1F33B", "Tournesol"], ["&#x1F33C", "Bourgeon"], ["&#x1F337", "Tulipe"], ["&#x1F331", "Jeune pousse"], ["&#x1FAB4", "Plante en pot"], ["&#x1F332", "Conifère"], ["&#x1F333", "Arbre à feuilles caduques"], ["&#x1F334", "Palmier"], ["&#x1F335", "Cactus"], ["&#x1F33E", "Plant de riz"], ["&#x1F33F", "Feuille"], ["&#x2618", "Trèfle"], ["&#x1F340", "Trèfle à quatre feuilles"], ["&#x1F341", "Feuille d'&eacute;rable"], ["&#x1F342", "Feuille morte"], ["&#x1F343", "Feuille virevoltante"], ["&#x1FAB9", "Plante en pot"], ["&#x1FABA", "Nid avec oeufs"]];
 
 	this.emoLists = [ [emoSmilyList, "&#x1F642", "Smileys"], [emoHandList, "&#x1F44D", "Mains"], [emoActiList, "&#x1F3D2", "Activites"], [emoFoodList, "&#x1F352", "Nourriture et boissons"], [emoAnimList, "&#x1F434", "Animaux et nature"], [[], "&#x1F50D;","Recherche"]];	
 	
@@ -531,7 +519,7 @@ class objEmojPicker {
 		   var Cspa = document.createElement("span");   
 		   Cspa.setAttribute('class', 'btn-close');
 		   Cspa.setAttribute('onclick', 'window.emojWidgetObj.closeSearchEmo();');
-		   Cspa.innerHTML = 'X';
+		   Cspa.innerHTML = 'X';	
 		sCont.appendChild(Cspa);	
 		var tfm = document.createElement("form");	
 		tfm.setAttribute('action', '');
@@ -573,246 +561,10 @@ class objEmojPicker {
 
 }	//FIN Class emoji
 
-class fbObj {
-  constructor(callBack, oDiv, connectNow) {
-
-	window.FBobject = this;
-	if (oDiv)		  // Objet DIV pour afficher la progression.
-	    if (typeof oDiv == "object")
-		this.dlg = oDiv;
-	    else
-		this.dlg = document.getElementById(oDiv);
-	else
-		this.dlg = null;
-	this.tmt = null;
-	this.callBack = callBack; // Callback function pour obtenir la réponse en json { "nom": "", "id" : "", "erreur": "" }
-
-	if (connectNow)	
-		this.connect();  // Exécute le processus d'authentification si paramètre connectNow = true
-
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '565245742409335',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v17.0'
-    });
-
-    FB.AppEvents.logPageView();
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "https://connect.facebook.net/fr_CA/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-
-  } // Fin constructor
-
-  // Methods
-  connect(){
-	this.#showProg("Appel Facebook...", true);
-	this.#getStatus();
-  }
-
-  disconnect(){
-	FB.logout(function(response) {
-	   window.FBobject.#statusChange(response, true);
-	});
-  }
-
-  #getStatus() {
-     if (typeof FB == "object"){
-	FB.getLoginStatus(function(response) {
-	    window.FBobject.#statusChange(response);
-	});
-     }else{
-	this.#showProg(".");
-	this.tmt = setTimeout(this.#getStatus.bind(this), 1000);
-     }
-  }
-
-  #statusChange(response, end) {  // Called with the results from FB.
-
-    this.#showProg("...");
-	var expTime = 1600000000;
-	if (response.authResponse && response.authResponse.data_access_expiration_time) 
-		expTime = response.authResponse.data_access_expiration_time;
-    if (response.status === 'connected') {   // Logged with Facebook.
-        this.#getAPI(response.status, expTime );  
-    } else {                                 // Not logged with Facebook.
-		if (end){			// Logging issue, endding process
-			this.callBack({ "nom": "", "id" : "", "statut" : response.status, "erreur": ( (response.error) ? response.error.message:"" )});
-			this.#showProg('Non connect&eacute; avec Facebook.', true);
-		}else{
-			this.#loginFB();   		// Try login
-		}
-    }
-  }
-
-  #getAPI(status, expTime) {                      // Return result info when authenticated with FB.
-    this.#showProg(".");
-    FB.api('/me', function(response, x=status, ex = expTime) {
-	window.FBobject.callBack({ "nom": response.name, "id" : response.id, "statut" : status, "expTime" : expTime , "erreur": ( (response.error) ? response.error.message:"" )});
-	window.FBobject.#showProg('Connect&eacute;: ' + response.name, true);
-    });
-	this.#showProg("..");
-  }
-
-  #loginFB(){
-	this.#showProg("+");
-	FB.login(function(response){
-	   window.FBobject.#statusChange(response, true);
-	}, {scope: 'public_profile,email'});
-	this.#showProg("..");
-  }
-
-  #showProg(ch, initial){
-      if (this.dlg != null)
-	this.dlg.innerHTML = (initial) ? ch:this.dlg.innerHTML + ch ;
-   }
-
-}  // FIN class fbObj
-
-
-// Class Chat Authorisation
-class objChatAuth {
-	#infoAuth;
-	#email;
-  constructor() {
-	  window.oChatAuth = this;
-	  this.#email = "";
-	  this.callbackFB = null;
-	  this.#infoAuth = {
-		"type" : "",
-		"id" : "",
-		"name" : "",
-		"expir" : 0
-	  }
-	 
-  } // FIN Constructor
-  
-  getInfo(){
-	return {
-		//"type" : this.#infoAuth.type,
-		"id" : this.#infoAuth.id,
-		"name" : this.#infoAuth.name
-	};  
-  }
-
-  getStatus(){
-	if (this.#infoAuth.id == "")
-		var sta = "D&eacute;connect&eacute;";
-	else{
-		var sta = "Connect&eacute; avec ";
-	
-		switch (this.#infoAuth.type)
-		{
-		   case "A":
-				sta += "Recette: ";	//App connexion
-				break;
-		   case "M":
-				sta += "courriel: ";
-			   break;
-		   case "F":
-				sta += "Facebook: ";
-			   break;
-	    }
-	sta += this.#infoAuth.name;
-	}
-	return sta;  
-  }
-
-  setProfile(inf){
-	  localStorage.setItem("chatUser", inf);
-	  this.#infoAuth.name = inf;
-  }
-   
-  connectFB(callback, divInfo){
-	  this.callbackFB = callback;
-	  new fbObj( this.resultFB.bind(this), divInfo, true );
-
-  }
-  
-  resultFB(res){
-	  var succes = false;
-	  if (res.statut === 'connected'){
-		  this.#infoAuth.type = "F";
-		  localStorage.setItem("chatUser", res.nom);
-		  localStorage.setItem("chatID", res.id + "$$" + (Date.now() + res.expTime - 100000000));
-		  this.#infoAuth.name = res.nom;
-		  this.#infoAuth.id = res.id;
-		  succes = true;
-	  }
-	  this.callbackFB(succes);
-  }
-
-  connectMail(nom, mail){
-	  this.#email = nom + "$$" + mail;
-  }
-  
-  comfirmMail(){
-	  var arrID = this.#email.split("$$");
-	  localStorage.setItem("chatUser", arrID[0]);
-	  localStorage.setItem("chatID", arrID[1]);
-	  this.#infoAuth.type = "M";
-	  this.#infoAuth.name = arrID[0];
-	  this.#infoAuth.id = arrID[1];	 
-	  return this.#infoAuth.id;
-  }
-  
-  disconnect(){
-	  this.#infoAuth = {
-		"type" : "",
-		"id" : "",
-		"name" : "",
-		"expir" : 0
-	  }	  
-	localStorage.setItem("chatUser", "");
-	localStorage.setItem("chatID", "");
-	return "";
-  }
-
-  checkconnect(uID, uName){  
-
-		if (uID){
-			this.#infoAuth.type = "A";
-			this.#infoAuth.id = uID;
-			localStorage.setItem("chatID", "");
-			var chatName = localStorage.getItem("chatUser");
-			if (chatName)
-				this.#infoAuth.name = chatName;
-			else
-				this.#infoAuth.name = uName;
-		}else{
-			var chatID = localStorage.getItem("chatID");
-			if (chatID){
-				this.#infoAuth.name = localStorage.getItem("chatUser");
-				this.#infoAuth.id = chatID;
-				if (chatID.indexOf("@") == -1){
-					this.#infoAuth.type = "F";
-					var arrID = this.#infoAuth.id.split("$$");
-					this.#infoAuth.id = arrID[0];
-					if ( arrID[1] && Date.now() > arrID[1]){
-						
-					}
-				}else{
-					this.#infoAuth.type = "M";
-				}
-			}
-		}
-	return this.#infoAuth.name;
-  }
-  
-}   // FIN class objChatAuth
-
 
 function showConnectOpt(){
 var Cform = document.getElementById('connectForm');	
-remChilds(Cform); 
-
+remChilds(Cform);    
 	  var div1 = document.createElement("div");
          var ul1 = document.createElement("ul"); 
             var li1 = document.createElement("li");
@@ -823,58 +575,40 @@ remChilds(Cform);
                Cbut.setAttribute('onclick', 'showConnectTo(this.form); return false;');
                Cbut.innerHTML = 'Connecter avec courriel';
             li1.appendChild(Cbut);
-		 ul1.appendChild(li1); 
+		ul1.appendChild(li1); 
             var li3 = document.createElement("li");
                li3.setAttribute('tabindex', '11');
                var Cbut = document.createElement("button");
                Cbut.setAttribute('title', 'Connexion avec facebook');   
                Cbut.setAttribute('class', 'focus-cont');
-               Cbut.setAttribute('onclick', 'showConnectFB(this.form); return false;');
+               Cbut.setAttribute('onclick', 'showConnectTo(this.form, "FB"); return false;');
                Cbut.innerHTML = 'Connecter avec facebook';
             li3.appendChild(Cbut);
-         ul1.appendChild(li3);   
-     div1.appendChild(ul1);
-  Cform.appendChild(div1);
-}
-
-function showConnectFB(Cform){
-remChilds(Cform);    
-	var div1 = document.createElement("div");
-	Cform.appendChild(div1);	
-   oChatAuth.connectFB(FBresult, div1);
-}
-
-function FBresult(res, oDiv){
-	if (res){
-		setUserInfo(oChatAuth.getInfo().name);
-		userID = oChatAuth.getInfo().id;
-		chatRun = false;
-		if (xhrPoll)
-			xhrPoll.abort();
-		longPolling(true);
-	}
-	setTimeout(closeAll, 3000);
+        ul1.appendChild(li3);   
+      div1.appendChild(ul1);
+   Cform.appendChild(div1);
 }
 
 function showConnectTo(Cform, conTo){
-	
+//var Cform = document.getElementById('connectForm');	
 remChilds(Cform);    
 	  var div1 = document.createElement("div");
          var ul1 = document.createElement("ul"); 
-
-			var li2 = document.createElement("li");
-			   li2.setAttribute('tabindex', '10');
-			   var Ulab = document.createElement("label");
-			   Ulab.setAttribute('for', 'chatUserMail');
-			   Ulab.innerHTML = 'Courriel:';
-			   li2.appendChild(Ulab);
-			   var Uinp = document.createElement("input");
-			   Uinp.setAttribute('id', 'chatUserMail');
-			   Uinp.setAttribute('type', 'text'); 
-			   Uinp.setAttribute('maxlength', '35'); 
-			   li2.appendChild(Uinp);
-			ul1.appendChild(li2);				
-
+		 
+		    if (conTo == "FB"){
+				var li2 = document.createElement("li");
+				   li2.setAttribute('tabindex', '10');
+				   var Ulab = document.createElement("label");
+				   Ulab.setAttribute('for', 'chatUserMail');
+				   Ulab.innerHTML = 'Courriel:';
+				   li2.appendChild(Ulab);
+				   var Uinp = document.createElement("input");
+				   Uinp.setAttribute('id', 'chatUserMail');
+				   Uinp.setAttribute('type', 'text'); 
+				   Uinp.setAttribute('maxlength', '35'); 
+				   li2.appendChild(Uinp);
+				ul1.appendChild(li2);				
+			}
             var li2 = document.createElement("li");
                li2.setAttribute('tabindex', '10');
                var Ulab = document.createElement("label");
@@ -893,7 +627,7 @@ remChilds(Cform);
                var Cbut = document.createElement("button");
                Cbut.setAttribute('title', 'Connecter');   
                Cbut.setAttribute('class', 'focus-cont');
-               Cbut.setAttribute('onclick', 'chatConnect(this.form); return false;');
+               Cbut.setAttribute('onclick', 'connect(this.form); return false;');
                Cbut.innerHTML = 'Connecter';
             li3.appendChild(Cbut);
          ul1.appendChild(li3);   
@@ -945,7 +679,7 @@ remChilds(Cform);
 		   Uinp.setAttribute('id', 'chatUserName');
 		   Uinp.setAttribute('type', 'text');  
 		   Uinp.setAttribute('maxlength', '20');
-		   Uinp.value = oChatAuth.getInfo().name;
+		   Uinp.value = chatName;
 		   li2.appendChild(Uinp);
 		ul1.appendChild(li2);
 		var li2 = document.createElement("li");
@@ -953,7 +687,7 @@ remChilds(Cform);
 		   var Cbut = document.createElement("button");
 		   Cbut.setAttribute('title', 'Ok');   
 		   Cbut.setAttribute('class', 'focus-cont');
-		   Cbut.setAttribute('onclick', 'chatConnect(this.form, true); return false;');
+		   Cbut.setAttribute('onclick', 'editProfil(this.form); return false;');
 		   Cbut.innerHTML = 'Ok';
 		   li2.appendChild(Cbut);
 	ul1.appendChild(li2); 			

@@ -1,14 +1,9 @@
-var HOSTserv = "https://loupop.ddns.net/pyt/";
-//"http://127.0.0.1:3000/";
-//"https://loupop.ddns.net/pyt/";
-var langSet = window.navigator.userLanguage || window.navigator.language;
-const chat_color_background = '#1db2fd99', chat_color_text = '#FFF', chat_color_background_other = '#98dbfd99', chat_color_text_other = '#222';
-//const chat_color_background = 'rgb(57, 170, 0)', chat_color_text = '#FFF', chat_color_background_other = 'rgb(220, 246, 220)', chat_color_text_other = '#222';
-var chatID = 2023;
+const chat_color_background = '#1db2fd99', color_text = '#FFF';
+var chatID = 2001;
 var lastTime = new Date().getTime();
 var firstTime = lastTime, histTime = null;
 var chatRun = false;
-var userID="", lastUser, lastIP, pollTimeout, scrollChat, panelLayer, panelLayerMinWidth, modLayer, messUpdtItem, messList, optMenu, userOnPage;
+var chatName="", userID="", lastName, lastIP, pollTimeout, wTimeout, scrollChat, panelLayer, panelLayerMinWidth, modLayer, messUpdtItem, messList, optMenu, userOnPage;
 var lastInputH = 0, lastKey = 0, longMax = 250;
 var respondToMess = false;
 var xhrPoll;
@@ -16,13 +11,17 @@ const delay = 600000; // 10 minutes ........10 second
 const supMessage = "Supprim&eacute;";
 
 //include("instChat.js");
-(function () { var chatP = document.createElement('script'); chatP.type = 'text/javascript'; chatP.async = true; chatP.src = 'https://loupop.ddns.net/misc/instChat.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(chatP, s); })();
+(function () { var chatP = document.createElement('script'); chatP.type = 'text/javascript'; chatP.async = true; chatP.src = 'misc/instChat.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(chatP, s); })();
+
+//include("util.js");
+//(function () { var chat1 = document.createElement('script'); chat1.type = 'text/javascript'; chat1.async = true; chat1.src = 'util.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(chat1, s); })();
 
 
-function initChatWidget(){
+
+function initPage(){
 var csslink = document.createElement('link');
 csslink.setAttribute('rel', 'stylesheet');
-csslink.setAttribute('href', 'https://loupop.ddns.net/misc/recChat.css');
+csslink.setAttribute('href', 'misc/recChat.css');
 document.head.appendChild(csslink);	
 
 addChatPanel();
@@ -34,24 +33,18 @@ messList = document.getElementById('messagesList');
 userOnPage = document.getElementById('presence-container');
 scrollChat = document.getElementById("messListCont");
 
-new objChatAuth();
-	
-if (oChatAuth.checkconnect(GetCookie("userID"), GetCookie("userName")) != ""){
-		setUserInfo(oChatAuth.getInfo().name);
-		userID = oChatAuth.getInfo().id;
-	}else{
+chatName = localStorage.getItem("chatUser");
+userID = GetCookie("userID");
+if (!chatName){
+	chatName = GetCookie("userName");
+}
+if (chatName && chatName != "")
+	setUserInfo(chatName);
+	else{
 		showConnectOpt();
+		chatName = "";
 	}
 
-addtextContentListener();
-
-fetchData(true);
-
-scrollChat.addEventListener('scroll', checkScroll, this);
-setTimeout(minimise, 1000);
-}
-
-function addtextContentListener(){
 textContent.addEventListener("keydown", (event) => {
     var code = (event.keyCode ? event.keyCode : event.which);
 	
@@ -88,97 +81,33 @@ textContent.addEventListener("keydown", (event) => {
 	}
 	if (code != 13)
 		lastKey = code;
-});	
+});
+
+fetchData(true);
+
+scrollChat.addEventListener('scroll', checkScroll, this);
+wTimeout = setTimeout(minimise, 5000);
 }
 
-var formatDateTime = {
-	 toTitleCase : function(str) {
-		return str.replace(
-			/\w\S*/g,
-			function(txt) {
-				return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-			}
-		)
-	},
-	getDateTime : function(milliTime){
-			if (milliTime)
-				return new Date(milliTime);
-			else
-				return new Date();
-	},
-	time : function(milliTime, notShowSecond) {
-		var dt = this.getDateTime(milliTime);
-		return dt.getHours() + ":" + (dt.getMinutes()+"").padStart(2, '0') + ( (notShowSecond) ? "":(":" + (dt.getSeconds()+"").padStart(2, '0')) );
-	},
-	date : function(milliTime) {
-		var dt = this.getDateTime(milliTime);
-		return dt.getFullYear() + "-" + ((dt.getMonth()+1)+"").padStart(2, '0') + "-" + (dt.getDate()+"").padStart(2, '0');
-	},
-	datetime : function(milliTime) {
-		return this.date(milliTime) + " " + this.time(milliTime, true);
-	},
-	datetimecar : function(milliTime, heure) {
-	var options = {year: 'numeric', month: 'long', day: 'numeric' };
-	var opt_weekday = { weekday: 'long' };
-	var today  = new Date(milliTime);
-	var weekday = this.toTitleCase(today.toLocaleDateString(langSet, opt_weekday));
-	var the_date = weekday + ", " + today.toLocaleDateString(langSet, options);
-	if (heure)
-		the_date = the_date + " " + this.time(milliTime, true);
-	return the_date;
-	},
-	chattime : function(milliTime) {
-	//var options = {year: 'numeric', month: 'long', day: 'numeric' };
-	var opt_weekday = { weekday: 'long' };
-	var today  = new Date(milliTime);
-	var weekday = this.toTitleCase(today.toLocaleDateString(langSet, opt_weekday));
-	//var the_date = weekday.substring(0,3) + ", " + today.toLocaleDateString("fr-FR", options);
-	return weekday.substring(0,3) + ", " + this.time(milliTime, true) ;
-	},	
-	datetimeToMilli : function(datetime) {
-		var res = false;
-		
-		if (datetime.length == 16)
-			var regex = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]/g;
+/*
+function process(e, obj) {
+    var code = (e.keyCode ? e.keyCode : e.which);
+	if (lastInputH < chatForm.textContent.scrollHeight){
+		lastInputH = chatForm.textContent.scrollHeight;
+		if (lastInputH < 130)
+			chatForm.textContent.style.height = lastInputH + "px";
 		else
-			var regex = /[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])/g;
+			chatForm.textContent.style.overflowY  = "auto";
+	}    
+	if (code == 13) { //Enter keycode
+		e.preventDefault();
+		sendMess(obj);
+		var oCnt = document.getElementById("textCount");
 		
-		if (regex)
-			res = datetime.match(regex);
-		if (res){
-			res = new Date(res[0])
-			res = res.valueOf()
-		}
-		return res;
-	}
-}
-
-function remChilds(eItem, eItemToRemove){
-if (eItem){
-	while (eItem.childNodes.length > 0){
-		eItem.removeChild(eItem.childNodes[0]);
-	}
-}
-if (eItemToRemove){
-	eItemToRemove.parentNode.removeChild(eItemToRemove);
-}
-}
-
-function GetCookie(cname) {
-  var name = cname + "=";
-  var decodedCookie = decodeURIComponent(document.cookie);
-  var ca = decodedCookie.split(';');
-  for(var i = 0; i <ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
     }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
 }
+*/
+
 
 function getData(param, callback){
 
@@ -200,85 +129,48 @@ function getData(param, callback){
   };
   
   xhr.send();
-  //console.log("Fetching : " + formatDateTime.time(new Date().getTime())); 
+  //tt = new Date().getTime();
+  //console.log("Fetching : " + formatDateTime.time(tt)); 
+
 }
 
 function postdata(param, callback){
 var fd = new FormData();
 const dat = {
     "cID": chatID,
-    "user": oChatAuth.getInfo().name,
-	"uID": oChatAuth.getInfo().id ,
+    "user": chatName,
     "data": (param.data) ? param.data:"",
 	"mID" : (param.id) ? param.id:"",
 	"stat": (param.stat) ? param.stat:"M",
 	"messR": (param.messR) ? param.messR:""
 };
 fd.append('info', JSON.stringify(dat));
-
-postReq('updChat', fd, callback);
-
-}
-
-function postMailCode(email){
-var fd = new FormData();
-const dat = {
-    "email": email
-};
-fd.append('info', JSON.stringify(dat));
-
-postReq('confirmMail', fd, getMailCode);
-
-}
-
-function getMailCode(res){
-	if (res.res == 0){
-		let code = prompt(chatLangLbl[res.message] + res.email);
-		if (code){
-			var fd = new FormData();
-			const dat = {
-				"email": res.email,
-				"code" : code
-			};
-			fd.append('info', JSON.stringify(dat));
-			postReq('confirmCode', fd, confMailCode);
-		}
-	}
-}
-
-function confMailCode(res){
-	if (res.res == 0){
-		userID = oChatAuth.comfirmMail();
-		setUserInfo(oChatAuth.getInfo().name);
-		longPolling(true);
-	}else{
-		var mess = chatLangLbl[res.message].replace("%1", res.code) + res.email;
-		alert(mess);
-	}
-}
-
-function postReq(funct, dat, callback){
 var xhr=new XMLHttpRequest();
 	xhr.onloadend = function() {
 	var text = xhr.responseText;
 	if (text == "")
 		affNoRep();
 	var data=JSON.parse(text);
-
+	//setTimeout(longPolling, 1000);
 	if (callback)
 		callback(data, true);
-	//if (!chatRun)
-	//	longPolling();
+	longPolling();
 	};
 	
-xhr.open("POST", HOSTserv + funct,true);
-xhr.send(dat);	
+xhr.open("POST", HOSTserv + 'updChat',true);
+//xhr.setRequestHeader('Content-Type', 'application/json');
+//xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+if ("POST" == "POST" && HOSTserv != "http://127.0.0.1:5000/"){
+	//xhr.withCredentials = true;
+}
+xhr.send(fd);
+
 }
 
-
 function longPolling(resNow) {
+	//return false;
 	chatRun = true;
-	coID = oChatAuth.getInfo().name;
+	coID = chatName;
 	resNow = (resNow) ? 1:0;
   xhrPoll = new XMLHttpRequest();
   xhrPoll.open('GET', HOSTserv + 'chat?lastTime=' + lastTime + '&cID=' + chatID + '&uID=' + userID + '&coID=' + coID + '&rN=' + resNow, true);
@@ -306,8 +198,9 @@ function longPolling(resNow) {
   };
   
   xhrPoll.send();
-  if ( HOSTserv == "http://127.0.0.1:3000/")
-	console.log("Polling : " + userID + "  " + formatDateTime.time(new Date().getTime())); 
+  tt = new Date().getTime();
+  if ( HOSTserv == "http://127.0.0.1:5000/")
+	console.log("Polling : " + formatDateTime.time(tt)); 
 }
 
 function poolRes(res){
@@ -327,6 +220,7 @@ if (chatRun){
 		xhrPoll.abort();
 	oF.message.value = "Stop polling";
 }else{
+	//chatRun = true;
 	longPolling();
 	oF.message.value = "Start polling";
 }
@@ -336,7 +230,7 @@ if (chatRun){
 
 function sendMess(oF){
 
-if (oChatAuth.getInfo().name == ""){
+if (!chatName || chatName == ""){
 	showConnect();
 	return false;
 	}else{
@@ -377,7 +271,7 @@ function addTimeBar(ml, t, isBefore){
 function addMess(oMessItem, isRight){
 var oMess = popMess(oMessItem, isRight);
 
-if (lastUser == oMessItem.uID)
+if (lastName == oMessItem.user)
 	remChilds(false,messList.lastChild.childNodes[1]);
 if (oMessItem.time > lastTime + delay)
 	addTimeBar(messList, oMessItem.time);
@@ -387,8 +281,10 @@ checkAddRespo(oMess, oMessItem , isRight);
 messList.append(oMess);
 messList.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
 lastTime = oMessItem.time;
-lastUser = oMessItem.uID;
+lastName = oMessItem.user;
 lastIP = oMessItem.IP;
+//if (oMessItem.stat == 'R')
+	//addRespond(oMess, oMessItem.messR , isRight)
 }
 
 function addMessList(oMessList){
@@ -408,7 +304,7 @@ return oRMess;
 
 function addHistoMess(oMessItem){
 var messList = document.getElementById('messagesList');
-var isRight = (oChatAuth.getInfo().id == oMessItem.uID) ;
+var isRight = (chatName == oMessItem.user);
 
 var oMess = popMess(oMessItem, isRight);
 var oR = checkAddRespo(oMess, oMessItem , isRight);
@@ -446,21 +342,21 @@ chatForm.scrollIntoView(false);
 function popMess(oMess, isRight){
 var dtime = formatDateTime.chattime(oMess.time, true)
 var messtatus = (oMess.status) ?  oMess.status:"M";
-
+	
 if (isRight){
 	var row1Class = "message-list-item-row-1 right-message-list-item-row-1";
 	var row2Class = "message-list-item-row-2 right-message-list-item-row-2";
 	var senderClass = "message-sender-profile-img-container right-message-sender-profile-img-container";
 	var messageOptionsClass = "message-options message-options-left";
-	var divStyle = "background-color: " + chat_color_background + "; color: " + chat_color_text;
+	var divStyle = "background-color: rgb(57, 170, 0); color: rgb(255, 255, 255)";
 }else{
 	var row1Class = "message-list-item-row-1 left-message-list-item-row-1";
 	var row2Class = "message-list-item-row-2 left-message-list-item-row-2";
 	var senderClass = "message-sender-profile-img-container left-message-sender-profile-img-container";
 	var messageOptionsClass = "message-options message-options-right";
-	var divStyle = "background-color: " + chat_color_background_other + "; color: " + chat_color_text_other;
+	var divStyle = "background-color: rgb(239, 246, 238); color: rgb(52, 73, 94);"
 }
-
+ 
 var divM = document.createElement("div");
 if (messtatus == "D")
 	divM.setAttribute('class', 'message-list-item message-list-item-sup');
@@ -544,12 +440,12 @@ if (isRight){
 	var row1Class = "message-list-item-row-1 right-message-list-item-row-1";
 	var senderClass = "message-sender-profile-img-container right-message-sender-profile-img-container";
 	var messageOptionsClass = "message-options message-options-left";
-	var divStyle = "background-color: " + chat_color_background + "; color: " + chat_color_text;
+	var divStyle = "background-color: rgb(57, 170, 0); color: rgb(255, 255, 255)";
 }else{
 	var row1Class = "message-list-item-row-1 left-message-list-item-row-1";
 	var senderClass = "message-sender-profile-img-container left-message-sender-profile-img-container";
 	var messageOptionsClass = "message-options message-options-right";
-	var divStyle = "background-color: " + chat_color_background_other + "; color: " + chat_color_text_other;
+	var divStyle = "background-color: rgb(239, 246, 238); color: rgb(52, 73, 94);"
 }
 var div1 = document.createElement("div");
 div1.setAttribute('class', row1Class);
@@ -597,17 +493,22 @@ function fetchData(resNow) {
 
 // Set up function to check if user has reached the bottom of the page
 function checkScroll() {
-/*  
+  
   const scrollableHeight = this.scrollHeight - this.clientHeight;
   const scrolledDistance = this.scrollTop;
 
 	//console.log(scrollableHeight - scrolledDistance + " Tot height:" + this.scrollHeight + " See height:" + this.clientHeight + " Scroll height:" + scrollableHeight);
-*/
-  if (this.scrollTop <= 1) {
+
+  if (scrolledDistance <= 1) {
     fetchData();
   }
 }
 
+
+
+// Add event listener for scroll event
+//window.addEventListener('scroll', checkScroll);
+//FIN  SCROLL
 
 function showConnect(){
 var optConnect = document.getElementById('options-modal');
@@ -626,27 +527,35 @@ if (optConnect.style.display == "none" || optConnect.style.display == ""){
 }
 }
 
+function connect(fo){
 
-function chatConnect(fo, profil){
+chatRun = false;
+if (xhrPoll)
+	xhrPoll.abort();
 
-if (profil){
-	oChatAuth.setProfile(fo.chatUserName.value);
-	setUserInfo(oChatAuth.getInfo().name);
-}else{
-	postMailCode(fo.chatUserMail.value);
-	oChatAuth.connectMail(fo.chatUserName.value, fo.chatUserMail.value);
+var nom = fo.chatUserName.value;
+localStorage.setItem("chatUser", nom);
+if (setUserInfo(nom)){
+	closeAll();
+	longPolling(true);
 }
-closeAll();
 }
 
 function deconnect(){
 var offLine = document.getElementById('offLine');     
 var conStat = document.getElementById('connectStatus');
 var userInfoLayer = document.getElementById('chatUserInfo');
-	userID = oChatAuth.disconnect();
+	chatName = "", nom = "";
 	userInfoLayer.innerHTML = "Chat";
-	conStat.innerHTML = oChatAuth.getStatus();
+	conStat.innerHTML = "D&eacute;connect&eacute;";
+	localStorage.setItem("chatUser", "");
 	offLine.style.display = "block";
+	closeAll();
+}
+
+function editProfil(fo){
+	chatName = fo.chatUserName.value;
+	setUserInfo(chatName);
 	closeAll();
 }
 
@@ -659,8 +568,9 @@ if (nom == ""){
 	alert("Nom vide");
 	return false;
 }else{
-	conStat.innerHTML = oChatAuth.getStatus();
-	userInfoLayer.innerHTML = oChatAuth.getInfo().name;
+	chatName = nom;
+	conStat.innerHTML = "Connect&eacute;: " + nom;
+	userInfoLayer.innerHTML = nom;
 }
 offLine.style.display = "none";
 panelLayer.style.minWidth = (userInfoLayer.offsetWidth + 20) + "px";
@@ -846,8 +756,20 @@ var resCont = document.getElementById("respond-container");
 resCont.style.display = "none";
 respondToMess = false;
 }
+/*
+function addRespond(oMess, messR, isRight){
+oRMess = createRowRespond(messUpdtItem, messR, isRight);
+oMess.insertBefore(oRMess, oMess.firstChild);
+}
+*/
 
 
+setTimeout(initPage, 1000);
 
-setTimeout(initChatWidget, 1000);
+/*
+initPage();
 
+setTimeout(() => {
+ initPage();
+}, 5000)
+*/

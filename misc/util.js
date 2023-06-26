@@ -1,4 +1,4 @@
-var HOSTserv = "https://loupop.ddns.net/pyt/";
+var HOSTserv = "http://127.0.0.1:3000/";
 // "http://127.0.0.1:3000/";		//Portable Windows 10 Local host Node JS v6.10.0
 // "http://192.168.2.195:3000/";    //Ubuntu workstation 16.04
 // "http://192.168.2.195:8080/";    //Ubuntu workstation 16.04 docker 1.12.6 Node JS v4.2.3  MongoDB server v3.4.9
@@ -728,7 +728,7 @@ if (rep.resp.result){
 		identLayer.style.display="none";
 
 	SetCook("userID",rep.resp.user._id + "");
-	//SetCook("userName",rep.resp.user.Nom);
+	SetCook("userName",rep.resp.user.Nom);
 	SetCook("userMail",rep.resp.user.courriel);
 	SetCook("userRole",rep.resp.user.niveau);
 	userId = rep.resp.user._id;

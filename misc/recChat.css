@@ -62,10 +62,6 @@ background-size: 100% 100%;
 overflow: hidden;
 }
 
-html.noto-color-emoji * {
-    font-family: 'Roboto', 'Noto Color Emoji', sans-serif;
-}
-
 .desktop-panel {
 /*
     height: 96%;
@@ -99,6 +95,13 @@ html.noto-color-emoji * {
     overflow-y: auto;
 
 }
+/*
+#messagesList{
+position: relative;
+height: 100%;
+}
+*/
+
 .smooth-scroll {
 
     -webkit-overflow-scrolling: touch;
@@ -505,10 +508,8 @@ filter: brightness(85%);
   padding: 0;
   margin: 0;
   font-size: 0.794rem;
-padding: 0.125em 0.25em;
-text-align: center;
-background-color: rgb(227, 239, 225);
-color: rgb(52, 73, 94);
+  padding: 0.125em 0.25em;
+  text-align: center;
 }
 
 .presence-summary {
@@ -550,7 +551,7 @@ color: rgb(52, 73, 94);
 }
 
 .input-container {
-  margin-top: 5px;
+  /*margin-top: 5px;*/
   padding: 2.5px;
   display: -webkit-box;
   display: -ms-flexbox;
@@ -582,7 +583,7 @@ color: rgb(52, 73, 94);
   display: inline-block;
   width: 100%;
   height: 100%;
-  border: 1px solid transparent !important;
+  /*border: 1px solid transparent !important;*/
 }
 
 .picker-btn-container {
@@ -604,7 +605,7 @@ color: rgb(52, 73, 94);
   box-sizing: border-box;
   resize: none;
   padding: 4px;
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1.2;
   border: 1px solid;
   white-space: pre-wrap;
@@ -759,11 +760,11 @@ font-weight: bold;
 	width: 100px;
 	position: absolute;
 	z-index: 1005;
-	border-radius: 8px;
+	border-radius: 3px;
     overflow: hidden;
 	display:none;
 	/*background: white;*/
-	border: 1px solid #aaa;
+	/*border: 1px solid #aaa;*/
 }
 
 .msg-options-menu ul {
@@ -777,6 +778,9 @@ font-weight: bold;
   font-size: 0.941rem;
   cursor: pointer;
   padding: 0.25em 0.5em;
+  border: 1px solid #aaa;
+display: inline-block;
+/*border-radius: 8px;*/
 }
 
 .msg-options-menu button:hover {
@@ -850,7 +854,7 @@ font-weight: bold;
       -moz-user-select: none;
       -ms-user-select: none;
       user-select: none;
-	height: 160px;
+	height: 150px;
 	margin: 0;
     padding: 0;
 	padding-left: 5px;
@@ -859,7 +863,7 @@ font-weight: bold;
 	}
 	
     #emoList li {
-	  font-size: 22px;
+	  font-size: 1.1rem;
 	  float: left;
 	  display: inline-block;
 	  margin: 4px;
@@ -897,7 +901,7 @@ font-weight: bold;
 	}
 
     #emoCatList button {
-      font-size: 1.3em;
+      font-size: 1.2rem;
       float: left;
       display: inline-block;
       border: none;
@@ -924,7 +928,7 @@ font-weight: bold;
 	#searchEmoContainer{
 	position: absolute;
 	background: white;
-	height: 35px;
+	height: 39px;
 	border-radius: 8px;
 	padding: 5px;
 	display: block;
@@ -978,12 +982,10 @@ font-weight: bold;
 
 
 #respond-container{
-	background: rgb(57, 170, 0);
 	padding: 0;
 	margin: 0;
 	font-size: 0.9rem;
 	padding: 0.125em 0.25em;
-	background-color: rgb(57, 170, 0);
 	color: white;
 	border: 1px solid rgb(230, 230, 230);
 	display: none;
