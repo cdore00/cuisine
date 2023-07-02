@@ -1,7 +1,4 @@
-var chatLangLbl = [];
-chatLangLbl["S0010"] = "Veuillez entrer le code de confirmation envoyé à l'adresse: ";
-chatLangLbl["S0011"] = "Le code de confirmation '%1' ne correspons pas à celui envoyé à l'adresse: ";
-chatLangLbl["S0012"] = "Adresse confirmé!";
+
 
 function addChatPanel(){
 //var pageZone = document.getElementById('testScroll');

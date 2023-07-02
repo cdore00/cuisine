@@ -2,18 +2,23 @@ var HOSTserv = "https://loupop.ddns.net/pyt/";
 //"http://127.0.0.1:3000/";
 //"https://loupop.ddns.net/pyt/";
 var langSet = window.navigator.userLanguage || window.navigator.language;
-const chat_color_background = '#1db2fd99', chat_color_text = '#FFF', chat_color_background_other = '#98dbfd99', chat_color_text_other = '#222';
-//const chat_color_background = 'rgb(57, 170, 0)', chat_color_text = '#FFF', chat_color_background_other = 'rgb(220, 246, 220)', chat_color_text_other = '#222';
+const chat_color_background = '#1db2fd99', chat_color_text = '#FFF', chat_color_background_other = '#98dbfd99', chat_color_text_other = '#222';   // Bleu
+//const chat_color_background = 'rgb(57, 170, 0)', chat_color_text = '#FFF', chat_color_background_other = 'rgb(220, 246, 220)', chat_color_text_other = '#222';   // Vert
 var chatID = 2023;
 var lastTime = new Date().getTime();
 var firstTime = lastTime, histTime = null;
-var chatRun = false;
+var xhrPoll, chatRun = false;
 var userID="", lastUser, lastIP, pollTimeout, scrollChat, panelLayer, panelLayerMinWidth, modLayer, messUpdtItem, messList, optMenu, userOnPage;
 var lastInputH = 0, lastKey = 0, longMax = 250;
 var respondToMess = false;
-var xhrPoll;
-const delay = 600000; // 10 minutes ........10 second
-const supMessage = "Supprim&eacute;";
+
+const timeBarDelay = 600000; // 10 minutes ........ délai pour afficher la barre du moment dans le chat Ex.: "Lundi, 8 mai 2023 10:15"
+
+var chatLangLbl = [];
+chatLangLbl["S0005"] = "Supprim&eacute;";
+chatLangLbl["S0010"] = "Veuillez entrer le code de confirmation envoyé à l'adresse: ";
+chatLangLbl["S0011"] = "Le code de confirmation '%1' ne correspons pas à celui envoyé à l'adresse: ";
+chatLangLbl["S0012"] = "Adresse confirmé!";
 
 //include("instChat.js");
 (function () { var chatP = document.createElement('script'); chatP.type = 'text/javascript'; chatP.async = true; chatP.src = 'https://loupop.ddns.net/misc/instChat.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(chatP, s); })();
@@ -287,8 +292,12 @@ function longPolling(resNow) {
   xhrPoll.onload = function() {
     if (xhrPoll.status === 200) {
       // process the response
-      var res = JSON.parse(xhrPoll.responseText);
-	  poolRes(res);
+      var res = xhrPoll.responseText;
+	  if (res)
+		poolRes(JSON.parse(res));
+	  else
+		  x=res;
+	  
     }
     
     // initiate a new long-polling request
@@ -298,7 +307,7 @@ function longPolling(resNow) {
   
   xhrPoll.onerror = function() {
     // handle errors
-    console.error('Error occurred while long-polling: ', xhrPoll.statusText);
+    console.error('Error while long-polling: ' + formatDateTime.datetime() , xhrPoll.statusText);
     
     // retry after a delay
 	if (chatRun)
@@ -379,7 +388,7 @@ var oMess = popMess(oMessItem, isRight);
 
 if (lastUser == oMessItem.uID)
 	remChilds(false,messList.lastChild.childNodes[1]);
-if (oMessItem.time > lastTime + delay)
+if (oMessItem.time > lastTime + timeBarDelay)
 	addTimeBar(messList, oMessItem.time);
 
 checkAddRespo(oMess, oMessItem , isRight);
@@ -413,7 +422,7 @@ var isRight = (oChatAuth.getInfo().id == oMessItem.uID) ;
 var oMess = popMess(oMessItem, isRight);
 var oR = checkAddRespo(oMess, oMessItem , isRight);
 
-if (histTime && oMessItem.time + delay < histTime ){
+if (histTime && oMessItem.time + timeBarDelay < histTime ){
 	addTimeBar(messList, histTime, messList.firstChild);
 }
 	
@@ -488,7 +497,7 @@ div1.setAttribute('onmouseout', 'hideOptions(this)');
 		divC.setAttribute('id', oMess.time);	//ID à remplacer
 		divC.setAttribute('class', 'message-bubble-content');
 		if (oMess.status && oMess.status == "D")
-			divC.innerHTML = supMessage + "</br>" + formatDateTime.datetime(oMess.Mtime, true);
+			divC.innerHTML = chatLangLbl["S0005"] + "</br>" + formatDateTime.datetime(oMess.Mtime, true);
 		else
 			divC.innerHTML = oMess.data;
 		div12.appendChild(divC);
@@ -569,7 +578,6 @@ div1.setAttribute('onmouseout', 'hideOptions(this)');
 		div12.appendChild(divC);
 	var div13 = document.createElement("div");
 	div13.setAttribute('class', messageOptionsClass);
-	//div13.setAttribute('onclick', "menuItemOpt(this)");
 		var but = document.createElement("button");
 		but.setAttribute('class', 'btn hoverable-btn');
 			var spa1 = document.createElement("span");
@@ -811,7 +819,7 @@ if (res.ok){
 	if (res.status == 'D'){
 		catCont.classList.add("message-list-item-sup");
 		catCont.parentNode.parentNode.id = "D" + messUpdtItem;
-		catCont.innerHTML = supMessage + "</br>" + formatDateTime.datetime(Date.now(), true);
+		catCont.innerHTML = chatLangLbl["S0005"] + "</br>" + formatDateTime.datetime(Date.now(), true);
 		var obR = getHistMess(catCont).histObj;
 		if (typeof obR == 'object')
 			obR.style.display = "none";
