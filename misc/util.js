@@ -652,6 +652,12 @@ function adjustScreen(hauteurUtil){
 
 }
 
+function zoomMap(p_m){
+var mapZoom = map.getZoom();
+
+map.setZoom(mapZoom + p_m);
+
+}
 
 function getWindowWidth() {
 	var windowWidth = 0;

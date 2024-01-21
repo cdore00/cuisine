@@ -1,4 +1,4 @@
-var HOSTserv = "https://loupop.ddns.net/pyt/";
+//var HOSTserv = "https://loupop.ddns.net/pyt/";
 //"http://127.0.0.1:3000/";
 //"https://loupop.ddns.net/pyt/";
 var langSet = window.navigator.userLanguage || window.navigator.language;
@@ -416,7 +416,7 @@ return oRMess;
 }
 
 function addHistoMess(oMessItem){
-var messList = document.getElementById('messagesList');
+//var messList = document.getElementById('messagesList');
 var isRight = (oChatAuth.getInfo().id == oMessItem.uID) ;
 
 var oMess = popMess(oMessItem, isRight);
@@ -442,9 +442,11 @@ firstTime = oMessItem.time;
 }
 
 function addHisto(oMessList){
-var messList = document.getElementById('messagesList');
+//var messList = document.getElementById('messagesList');
 fObj = messList.firstChild;
 oMessList.forEach(addHistoMess);
+if (oMessList.length == 0 && messList.childNodes.length > 0 && messList.firstChild.className != "timeBar" )
+	addTimeBar(messList, histTime, messList.firstChild);
 if (fObj)
 	fObj.scrollIntoView(false);
 else
